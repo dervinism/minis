@@ -7,6 +7,6 @@ It allows you to:
 
 Download the trial version of the software here: https://github.com/dervinism/minis/releases
 
-It is a proprietary software that costs $300 per user copy. If you would like to get a copy, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will also need to have the serial number of your hard-drive (Windows/macOS) or your BIOS serial number (Linux).
+It is a proprietary software that costs $300 per user copy. If you would like to get a copy, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will also need to have the serial number of your hard-drive (Windows/macOS) or your BIOS serial number (Linux). minis has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
 Software documentation will be expnaded in the coming days.
