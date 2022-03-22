@@ -1,8 +1,8 @@
 # minis
 
 'minis' is a software for electrophysiological data analysis.
-It allows you to:
-(1) detect and analyse spontaneous postsynaptic potetnials/currents in whole-cell patch clamp recordings (Dervinis and Major, 2022);
+It allows you to:\
+(1) detect and analyse spontaneous postsynaptic potetnials/currents in whole-cell patch clamp recordings (Dervinis and Major, 2022);\
 (2) estimate quantal size in the central synapse.
 
 Download the trial version of the software here: https://github.com/dervinism/minis/releases
@@ -11,5 +11,5 @@ It is a proprietary software that costs $300 per user copy. If you would like to
 
 Software documentation will be expanded in the coming days.
 
-References:
+**References**\
 Dervinis, M, Major, G (2022) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
