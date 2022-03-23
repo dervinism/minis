@@ -17,10 +17,10 @@ In order to install minis as a Matlab packaged app, double click minisMatlab.mla
 If you intend to use minis as a Python package, you can install the source code located inside the minisPy folder. Simply open GettingStarted.html file and follow the instructions outlined inside the file. However, prior to installing minisPy package you have to make sure that all required Python package dependencies are also installed. These are:\
 python=3.7\
 matlab\
-pyabf\
+pyabf
 
 If you run Python on Anaconda, you can install minisPy in a separate environment by following these steps
-'''
+```
 conda create --name minis-env python=3.7
 conda activate minis-env
 pip install matlab
@@ -28,7 +28,7 @@ pip install pyabf
 cd minisPy
 python setup.py install
 conda install spyder-kernels
-'''
+```
 
 Software user documentation file minis_documentation.pdf will be added in the coming days.
 
