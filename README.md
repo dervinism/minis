@@ -14,7 +14,7 @@ When you get hold of the fully functional software, you can install the standalo
 
 In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
 
-If you intend to use minis as a Python package, you can install the source code located inside the minisPy folder. Simply open GettingStarted.html file and follow the instructions outlined inside the file. However, prior to installing minisPy package you have to make sure that all required Python package dependencies are also installed. These are:\
+If you intend to use minis as a Python package, you can install the setup.py file located inside the minisPy folder. Simply open GettingStarted.html file and follow the instructions outlined inside the file. However, prior to installing minisPy package you have to make sure that all required Python package dependencies are also installed. These are:\
 python=3.7\
 matlab\
 pyabf
