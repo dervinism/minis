@@ -8,8 +8,9 @@ It allows you to:\
 Download the trial version of the software here: https://github.com/dervinism/minis/releases  \
 To install the trial version on your PC, please follow the installer instructions. As part of the installation process, yuu will have to install Matlab Runtime. The trial version comes with inbuilt data, so you can try out running the software in various modes: Detect, Detect and Compare, Automatic Distribution Fitting, Simulate. You will not be able to load your own data.
 
-It is a proprietary software that costs $300 per user copy. If you would like to get a copy, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will also need to have the serial number of your hard-drive (Windows/macOS) or your BIOS serial number (Linux). 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
+It is a proprietary software. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows/macOS) or your BIOS serial number (Linux). 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
+**Installation instructions**\
 When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside minisStandalone folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
 
 In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
