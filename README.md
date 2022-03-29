@@ -6,7 +6,7 @@ It allows you to:\
 (2) estimate the quantal size in the central synapse (Dervinis and Major, in preparation).
 
 Download the trial version of the software here: https://github.com/dervinism/minis/releases  \
-To install the trial version on your PC, please follow the installer instructions. As part of the installation process, yuu will have to install Matlab Runtime. The trial version comes with inbuilt data, so you can try out running the software in various modes: Detect, Detect and Compare, Automatic Distribution Fitting, Simulate. You will not be able to load your own data.
+To install the trial version on your PC, please follow the installer instructions. As part of the installation process, you will have to install Matlab Runtime. The trial version comes with inbuilt data, so you can try out running the software in various modes: Detect, Detect and Compare, Automatic Distribution Fitting, and Simulate. You will not be able to load your own data.
 
 It is a proprietary software. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows/macOS) or your BIOS serial number (Linux). 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
