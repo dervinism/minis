@@ -3,7 +3,7 @@
 'minis' is a software for electrophysiological data analysis.
 It allows you to:\
 (1) detect and analyse spontaneous postsynaptic potetnials/currents in whole-cell patch clamp recordings (Dervinis and Major, 2022);\
-(2) estimate the quantal size in the central synapse.
+(2) estimate the quantal size in the central synapse (Dervinis and Major, in preparation).
 
 Download the trial version of the software here: https://github.com/dervinism/minis/releases  \
 To install the trial version on your PC, please follow the installer instructions. As part of the installation process, yuu will have to install Matlab Runtime. The trial version comes with inbuilt data, so you can try out running the software in various modes: Detect, Detect and Compare, Automatic Distribution Fitting, Simulate. You will not be able to load your own data.
