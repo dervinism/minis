@@ -14,9 +14,9 @@ It is a proprietary software that is currently provided free of charge. If you w
 On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```\
 Any internal disk will work.
 
-On macOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```\
+On macOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```
 
-On Linux open your terminal and type in ```dmesg | grep "DMI:" | cut -c "6-" | cut -d "," -f "2"```\
+On Linux open your terminal and type in ```dmesg | grep "DMI:" | cut -c "6-" | cut -d "," -f "2"```
 
 **Installation instructions**\
 When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside minisStandalone folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
