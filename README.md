@@ -8,11 +8,15 @@ It allows you to:\
 Download the trial version of the software here: https://github.com/dervinism/minis/releases  \
 If downloading the executable is blocked by your web browser, make sure that the executable file is kept and not discarded. To install the trial version on your PC, please follow the installer instructions. As part of the installation process, you will have to install Matlab Runtime. The trial version comes with inbuilt data, so you can try out running the software in various modes: Detect, Detect and Compare, Automatic Distribution Fitting, and Simulate. You will not be able to load your own data.
 
-It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows/macOS) or your BIOS serial number (Linux). 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
+It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows) or your computing device serial number (macOS) or your BIOS serial number (Linux). 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
-**Instructions on how to get the hard disk serial number**\
-On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```
+**Instructions on how to get the required serial number**\
+On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```\
 Any internal disk will work.
+
+On macOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```\
+
+On Linux open your terminal and type in ```dmesg | grep "DMI:" | cut -c "6-" | cut -d "," -f "2"```\
 
 **Installation instructions**\
 When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside minisStandalone folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
