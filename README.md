@@ -11,10 +11,7 @@ If downloading the executable is blocked by your web browser, make sure that the
 It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows/macOS) or your BIOS serial number (Linux). 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
 **Instructions on how to get the hard disk serial number**\
-On Windows open your command prompt and type in
-```
-wmic diskdrive get model,serialnumber
-```
+On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```
 Any internal disk will work.
 
 **Installation instructions**\
