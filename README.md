@@ -23,12 +23,12 @@ When you get hold of the fully functional software, you can install the standalo
 
 In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
 
-If you intend to use minis as a Python package, run the executable located inside minisPy folder. This will extract the python app inside the folder of your choice. Inside the extraction folder open application folder and install the setup.py file (follow the instructions outlined inside the GettingStarted.html file). However, prior to installing minisPy package you have to make sure that all required Python package dependencies are also installed. These are:\
+If you intend to use minis as a Python package, navigate to the minisPy folder and install the setup.py file (follow the instructions outlined inside the GettingStarted.html file). However, prior to installing minisPy package you have to make sure that all required Python package dependencies are also installed. These are:\
 python=3.7\
 matlab\
 pyabf
 
-If you run Python on Anaconda, you can install minisPy in a separate environment by following these steps (the last line is optional)
+If you run Python on Anaconda, you can install minisPy in a separate environment by following these steps
 ```
 conda create --name minis-env python=3.7
 conda activate minis-env
@@ -36,7 +36,6 @@ pip install matlab
 pip install pyabf
 cd minisPy
 python setup.py install
-conda install spyder-kernels
 ```
 
 Software user documentation file minis_documentation.pdf is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in testMatlab.m, testMatlab_preload.m, testPython.py, and testPython_preload.py files.
