@@ -41,7 +41,7 @@ python setup.py install
 Software user documentation file minis_documentation.pdf is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in testMatlab.m, testMatlab_preload.m, testPython.py, and testPython_preload.py files.
 
 **Input files**\
-The software does not work with version 2 ABF files. Please use earlier versions.
+The software does not work with version 2 ABF files. Please use earlier versions. You can convert them using the pClamp software.
 
 **References**\
 Dervinis, M, Major, G (2022) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
