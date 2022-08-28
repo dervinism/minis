@@ -28,7 +28,7 @@ python=3.7\
 matlab\
 pyabf
 
-If you run Python on Anaconda, you can install minisPy in a separate environment by following these steps. First, install Matlab R2020a Runtime. Then execute the rest of the commands below
+If you run Python on Anaconda, you can install minisPy in a separate environment by following these steps. First, install Matlab R2020a Runtime. Then execute the rest of the commands below in the terminal (Anaconda terminal if on Windows)
 ```
 conda create --name minis-env python=3.7
 conda activate minis-env
