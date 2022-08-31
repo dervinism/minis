@@ -52,8 +52,8 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}\
 export LD_PRELOAD="${LD_PRELOAD:+${LD_PRELOAD}:}\
 /usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64/glibc-2.17_shim.so"
 ```
-Make sure you also execute these commands in your terminal. \
-4. Install minis and its dependencies by executing the lines below in your terminal:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute these commands in your terminal. \
+&nbsp;&nbsp;&nbsp; 4. Install minis and its dependencies by executing the lines below in your terminal:
 ```
 pip install matlab
 pip install pyabf
@@ -73,8 +73,8 @@ export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
 /Applications/MATLAB/MATLAB_Runtime/v912/sys/os/maci64:\
 /Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
 ```
-&nbsp;&nbsp;&nbsp; Make sure you also execute this command in your terminal. \
-4. Change python executable associated with mwpython by executing the lines below in your terminal:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute this command in your terminal. \
+&nbsp;&nbsp;&nbsp; 4. Change python executable associated with mwpython by executing the lines below in your terminal:
 ```
 echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
 source ~/.zshrc
