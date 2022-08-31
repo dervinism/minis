@@ -42,7 +42,35 @@ python setup.py install
 Will be updated soon.
 
 **Installation instructions: Python package on macOS**\
-Will be updated soon.
+To install follow these steps:
+1. Install Matlab R2022a Runtime
+2. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
+```
+export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
+/Applications/MATLAB/MATLAB_Runtime/v912/runtime/maci64:\
+/Applications/MATLAB/MATLAB_Runtime/v912/bin/maci64:\
+/Applications/MATLAB/MATLAB_Runtime/v912/sys/os/maci64:\
+/Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
+```
+Make sure you also execute this command in your terminal.
+3. Change python executable associated with mwpython by executing the lines below in your terminal:
+```
+echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
+source ~/.zshrc
+echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.bash_profile
+source ~/.bash_profile
+```
+4. Install minis and its dependencies by executing the lines below in your terminal:
+```
+pip3 install matlab
+pip3 install pyabf
+cd minisPy
+python3 setup.py install
+```
+5. Use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
+```
+/Applications/MATLAB/MATLAB_Runtime/v912/bin/mwpython testPython.py
+```
 
 Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
 
