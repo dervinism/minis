@@ -115,7 +115,7 @@
 #         'L' - the starting size of the electronic length of the dendritic
 #           cylinder in simulations (unitless). It corresponds to the real
 #           dendritic cylinder length (measured in micrometers) divided by
-#           the dendritic length constant (l/λ). The default value is 0.6.
+#           the dendritic length constant (l/delta). The default value is 0.6.
 #         'tau_m' - Passive membrane time constant (ms), lower limit
 #           (character array).
 #         'tau_PSPm' - Passive membrane time constant (ms), upper limit
@@ -204,6 +204,29 @@
 #           'SDupbound' - a logical for using upper bound on membrane
 #             potential standard deviation as another controlled parameter
 #             during optimisation.
+#           'estimateTauLo' - a logical for estimating passive membrane
+#             time constant lower limit based on measured decays of
+#             detected minis-like events. This field is used only during
+#             autoDistributionFitHeadless task. If specified to be true,
+#             the supplied range of membrane time constants in the
+#             Simulation Paprameters panel is overridden and a new range is
+#             established if 'tauRange' was set to be true.
+#           'estimateTauHi' - a logical for estimating passive membrane
+#             time constant upper limit based on measured decays of
+#             detected minis-like events. This field is used only during
+#             autoDistributionFitHeadless task. If specified to be true,
+#             the supplied range of membrane time constants in the
+#             Simulation Paprameters panel is overridden and a new range is
+#             established if 'tauRange' was set to be true.
+#           'optimisationData' - a character array containing optimisation
+#             data file path obtained in error bound estimation. Supply
+#             only when running autoDistributionFitHeadless task. It is an
+#             empty character array by default.
+#           'resumeOptimisation' - a character array containing unfinished
+#             optimisation data file path obtained during previous
+#             optimisation. Supply only when running
+#             autoDistributionFitHeadless task. It is an empty character
+#             array by default.
 # Output: output (1) - a structure with the following fields (produced only
 #           during the detectionHeadless mode, otherwise empty):
 #           'minisArray' - a matrix with rows corresponding to the
@@ -307,8 +330,8 @@ import minisPy as minis
 # Setup minis input structure variable
 inputDict = {
   'task': 'detectionHeadless', # 'preprocess', 'detection', 'detectionHeadless', 'detectCompare', 'errorBounds', 'autoDistributionFit', 'simulation', 'simulationHeadless'
-  'loadTargetFileInput': 'target_file_path.abf',
-  'loadNoiseFileInput': 'noise_file_path.abf',
+  'loadTargetFileInput': 'D:/PhD/previous/Guy_Major/Data/p103a_copy/data/optimisation/target/p103a_0084_088.abf',
+  'loadNoiseFileInput': 'D:/PhD/previous/Guy_Major/Data/p103a_copy/data/optimisation/noise/p103a_0100-0104.abf',
   'tau_PSPm': '...',
   'tau_m': '13.5288',
   'L': '0.6',
