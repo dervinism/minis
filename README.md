@@ -17,6 +17,7 @@ Any internal disk will work.
 On MacOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```
 
 On Linux open your terminal and type in ```sudo dmesg | grep "DMI:" | cut -c "6-" | cut -d "," -f "2"```
+Linux terminal will give you a BIOS number.
 
 **Installation instructions: Standalone desktop app**\
 When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside minisStandalone folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
