@@ -16,7 +16,7 @@ Any internal disk will work.
 
 On MacOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```
 
-On Linux open your terminal and type in ```sudo dmesg | grep "DMI:" | cut -c "6-" | cut -d "," -f "2"```
+On Linux open your terminal and type in ```sudo dmesg | grep "DMI:" | cut -c "6-" | cut -d "," -f "2"``` \
 Linux terminal will give you a BIOS number.
 
 **Installation instructions: Standalone desktop app**\
