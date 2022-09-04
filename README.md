@@ -82,12 +82,12 @@ source ~/.zshrc
 echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.bash_profile
 source ~/.bash_profile
 ```
-In R2022a, PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains one of the following Python executables:
-- python
-- python3.8
-- python3.9
+&emsp;&emsp;In R2022a, PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains one of the following Python executables:
+&emsp;&emsp;- python
+&emsp;&emsp;- python3.8
+&emsp;&emsp;- python3.9
 
-Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9
+&emsp;&emsp;Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9
 
 5. Install minis and its dependencies by executing the lines below in your terminal:
 ```
