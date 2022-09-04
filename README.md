@@ -82,10 +82,11 @@ source ~/.zshrc
 echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.bash_profile
 source ~/.bash_profile
 ```
-&emsp;&emsp;In R2022a, PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains one of the following Python executables:
-&emsp;&emsp;- python
-&emsp;&emsp;- python3.8
-&emsp;&emsp;- python3.9
+&emsp;&emsp;In R2022a, PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains one of the following Python
+&emsp;&emsp;executables:
+- python
+- python3.8
+- python3.9
 
 &emsp;&emsp;Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9
 
