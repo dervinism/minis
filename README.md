@@ -86,7 +86,7 @@ source ~/.bash_profile
 &emsp;&emsp;executables: \
 &emsp;&emsp;- python \
 &emsp;&emsp;- python3.8 \
-&emsp;&emsp;- python3.9 \
+&emsp;&emsp;- python3.9
 
 &emsp;&emsp;Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9
 
