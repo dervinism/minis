@@ -86,7 +86,8 @@ In R2022a, PYTHONHOME needs to be set to an actual directory that has a bin subd
 - python
 - python3.8
 - python3.9 \
-Typically the correct folder is /Library/Frameworks/Python.framework/Versions/3.9
+
+Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9
 
 5. Install minis and its dependencies by executing the lines below in your terminal:
 ```
