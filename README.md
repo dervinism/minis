@@ -26,14 +26,12 @@ When you get hold of the fully functional software, you can install the standalo
 In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
 
 **Installation instructions: Python package on Windows**\
-Navigate to the minisPy folder and install the setup.py file (follow the instructions outlined inside the GettingStarted.html file; make sure you install Matlab R2022a Runtime before you complete the rest of the installation steps). Prior to installing minisPy package you have to make sure that all required Python package dependencies are also installed. These are:\
-python=3.9\
-matlab\
-pyabf
-
-Execute the commands below in the terminal (if you have correct Matlab Runtime and Python version):
+To install follow these steps:
+1. Install Python 3.9 (in a separate environment if needed).
+2. Install Matlab R2022a Runtime by following instructions [here](https://uk.mathworks.com/help/compiler/install-the-matlab-runtime.html).
+3. Install Matlab Engine API for Python by following the steps outlined [here](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html).
+4. Install minis and its dependencies by executing the lines below in your terminal:
 ```
-pip install matlab
 pip install pyabf
 cd minisPy
 python setup.py install
