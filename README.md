@@ -40,7 +40,7 @@ python setup.py install
 **Installation instructions: Python package on Linux**\
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Install Matlab R2022a Runtime.
+2. Install Matlab R2022a Runtime as explained [here](https://uk.mathworks.com/help/compiler/install-the-matlab-runtime.html).
 3. Update Matlab Runtime path by adding the lines below to your ~./bashrc file:
 ```
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}\
@@ -52,9 +52,9 @@ export LD_PRELOAD="${LD_PRELOAD:+${LD_PRELOAD}:}\
 /usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64/glibc-2.17_shim.so"
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute these commands in your terminal. \
-&nbsp;&nbsp;&nbsp; 4. Install minis and its dependencies by executing the lines below in your terminal:
+&nbsp;&nbsp;&nbsp; 4. Install Matlab Engine API for Python by following the steps outlined [here](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html). \
+&nbsp;&nbsp;&nbsp; 5. Install minis and its dependencies by executing the lines below in your terminal:
 ```
-pip install matlab
 pip install pyabf
 cd minisPy
 python setup.py install
@@ -63,7 +63,7 @@ python setup.py install
 **Installation instructions: Python package on macOS**\
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Install Matlab R2022a Runtime
+2. Install Matlab R2022a Runtime as explained [here](https://uk.mathworks.com/help/compiler/install-the-matlab-runtime.html).
 3. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
 ```
 export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
@@ -84,14 +84,14 @@ source ~/.bash_profile
 &emsp;&emsp;the python3.9 executable. \
 &emsp;&emsp;Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9.
 
-5. Install minis and its dependencies by executing the lines below in your terminal:
+5. Install Matlab Engine API for Python by following the steps outlined [here](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html).
+6. Install minis and its dependencies by executing the lines below in your terminal:
 ```
-pip3 install matlab
 pip3 install pyabf
 cd minisPy
 python3 setup.py install
 ```
-6. Use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
+7. Use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
 ```
 /Applications/MATLAB/MATLAB_Runtime/v912/bin/mwpython testPython.py
 ```
