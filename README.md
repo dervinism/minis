@@ -36,7 +36,7 @@ pip install pyabf
 cd minisPy
 python setup.py install
 ```
-&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation.
+&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 **Installation instructions: Python package on Linux**\
 To install follow these steps:
@@ -60,7 +60,7 @@ pip install pyabf
 cd minisPy
 python setup.py install
 ```
-&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation.
+&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 **Installation instructions: Python package on macOS**\
 To install follow these steps:
@@ -97,7 +97,7 @@ python3 setup.py install
 ```
 /Applications/MATLAB/MATLAB_Runtime/v912/bin/mwpython testPython.py
 ```
-&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script.
+&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 **Documentation**\
 Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
