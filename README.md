@@ -36,7 +36,8 @@ pip install pyabf
 cd minisPy
 python setup.py install
 ```
-&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
+&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to
+&emsp;&emsp;initialise Matlab Runtime and minisPY.
 
 **Installation instructions: Python package on Linux**\
 To install follow these steps:
@@ -60,7 +61,8 @@ pip install pyabf
 cd minisPy
 python setup.py install
 ```
-&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
+&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to
+&emsp;&emsp;initialise Matlab Runtime and minisPY.
 
 **Installation instructions: Python package on macOS**\
 To install follow these steps:
