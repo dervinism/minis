@@ -79,6 +79,7 @@ source ~/.bash_profile
 &emsp;&emsp;In R2022a, PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains \
 &emsp;&emsp;the python3.9 executable. \
 &emsp;&emsp;Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9.
+
 7. You are all set. Just make sure to use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
 ```
 /Applications/MATLAB/MATLAB_Runtime/v912/bin/mwpython testPython.py
