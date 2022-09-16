@@ -57,7 +57,7 @@ You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main
 **Installation instructions: Python package on macOS**\
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Open the minisPy/installer folder and run the minisPyInstaller_web.install. Follow the installation instructions and install Matlab Runtime as part of them.
+2. Open the minisPy/installer folder and run the minisPyInstaller_web.app. Follow the installation instructions and install Matlab Runtime as part of them.
 3. Open the minisPy/python_files folder and execute the following line in your terminal ```python3 setup.py install```.
 4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip3 install pyabf```.
 5. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
