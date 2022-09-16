@@ -55,6 +55,7 @@ export LD_PRELOAD="${LD_PRELOAD:+${LD_PRELOAD}:}\
 You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 **Installation instructions: Python package on macOS**\
+To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
 2. Open the minisPy/installer folder and run the minisPyInstaller_web.install. Follow the installation instructions and install Matlab Runtime as part of them.
 3. Open the minisPy/python_files folder and execute the following line in your terminal ```python3 setup.py install```.
