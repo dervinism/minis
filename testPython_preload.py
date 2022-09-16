@@ -324,8 +324,8 @@
 
 import pyabf
 import struct
-import matlab
 import minisPy as minis
+import matlab
 
 # Data loading function
 def getData(targetOrNoiseFilePath): # Full path to an ABF

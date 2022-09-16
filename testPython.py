@@ -324,14 +324,14 @@
 
 import pyabf
 import struct
-import matlab
 import minisPy as minis
+import matlab
 
 # Setup minis input structure variable
 inputDict = {
   'task': 'detectionHeadless', # 'preprocess', 'detection', 'detectionHeadless', 'detectCompare', 'errorBounds', 'autoDistributionFit', 'simulation', 'simulationHeadless'
-  'loadTargetFileInput': 'D:/PhD/previous/Guy_Major/Data/p103a_copy/data/optimisation/target/p103a_0084_088.abf',
-  'loadNoiseFileInput': 'D:/PhD/previous/Guy_Major/Data/p103a_copy/data/optimisation/noise/p103a_0100-0104.abf',
+  'loadTargetFileInput': 'C:/Users/44079/Phd/previous/Guy_Major/Data/p103a_copy/data/optimisation/target/p103a_0084_088.abf',
+  'loadNoiseFileInput': 'C:/Users/44079/Phd/previous/Guy_Major/Data/p103a_copy/data/optimisation/noise/p103a_0100-0104.abf',
   'tau_PSPm': '...',
   'tau_m': '13.5288',
   'L': '0.6',
