@@ -37,8 +37,10 @@ You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main
 **Installation instructions: Python package on Linux**\
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Install Matlab R2022a Runtime as explained [here](https://uk.mathworks.com/help/compiler/install-the-matlab-runtime.html).
-3. Update Matlab Runtime path by adding the lines below to your ~./bashrc file:
+2. Open the minisPy/installer folder and run the minisPyInstaller_web.install. Follow the installation instructions and install Matlab Runtime as part of them.
+3. Open the minisPy/python_files folder and execute the following line in your terminal ```python setup.py install```.
+4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip install pyabf```.
+5. Update Matlab Runtime path by adding the lines below to your ~./bashrc file:
 ```
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}\
 /usr/local/MATLAB/MATLAB_Runtime/v912/runtime/glnxa64:\
@@ -48,22 +50,16 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}\
 export LD_PRELOAD="${LD_PRELOAD:+${LD_PRELOAD}:}\
 /usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64/glibc-2.17_shim.so"
 ```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute these commands in your terminal. \
-&nbsp;&nbsp;&nbsp; 4. Install Matlab Engine API for Python by following the steps outlined [here](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html). \
-&nbsp;&nbsp;&nbsp; 5. Install minis and its dependencies by executing the lines below in your terminal:
-```
-pip install pyabf
-cd minisPy
-python setup.py install
-```
-&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to
-&emsp;&emsp;initialise Matlab Runtime and minisPY.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute these commands in your terminal. You are all set. \
+
+You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 **Installation instructions: Python package on macOS**\
-To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Install Matlab R2022a Runtime as explained [here](https://uk.mathworks.com/help/compiler/install-the-matlab-runtime.html).
-3. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
+2. Open the minisPy/installer folder and run the minisPyInstaller_web.install. Follow the installation instructions and install Matlab Runtime as part of them.
+3. Open the minisPy/python_files folder and execute the following line in your terminal ```python3 setup.py install```.
+4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip3 install pyabf```.
+5. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
 ```
 export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
 /Applications/MATLAB/MATLAB_Runtime/v912/runtime/maci64:\
@@ -72,7 +68,7 @@ export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
 /Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute this command in your terminal. \
-&nbsp;&nbsp;&nbsp; 4. Change python executable associated with mwpython by executing the lines below in your terminal:
+&nbsp;&nbsp;&nbsp; 6. Change python executable associated with mwpython by executing the lines below in your terminal:
 ```
 echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
 source ~/.zshrc
@@ -82,20 +78,11 @@ source ~/.bash_profile
 &emsp;&emsp;In R2022a, PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains \
 &emsp;&emsp;the python3.9 executable. \
 &emsp;&emsp;Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9.
-
-5. Install Matlab Engine API for Python by following the steps outlined [here](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html).
-6. Install minis and its dependencies by executing the lines below in your terminal:
-```
-pip3 install pyabf
-cd minisPy
-python3 setup.py install
-```
-7. Use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
+7. You are all set. Just make sure to use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
 ```
 /Applications/MATLAB/MATLAB_Runtime/v912/bin/mwpython testPython.py
 ```
-&emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime
-&emsp;&emsp;and minisPY.
+You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 **Documentation**\
 Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
