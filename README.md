@@ -20,22 +20,17 @@ On Linux open your terminal and type in ```sudo dmesg | grep "DMI:" | cut -c "6-
 Linux terminal will give you a BIOS number.
 
 **Installation instructions: Standalone desktop app**\
-When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside minisStandalone folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
+When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside the minis folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
 
 **Installation instructions: Matlab packaged app**\
-In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
+In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside the minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
 
 **Installation instructions: Python package on Windows**\
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Install Matlab R2022a Runtime by following instructions [here](https://uk.mathworks.com/help/compiler/install-the-matlab-runtime.html).
-3. Install Matlab Engine API for Python by following the steps outlined [here](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html).
-4. Install minis and its dependencies by executing the lines below in your terminal:
-```
-pip install pyabf
-cd minisPy
-python setup.py install
-```
+2. Open the minisPy/installer folder and run the minisPyInstaller_web.exe. Follow the installation instructions and install Matlab Runtime as part of them.
+3. Open the minisPy/python_files folder and execute the following line in your terminal ```python setup.py install```.
+4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip install pyabf```. You are all set.
 &emsp;&emsp;You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to
 &emsp;&emsp;initialise Matlab Runtime and minisPY.
 
