@@ -8,16 +8,15 @@ It allows you to:\
 Download the trial version of the software here: https://github.com/dervinism/minis/releases/tag/v1.1.0  \
 If downloading the executable is blocked by your web browser, make sure that the executable file is kept and not discarded. To install the trial version on your computer, please follow the installer (Windows: minisTrialInstaller_web.exe, Linux: minisTrialInstaller_web.install, macOS: minisTrialInstaller_web.app) instructions. As part of the installation process, you will have to install Matlab R2022a Runtime. The trial version comes with inbuilt data, so you can try out running the software in various modes: Detect, Detect and Compare, Automatic Distribution Fitting, and Simulate. You will not be able to load your own data.
 
-It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows) or your computing device serial number (macOS) or your BIOS serial number (Linux). In the email please also indicate which operating system you are using. 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
+It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows and Linux) or your computing device serial number (macOS). In the email please also indicate which operating system you are using. 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
 **Instructions on how to get the required serial number**\
-On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```\
+On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```. \
 Any internal disk will work.
 
-On macOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```
+On macOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```.
 
-On Linux open your terminal and type in ```sudo dmesg | grep "DMI:" | cut -c "6-" | cut -d "," -f "2"``` \
-Linux terminal will give you a BIOS number.
+On Linux open your terminal and type in ```ls -la /dev/disk/by-uuid | grep sda1```.
 
 **Installation instructions: Standalone desktop app**\
 When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside the minis folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
