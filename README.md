@@ -16,7 +16,7 @@ Any internal disk will work.
 
 On macOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```.
 
-On Linux open your terminal and type in ```ls -la /dev/disk/by-uuid | grep sda1```.
+On Linux open your terminal and type in ```ls -la /dev/disk/by-uuid | grep sda1```. If your hard drive name is other than sda1, use the serial number of that hard drive instead.
 
 **Installation instructions: Standalone desktop app**\
 When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside the minis folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
