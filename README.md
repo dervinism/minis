@@ -10,6 +10,13 @@ If downloading the executable is blocked by your web browser, make sure that the
 
 It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows and Linux) or your computing device serial number (macOS). In the email please also indicate which operating system you are using. 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
+**Key points**
+1. minis does NOT work with ABF version 2 files. This may change in the future but for now please use earlier version files. You can convert them using Clampfit software.
+2. You can run minis in parallel fashion. To do so, go to the Optimisation options menu and click on Change options. In the Options window change the Number of parallel cores parameter to another value (e.g., 4). Click OK.
+3. If the Down-going tick box is marked, the recording trace will be inverted.
+4. Software documentation is available [here](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf).
+5. Read all of the instructions in the README file before you use minis.
+
 **Instructions on how to get the required serial number**\
 On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```. \
 Any internal disk will work.
