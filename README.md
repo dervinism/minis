@@ -68,8 +68,7 @@ export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
 /Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute this command in your terminal. \
-&nbsp;&nbsp;&nbsp; 6. Change python executable associated with mwpython by executing the lines below in your terminal (replace angle brackets with an actual
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; path):
+6. Change python executable associated with mwpython by executing the lines below in your terminal (replace angle brackets with an actual path):
 ```
 echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
 source ~/.zshrc
