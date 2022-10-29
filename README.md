@@ -69,18 +69,17 @@ To install follow these steps:
     ```
     Make sure you also execute this command in your terminal. \
 6. Change python executable associated with mwpython by executing the lines below in your terminal (replace angle brackets with an actual path):
-```
-echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
-source ~/.zshrc
-echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.bash_profile
-source ~/.bash_profile
-```
-&emsp;&emsp;PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains the python3.9 \
-&emsp;&emsp;executable. Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9. \
-&nbsp;&nbsp;&nbsp; 7. You are all set. Just make sure to use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
-```
-/Applications/MATLAB/MATLAB_Runtime/v912/bin/mwpython testPython.py
-```
+    ```
+    echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
+    source ~/.zshrc
+    echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.bash_profile
+    source ~/.bash_profile
+    ```
+    PYTHONHOME needs to be set to an actual directory that has a bin subdirectory that contains the python3.9 executable. Typically the correct directory is /Library/Frameworks/Python.framework/Versions/3.9.
+7. You are all set. Just make sure to use mwpython to run any code that involves loading Python packages compiled in Matlab. For example,
+    ```
+    /Applications/MATLAB/MATLAB_Runtime/v912/bin/mwpython testPython.py
+    ```
 You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 **Documentation**\
