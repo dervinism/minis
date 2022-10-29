@@ -60,14 +60,14 @@ To install follow these steps:
 3. Open the minisPy/python_files folder and execute the following line in your terminal ```python3 setup.py install```.
 4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip3 install pyabf```.
 5. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
-  ```
-  export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
-  /Applications/MATLAB/MATLAB_Runtime/v912/runtime/maci64:\
-  /Applications/MATLAB/MATLAB_Runtime/v912/bin/maci64:\
-  /Applications/MATLAB/MATLAB_Runtime/v912/sys/os/maci64:\
-  /Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
-  ```
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute this command in your terminal. \
+    ```
+    export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
+    /Applications/MATLAB/MATLAB_Runtime/v912/runtime/maci64:\
+    /Applications/MATLAB/MATLAB_Runtime/v912/bin/maci64:\
+    /Applications/MATLAB/MATLAB_Runtime/v912/sys/os/maci64:\
+    /Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
+    ```
+    Make sure you also execute this command in your terminal. \
 6. Change python executable associated with mwpython by executing the lines below in your terminal (replace angle brackets with an actual path):
 ```
 echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
