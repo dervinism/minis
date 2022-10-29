@@ -11,7 +11,7 @@ If downloading the executable is blocked by your web browser, make sure that the
 It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows and Linux) or your computing device serial number (macOS). In the email please also indicate which operating system you are using. 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
 
 **Key points**
-1. minis does NOT work with ABF version 2 files. This may change in the future but for now please use earlier version files. You can convert them using Clampfit software.
+1. minis does NOT work with ABF version 2 files. This may change in the future but for now please use earlier version files. You can convert them using pClamp Clampfit software.
 2. You can run minis in parallel fashion. To do so, go to the Optimisation options menu and click on Change options. In the Options window change the Number of parallel cores parameter to another value (e.g., 4). Click OK.
 3. If the Down-going tick box is marked, the recording trace will be inverted.
 4. Software documentation is available [here](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf).
@@ -93,7 +93,7 @@ You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main
 Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
 
 **Input files**\
-**The software does NOT work with version 2 ABF files**. Please use earlier versions. You can convert them using the pClamp software. [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) is an example of an ABF file that was used for testing the software.
+**The software does NOT work with version 2 ABF files**. Please use earlier versions. You can convert them using the pClamp Clampfit software. [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) is an example of an ABF file that was used for testing the software.
 
 **References**\
 Dervinis, M, Major, G (2022) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
