@@ -40,15 +40,15 @@ To install follow these steps:
 3. Open the minisPy/python_files folder and execute the following line in your terminal ```python setup.py install```.
 4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip install pyabf```.
 5. Update Matlab Runtime path by adding the lines below to your ~./bashrc file:
-```
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}\
-/usr/local/MATLAB/MATLAB_Runtime/v912/runtime/glnxa64:\
-/usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64:\
-/usr/local/MATLAB/MATLAB_Runtime/v912/sys/os/glnxa64:\
-/usr/local/MATLAB/MATLAB_Runtime/v912/extern/bin/glnxa64"
-export LD_PRELOAD="${LD_PRELOAD:+${LD_PRELOAD}:}\
-/usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64/glibc-2.17_shim.so"
-```
+  ```
+  export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}\
+  /usr/local/MATLAB/MATLAB_Runtime/v912/runtime/glnxa64:\
+  /usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64:\
+  /usr/local/MATLAB/MATLAB_Runtime/v912/sys/os/glnxa64:\
+  /usr/local/MATLAB/MATLAB_Runtime/v912/extern/bin/glnxa64"
+  export LD_PRELOAD="${LD_PRELOAD:+${LD_PRELOAD}:}\
+  /usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64/glibc-2.17_shim.so"
+  ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute these commands in your terminal. You are all set. \
 
 You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
@@ -60,15 +60,15 @@ To install follow these steps:
 3. Open the minisPy/python_files folder and execute the following line in your terminal ```python3 setup.py install```.
 4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip3 install pyabf```.
 5. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
-```
-export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
-/Applications/MATLAB/MATLAB_Runtime/v912/runtime/maci64:\
-/Applications/MATLAB/MATLAB_Runtime/v912/bin/maci64:\
-/Applications/MATLAB/MATLAB_Runtime/v912/sys/os/maci64:\
-/Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
-```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute this command in your terminal. \
-1. Change python executable associated with mwpython by executing the lines below in your terminal (replace angle brackets with an actual path):
+  ```
+  export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+${DYLD_LIBRARY_PATH}:}\
+  /Applications/MATLAB/MATLAB_Runtime/v912/runtime/maci64:\
+  /Applications/MATLAB/MATLAB_Runtime/v912/bin/maci64:\
+  /Applications/MATLAB/MATLAB_Runtime/v912/sys/os/maci64:\
+  /Applications/MATLAB/MATLAB_Runtime/v912/extern/bin/maci64"
+  ```
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Make sure you also execute this command in your terminal. \
+6. Change python executable associated with mwpython by executing the lines below in your terminal (replace angle brackets with an actual path):
 ```
 echo 'export PYTHONHOME=<python3 installation directory>' >> ~/.zshenv
 source ~/.zshrc
