@@ -27,6 +27,15 @@ On Linux open your terminal and type in ```ls -la /dev/disk/by-uuid | grep sda1`
 
 **Installation instructions: Standalone desktop app**\
 When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside the minis folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
+On Windows and Linux you can launch minis app in the same way you launch other apps. On macOS you launch the minis app by navigating to the application folder and issuing the command below:
+```
+./run_minis.sh <matlab_runtime_directory path>
+```
+Typically this command should work:
+```
+./run_minis.sh /Applications/MATLAB/MATLAB_Runtime/v912
+```
+If you lunch the app in the regular way, the log file will not be generated.
 
 **Installation instructions: Matlab packaged app**\
 In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside the minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
