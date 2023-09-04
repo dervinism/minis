@@ -1,0 +1,17 @@
+settings = load('settings.mat');
+input = settings2input(settings.settings);
+input.task = 'autoDistributionFitHeadless';
+input.loadTargetFileInput = 'p103a_0084_088.abf';
+input.loadNoiseFileInput = 'p103a_0100-0104.abf';
+input.filtering = 'on';
+input.loSimAmp = '0.02';
+input.options.nGenerations = 1000;
+input.options.parallelCores = 'min'; %'max';
+input.options.fullParallel = 0;
+input.options.figureDisplay = false;
+input.options.estimateTauLo = true;
+input.options.estimateTauHi = true;
+input.options.optimisationData = 'errorBounds.mat';
+input.options.resumeOptimisation = '';
+input.options.cliff = 1;
+[status, output] = minisHeadless(input);

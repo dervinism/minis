@@ -1,32 +1,21 @@
 # minis
-
 'minis' is a software for electrophysiological data analysis.
 It allows you to:\
-(1) detect and analyse spontaneous postsynaptic potetnials/currents in whole-cell patch clamp recordings (Dervinis and Major, 2022);\
+(1) detect and analyse spontaneous postsynaptic potetnials/currents in whole-cell patch clamp recordings (Dervinis and Major, 2023);\
 (2) estimate the quantal size in the central synapse (Dervinis and Major, in preparation).
 
-Download the trial version of the software here: https://github.com/dervinism/minis/releases/tag/v1.1.0  \
-If downloading the executable is blocked by your web browser, make sure that the executable file is kept and not discarded. To install the trial version on your computer, please follow the installer (Windows: minisTrialInstaller_web.exe, Linux: minisTrialInstaller_web.install, macOS: minisTrialInstaller_web.app) instructions. As part of the installation process, you will have to install Matlab R2022a Runtime. The trial version comes with inbuilt data, so you can try out running the software in various modes: Detect, Detect and Compare, Automatic Distribution Fitting, and Simulate. You will not be able to load your own data.
-
-It is a proprietary software that is currently provided free of charge. If you would like to get a software copy for your use, please email Martynas Dervinis (martynas.dervinis@gmail.com). You will need to provide the serial number of your hard-drive (Windows and Linux) or your computing device serial number (macOS). In the email please also indicate which operating system you are using. 'minis' has been fully written in Matlab (Mathworks) and is distributed as an application programming interface in the form of a packaged Matlab app or a Python (Python Software Foundation) package or as a compiled standalone desktop application with a graphical user interface.
+'minis' can be used as a standalone application with a graphical user interface (GUI), as a Matlab (Mathworks) function, or a Python (Python Software Foundation) package. 'minis' has been fully written in Matlab and its code base is open source.
 
 **Key points**
-1. minis does NOT work with ABF version 2 files. This may change in the future but for now please use earlier version files. You can convert them using pClamp Clampfit software. You can check the file version by going to the File menu in Clampfit and clicking on Properties.
-2. You can run minis in parallel fashion. To do so, go to the Optimisation options menu and click on Change options. In the Options window change the Number of parallel cores parameter to another value (e.g., 4). Click OK.
+1. You can run 'minis' in parallel fashion. To do so, go to the Optimisation options menu and click on Change options. In the Options window change the Number of parallel cores parameter to another value (e.g., 4). Click OK.
+2. 'minis' can also be executed on a computing cluster. The ```source_code``` directory contains a Matlab script file called ```minisCluster.m``` that can be used to launch 'minis' on a cluster.
 3. If the Down-going tick box is marked, the recording trace will be inverted.
 4. Software documentation is available [here](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf).
 5. Read all of the instructions in the README file before you use minis.
 
-**Instructions on how to get the required serial number**\
-On Windows open your command prompt and type in ```wmic diskdrive get model,serialnumber```. \
-Any internal disk will work.
-
-On macOS open your terminal and type in ```system_profiler SPHardwareDataType | grep Serial```.
-
-On Linux open your terminal and type in ```ls -la /dev/disk/by-uuid | grep sda1```. If your hard drive name is other than sda1, use the serial number of that hard drive instead.
-
-**Installation and launch instructions: Standalone desktop app**\
-When you get hold of the fully functional software, you can install the standalone version of the software by running the installer inside the minis folder. Simply follow the installer instructions. Uninstall the minis the same way you unistall any other regular app.
+## Installation and launch instructions
+### Standalone desktop app
+Run the installer located inside the minisStandalone folder (Windows: minisInstaller_web.exe, Linux: minisInstaller_web.install, macOS: minisInstaller_web.app). Simply follow the installer instructions. Uninstall the minis the same way you uninstall any other regular app.
 
 On Windows and Linux you can launch the minis app in the same way you launch other apps. On macOS you launch the minis app by navigating to the application folder and issuing the command below:
 ```
@@ -36,25 +25,25 @@ Typically this command should work:
 ```
 ./run_minis.sh /Applications/MATLAB/MATLAB_Runtime/v912
 ```
-If you lunch the app in the regular way, the log file will not be generated.
+If you launch the macOS app in the regular way, the log file will not be generated.
 
-**Installation instructions: Matlab packaged app**\
-In order to install minis as a Matlab packaged app, double click minisMatlab.mlappinstall inside the minisMatlab folder and follow instructions inside Matlab. To uninstall, navigate to Matlab Apps section, right-click minisMatlab under MY APPS subsection, and uninstall it.
+### Matlab functions
+If you want to use minis within the Matlab environment, download the source_code folder and add it to your Matlab path. You can launch the app by typing ```minis``` in the Matlab console. To run minis without the GUI, use the ```minisHeadless``` function. You can also run 'minis' on a cluster using the script ```minisCluster.m```
 
-**Installation instructions: Python package on Windows**\
+### Python package on Windows
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Open the minisPy/installer folder and run the minisPyInstaller_web.exe. Follow the installation instructions and install Matlab Runtime as part of them.
-3. Open the minisPy/python_files folder and execute the following line in your terminal ```python setup.py install```.
+2. Open the minisPy_Windows/installer folder and run the minisPyInstaller_web.exe. Follow the installation instructions and install Matlab Runtime as part of them.
+3. Open the minisPy_Windows/python_files folder and execute the following line in your terminal ```python setup.py install```.
 4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip install pyabf```. You are all set.
 
 You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
-**Installation instructions: Python package on Linux**\
+### Python package on Linux
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Open the minisPy/installer folder and run the minisPyInstaller_web.install. Follow the installation instructions and install Matlab Runtime as part of them.
-3. Open the minisPy/python_files folder and execute the following line in your terminal ```python setup.py install```.
+2. Open the minisPy_Linux/installer folder and run the minisPyInstaller_web.install. Follow the installation instructions and install Matlab Runtime as part of them.
+3. Open the minisPy_Linux/python_files folder and execute the following line in your terminal ```python setup.py install```.
 4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip install pyabf```.
 5. Update Matlab Runtime path by adding the lines below to your ~./bashrc file:
     ```
@@ -70,11 +59,11 @@ To install follow these steps:
 
 You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
-**Installation instructions: Python package on macOS**\
+### Python package on macOS
 To install follow these steps:
 1. Install Python 3.9 (in a separate environment if needed).
-2. Open the minisPy/installer folder and run the minisPyInstaller_web.app. Follow the installation instructions and install Matlab Runtime as part of them.
-3. Open the minisPy/python_files folder and execute the following line in your terminal ```python3 setup.py install```.
+2. Open the minisPy_macOS/installer folder and run the minisPyInstaller_web.app. Follow the installation instructions and install Matlab Runtime as part of them.
+3. Open the minisPy_macOS/python_files folder and execute the following line in your terminal ```python3 setup.py install```.
 4. Install Axon Binary File format python utility by executing the following line in your terminal ```pip3 install pyabf```.
 5. Update Matlab Runtime path by adding the lines below to your ~./bash_profile and ~./zshenv files:
     ```
@@ -99,11 +88,8 @@ To install follow these steps:
     ```
 You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
-**Documentation**\
+## Documentation
 Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
 
-**Input files**\
-**The software does NOT work with version 2 ABF files**. Please use earlier versions (You can check the file version by going to the File menu in Clampfit and clicking on Properties). You can convert them using the pClamp Clampfit software. [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) is an example of an ABF file that was used for testing the software.
-
 **References**\
-Dervinis, M, Major, G (2022) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
+Dervinis, M, Major, G (2023) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
