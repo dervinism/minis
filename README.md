@@ -1,3 +1,5 @@
+[![DOI](https://sandbox.zenodo.org/badge/471774302.svg)](https://sandbox.zenodo.org/badge/latestdoi/471774302)
+
 # minis
 'minis' is a software for electrophysiological data analysis.
 It allows you to:\
