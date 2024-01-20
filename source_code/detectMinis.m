@@ -293,14 +293,18 @@ smoothWindows = [searchParameters.smoothWindow searchParameters.smoothWindowLite
 %% Check unique device signature
 if ~fafTest
     if ispc
-      [~,uniqueDeviceSignature] = system('wmic diskdrive get serialnumber'); %#ok<*ASGLU> 
+      [~,uniqueDeviceSignature] = system('wmic diskdrive get serialnumber');
     elseif ismac
       [~,uniqueDeviceSignature] = system('system_profiler SPHardwareDataType | grep Serial');
     elseif isunix
       [~,uniqueDeviceSignature] = system('ls -la /dev/disk/by-uuid');
     end
-    if false %~contains(uniqueDeviceSignature, '2G2720') || ~contains(uniqueDeviceSignature, '064419') % MD1
-        minis = []; filterV = []; spectrum = struct(); %#ok<*UNRCH> 
+    %if ~contains(uniqueDeviceSignature, '2G2720') || ~contains(uniqueDeviceSignature, '064419') % MD1
+    %if ~contains(uniqueDeviceSignature, 'ACE4_2E00_2520_4A01_') || ~contains(uniqueDeviceSignature, '2EE4_AC00_0000_0001') % MD2
+    %if ~contains(uniqueDeviceSignature, 'ACE4_2E00_15FF_E770_') || ~contains(uniqueDeviceSignature, '2EE4_AC00_0000_0001') % GM
+    %if ~contains(uniqueDeviceSignature, 'E823_8FA6_BF53_0001_') || ~contains(uniqueDeviceSignature, '001B_448B_497C_2616') % UID
+    if false
+        minis = []; filterV = []; spectrum = struct();
         waveform.parameters.averageAmp = [];
         waveform.parameters.medianAmp = [];
         waveform.parameters.tau_m = []; waveform.estimate = [];
@@ -1489,6 +1493,9 @@ while edit
             p(4) = plot(minis(:,13), minis(:,19), 'r.', 'markersize', 10);
             p(5) = plot(minis(:,6), minis(:,5), 'c.', 'markersize', 10);
             p(6) = plot(minis(:,7), minis(:,5), 'b.', 'markersize', 10);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
             
         case 3 % Delete a mini
             distances = abs(minis(:,3) - ix);
@@ -1501,6 +1508,9 @@ while edit
             p(4) = plot(minis(:,13), minis(:,19), 'r.', 'markersize', 10);
             p(5) = plot(minis(:,6), minis(:,5), 'c.', 'markersize', 10);
             p(6) = plot(minis(:,7), minis(:,5), 'b.', 'markersize', 10);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
             
         case 29 % Next window (right arrow key)
             prevXLim = get(figureAxes,'XLim');
@@ -1510,6 +1520,9 @@ while edit
                 XLim = [t(end)-interval t(end)];
             end
             set(figureAxes, 'XLim', XLim);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
             
         case 28 % Previous window (left arrow key)
             currXLim = get(figureAxes,'XLim');
@@ -1519,26 +1532,49 @@ while edit
                 XLim = [t(1) interval];
             end
             set(figureAxes, 'XLim', XLim);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
             
         case 's' % Go to the beginning
             currXLim = get(figureAxes,'XLim');
             XLim = [t(1) currXLim(2)-currXLim(1)];
             set(figureAxes, 'XLim', XLim);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
             
         case 'e' % Go to the end
             prevXLim = get(figureAxes,'XLim');
             XLim = [t(end)-prevXLim(2)-prevXLim(1) t(end)];
             set(figureAxes, 'XLim', XLim);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
+
+        case 'f' % Fix y-axis limits
+            if exist('fixedYLim', 'var')
+              clear fixedYLim
+              ylim("auto");
+            else
+              fixedYLim = get(figureAxes,'YLim');
+            end
             
         case {'i', 31} % Zoom in
             prevXLim = get(figureAxes,'XLim');
             XLim = [prevXLim(1)+zoomFactor*(prevXLim(2)-prevXLim(1)) prevXLim(2)-zoomFactor*(prevXLim(2)-prevXLim(1))];
             set(figureAxes, 'XLim', XLim);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
             
         case {'o', 30} % Zoom out
             prevXLim = get(figureAxes,'XLim');
             XLim = [prevXLim(1)-zoomFactor*(prevXLim(2)-prevXLim(1)) prevXLim(2)+zoomFactor*(prevXLim(2)-prevXLim(1))];
             set(figureAxes, 'XLim', XLim);
+            if exist('fixedYLim', 'var')
+              set(figureAxes, 'YLim', fixedYLim);
+            end
             
         case 'h' % Help
             bringHelp;
@@ -1579,9 +1615,10 @@ helpText18 = 's  -  Return to the very beginning (the first interval).';
 helpText19 = 'e  -  Go to the very end (the last interval).';
 helpText20 = 'i or downward arrow key  -  Zoom in.';
 helpText21 = 'o or upward arrow key -  Zoom out.';
-helpText22 = 'h  -  Bring back the help window.';
+helpText22 = 'f  -  Freeze/unfreeze y-axis limits.';
+helpText23 = 'h  -  Bring back the help window.';
 helpText = char(helpText1,helpText2,helpText3,helpText4,helpText5,helpText6,helpText7,helpText8,helpText9,helpText10,helpText11,...
-    helpText12,helpText13,helpText14,helpText15,helpText16,helpText17,helpText18,helpText19,helpText20,helpText21,helpText22);
+    helpText12,helpText13,helpText14,helpText15,helpText16,helpText17,helpText18,helpText19,helpText20,helpText21,helpText22,helpText23);
 uiwait(helpdlg(helpText,'Help for Manual Event Editing'));
 end
 
