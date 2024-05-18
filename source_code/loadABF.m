@@ -23,7 +23,7 @@ if strcmpi(filename(end-2:end),'abf')
     fileFullName = filename;
   end
   if useNativeLoadFunction
-    fid = fopen(fileFullName,'rb','ieee-le'); %#ok<*UNRCH>
+    fid = fopen(fileFullName,'rb','ieee-le'); %#ok<*UNRCH> 
     fseek(fid,4,'bof');
     fileVersionNumber = fread(fid,1,'float'); %file format version number
 
@@ -57,63 +57,32 @@ if strcmpi(filename(end-2:end),'abf')
       currentChan = desired_chan;
     end
   else
-    try
-      [data,si,hd] = abf2load(fileFullName);
+    [data,si,hd] = abf2load(fileFullName);
 
-      desired_chan = find(contains(hd.recChNames,'Vmem'));
-      currentChan = find(contains(hd.recChNames,'Iinj'));
-      if isempty(currentChan)
-        currentChan = desired_chan;
-      end
-
-      hd.sampled_chan_mask = zeros(size(hd.nADCSamplingSeq(:)'));
-      hd.sampled_chan_mask(desired_chan) = 1;
-      if length(hd.nADCSamplingSeq) > 1
-        secondary_chan = hd.nADCSamplingSeq(2);
-        hd.sampled_chan_mask(secondary_chan+1) = 1;
-      end
-      nchans_to_read = length(hd.sampled_chan_mask(hd.sampled_chan_mask>0));
-
-      dataDims = size(data);
-      abf_data = [reshape(data(:,desired_chan,:), [dataDims(1)*dataDims(3) 1]) ...
-        reshape(data(:,currentChan,:), [dataDims(1)*dataDims(3) 1])];
-
-      abf_hdr = [NaN, 0, si];
-    catch
-      fid = fopen(fileFullName,'rb','ieee-le'); %#ok<*UNRCH>
-      fseek(fid,4,'bof');
-      fileVersionNumber = fread(fid,1,'float'); %file format version number
-
-      hd = get_abf_header_info(fileFullName);
-      hd.nADCchans = length(hd.fADCProgrammableGain);
-      desired_chan = hd.nADCSamplingSeq(1)+1;
-      hd.sampled_chan_mask = 0*hd.sampled_chan_mask;
-      hd.sampled_chan_mask(desired_chan) = 1;
-      if length(hd.nADCSamplingSeq) > 1
-        secondary_chan = hd.nADCSamplingSeq(2);
-        hd.sampled_chan_mask(secondary_chan+1) = 1;
-      end
-      %     data_units = hd.sADCUnits(desired_chan+1,:);
-      %     for ichar = length(data_units):-1:2  % strip off trailing spaces from units name
-      %         if data_units(ichar) == ' '
-      %             data_units = data_units(1:end-1);
-      %         end
-      %     end
-      nchans_to_read = length(hd.sampled_chan_mask(hd.sampled_chan_mask>0));  % still would allow us to read >1 channels in future
-
-      %if round(fileVersionNumber, 3) == 1.84
-      [abf_data,abf_hdr] = loadabfnew(fileFullName,hd);
-      %elseif round(fileVersionNumber, 3) < 2
-      %    [abf_data, si] = abfload(fileFullName);
-      %else
-      %  error('ABF version 2 is not supported');
-      %end
-      if nchans_to_read > 1 && length(hd.nADCSamplingSeq) > 1
-        currentChan = 2;
-      else
-        currentChan = desired_chan;
-      end
+    %desired_chan = find(contains(hd.recChNames,'Vmem'));
+    %currentChan = find(contains(hd.recChNames,'Iinj') || contains(hd.recChNames,'Ipatch'));
+    desired_chan = find(startsWith(hd.recChNames,'V'));
+    currentChan = find(startsWith(hd.recChNames,'I'));
+    if isempty(desired_chan)
+      desired_chan = currentChan;
     end
+    if isempty(currentChan)
+      currentChan = desired_chan;
+    end
+
+    hd.sampled_chan_mask = zeros(size(hd.nADCSamplingSeq(:)'));
+    hd.sampled_chan_mask(desired_chan) = 1;
+    if length(hd.nADCSamplingSeq) > 1
+      secondary_chan = hd.nADCSamplingSeq(2);
+      hd.sampled_chan_mask(secondary_chan+1) = 1;
+    end
+    nchans_to_read = length(hd.sampled_chan_mask(hd.sampled_chan_mask>0));
+
+    dataDims = size(data);
+    abf_data = [reshape(data(:,desired_chan,:), [dataDims(1)*dataDims(3) 1]) ...
+      reshape(data(:,currentChan,:), [dataDims(1)*dataDims(3) 1])];
+
+    abf_hdr = [NaN, 0, si]; 
   end
 else
   disp('not an abf file!');

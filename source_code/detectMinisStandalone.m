@@ -13,7 +13,7 @@ function [minis, filterV, waveform, dataProperties, F, spectrum] = detectMinisSt
 %   MINIS = DETECTMINISSTANDALONE(display, filename,...
 %       detectionParameters, excludedTimes, classificationParameters,...
 %       parallelCores, exclTimesAction, edit, waveform, filtering, SD,
-%       display)
+%       display2)
 %   detects the minis-like events and outputs detection data in MINIS. This
 %   variable can later be saved as a text log file (e.g.).DISPLAY is a
 %   logical variable with values true for displaying event histograms and
@@ -108,7 +108,7 @@ function [minis, filterV, waveform, dataProperties, F, spectrum] = detectMinisSt
 %   carried out. If the user specifies any of the combinations containing
 %   ones, the estimates are appended to the MINIS output array as
 %   additional collumns 22-25 in the order they are listed.
-%   DISPLAY is a logical controlling the display of figures. If set to
+%   DISPLAY2 is a logical controlling the display of figures. If set to
 %   false, no figures would be displayed (this does not affect amplitude
 %   and rise-time histogram figures). The default is true.
 %
@@ -323,9 +323,11 @@ end
 if isfield(detectionParameters,'voltageClamp') && detectionParameters.voltageClamp
     [minis, filterV, spectrum, waveform, F] = detectMinis(dataProperties.current, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
     %[minis, filterV, spectrum, waveform, F, smoothV] = detectMinis(dataProperties.current, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
-    %writeABF(single([dataProperties.sweep; smoothV]), ['D:\PhD\previous\Guy_Major\Data\Voltage_clamp' filesep 'p128c_0013_LPfilt@4kHz_smoothed.abf'], 1000/dataProperties.dt, {'mV';'pA'});
+    %writeABF(single([dataProperties.sweep; smoothV]), ['D:\PhD\previous\Guy_Major\Data\Voltage_clamp' filesep 'p131a_0015_sw7,8,0016_sw5,10,0017sw1_smoothed.abf'], 1000/dataProperties.dt, {'mV';'pA'});
 else
     [minis, filterV, spectrum, waveform, F] = detectMinis(dataProperties.sweep, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
+    %[minis, filterV, spectrum, waveform, F, smoothV] = detectMinis(dataProperties.sweep, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
+    %writeABF(single([smoothV; dataProperties.current]), [dataProperties.filename '_smoothed.abf'], 1000/dataProperties.dt, {'mV';'pA'});
 end
 
 

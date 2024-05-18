@@ -1993,6 +1993,7 @@ try
     % Determine the choice of action:
     preprocess = get(handles.preprocessButton,'value');
     detection = get(handles.detectOnly,'value');
+    detectBatch = get(handles.detectBatch,'value');
     detectCompare = get(handles.detectCompare,'value');
     errorBounds = get(handles.errorBounds,'value');
     autoDistributionFit = get(handles.autoDistFit, 'value');
@@ -2065,6 +2066,71 @@ try
 
         % Save the detected event log and figures:
         handles.ld = saveTargetEventLog(minisArray, F, waveform, filtering, detectionParameters.RTinterval, graphicsFormats, handles.ld);
+
+    elseif detectBatch
+        disp('Batch detection task initiated');
+        handles.state.String = '  State: Batch detection task initiated';
+        guidata(hObject, handles);
+
+        % Target file:
+        if fafTest
+            load('fafTarget.mat'); %#ok<*LOAD>
+        else
+            targetFilename = get(handles.loadTargetFileInput, 'string');
+            if ~preprocess && (strcmpi(targetFilename, '>>> <<<') || isempty(targetFilename))
+                errmsgNoFile = 'Error: no target file supplied';
+                msgbox(errmsgNoFile,'Error','Error');
+                return
+            end
+        end
+
+        % Pulses and glitches:
+        [initialised, targetExcludedTimes] = initExclTimesTarget(handles);
+        if ~initialised
+            return
+        end
+
+        % Estimate tau_m based on impulses for later using it as a reference time interval for tau_m estimation based on spontaneous PSPs:
+        if detectionParameters.voltageClamp
+            waveform.estimate = 1;
+            waveform.riseTimeArrayExt = classificationParameters.riseTimeArray;
+            waveform.tau_m = 10;
+        else
+            waveform = initWaveform(handles, detectionParameters.pulseDuration, classificationParameters.riseTimeArray, targetExcludedTimes, targetFilename);
+            waveform.estimate = 2;
+        end
+
+        % Filtering:
+        filtering = noiseFilterDlg;
+        filtering.excludedTimes = targetExcludedTimes;
+        options.Resize = 'on';
+        options.WindowStyle = 'normal';
+        if strcmpi(filtering.state, 'on')
+            filtering.filtfs = inputdlg('Choose stop band frequencies separated by commas:','FFT',1,{'50, 150'},options);
+        end
+        if isfield(filtering, 'filtfs') && isempty(filtering.filtfs)
+          filtering.state = 'off';
+        end
+
+        % Get the target folder structure:
+        targetFolder = fileparts(targetFilename);
+        folderStruct = dir(targetFolder);
+
+        % Detect minis-like events in all ABF files inside the target folder:
+        for iFile = 1:numel(folderStruct)
+            targetFilename = fullfile(folderStruct(iFile).folder, folderStruct(iFile).name);
+            if endsWith(targetFilename, '.abf')
+                [minisArray, ~, waveform] = detectMinisStandalone(false, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
+                    parallelCores, 'none', false, waveform, filtering, [1 1 1 1], false);
+                if ~isempty(waveform)
+                    minisArray = [minisArray repmat([waveform.parameters.averageAmp waveform.parameters.medianAmp waveform.parameters.tau_m], size(minisArray,1), 1)]; %#ok<AGROW> 
+                end
+        
+                % Save the detected event log and figures:
+                eventLogFile = [targetFilename(1:end-3) 'txt'];
+                handles.ld = saveTargetEventLogReduced(minisArray, eventLogFile, detectionParameters.RTinterval);
+            end
+        end
 
     elseif detectCompare
         disp('Detect and compare task initiated');
@@ -2277,18 +2343,21 @@ guidata(hObject, handles);
 
 %% Stop button:
 % --------------------------------------------------------------------
-function stopTool_ClickedCallback(~, ~, ~)
+function stopTool_ClickedCallback(hObject, ~, handles)
 % hObject    handle to stopTool (see GCBO)
 % handles    structure with handles and user data (see GUIDATA)
 
 global STOP                                                                 % STOP issues a global stop message
-button = questdlg('Do you want to stop the automatic distribution fitting?','Stop Program','Yes','No','No');
+button = questdlg('Do you want to stop the current task execution?','Stop Program','Yes','No','No');
 if strcmpi(button, 'Yes')
     handles.state.String = '  State: Execution termination requested';
     guidata(hObject, handles);
     disp('Program execution termination requested');
     STOP = 1;
 end
+
+% Update handles structure
+guidata(hObject, handles);
 
 %% GUI delete function
 % --- Executes during object deletion, before destroying properties.

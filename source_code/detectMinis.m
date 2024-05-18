@@ -198,6 +198,7 @@ function [minis, filterV, spectrum, waveform, varargout] = detectMinis(V, exclud
 
 %% Check if program termination was requested
 global STOP
+pause(0.01)
 if STOP
   disp('Program execution terminated');
   error('Interrupted by user');
@@ -293,7 +294,7 @@ smoothWindows = [searchParameters.smoothWindow searchParameters.smoothWindowLite
 %% Check unique device signature
 if ~fafTest
     if ispc
-      [~,uniqueDeviceSignature] = system('wmic diskdrive get serialnumber');
+      [~,uniqueDeviceSignature] = system('wmic diskdrive get serialnumber'); %#ok<*ASGLU> 
     elseif ismac
       [~,uniqueDeviceSignature] = system('system_profiler SPHardwareDataType | grep Serial');
     elseif isunix
@@ -304,7 +305,7 @@ if ~fafTest
     %if ~contains(uniqueDeviceSignature, 'ACE4_2E00_15FF_E770_') || ~contains(uniqueDeviceSignature, '2EE4_AC00_0000_0001') % GM
     %if ~contains(uniqueDeviceSignature, 'E823_8FA6_BF53_0001_') || ~contains(uniqueDeviceSignature, '001B_448B_497C_2616') % UID
     if false
-        minis = []; filterV = []; spectrum = struct();
+        minis = []; filterV = []; spectrum = struct(); %#ok<*UNRCH> 
         waveform.parameters.averageAmp = [];
         waveform.parameters.medianAmp = [];
         waveform.parameters.tau_m = []; waveform.estimate = [];
@@ -1377,6 +1378,9 @@ while edit
     try
         [x, y, button] = ginput(1);
     catch %#ok<CTCH>
+    end
+    if ~exist('button', 'var') || ~ishghandle(figureAxes, 'axes')
+        return
     end
     if isempty(button) || button == 27
         XLim = [t(1) t(end)];
