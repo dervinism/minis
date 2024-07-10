@@ -102,7 +102,11 @@ else
   end
   
   RTinterval = handles.RTintEdit;
-  RTinterval = strtrim(RTinterval);
+  if RTinterval == 1
+    RTinterval = '10-90%';
+  elseif RTinterval == 2
+    RTinterval = '20-80%';
+  end
   downGoing = handles.downGoingCheckbox;
   voltageClamp = handles.voltageClampCheckbox;
 end

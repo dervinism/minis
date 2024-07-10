@@ -205,7 +205,7 @@ outputFcn = @(options, state, flag)customOutput(options, state, flag, outPath);
 
 
 %% Load data for additional visualisation:
-if strcmpi(optimisationParameters.options.optimisationData, '')
+if ~isfield(optimisationParameters.options, 'optimisationData') || strcmpi(optimisationParameters.options.optimisationData, '')
     if isfield(optimisationParameters.options, 'headless') && optimisationParameters.options.headless
         button = 'No';
     else
@@ -215,7 +215,7 @@ else
     button = 'Yes';
 end
 if strcmpi(button, 'Yes')
-    if strcmpi(optimisationParameters.options.optimisationData, '')
+    if ~isfield(optimisationParameters.options, 'optimisationData') || strcmpi(optimisationParameters.options.optimisationData, '')
         [dataFilename, dataPathname, filterIndex] = uigetfile({'*.mat','MAT files (*.mat)'},'Data file', 'data_for_optimisation.mat');
     else
       [dataPathname, dataFilename] = fileparts(optimisationParameters.options.optimisationData);
@@ -357,7 +357,7 @@ costFuncStruct = struct('bottom', bottom, 'mid', mid, 'top', top, 'costBasis', c
 
 
 %% Resume an earlier optimisation:
-if strcmpi(optimisationParameters.options.resumeOptimisation, '')
+if ~isfield(optimisationParameters.options, 'resumeOptimisation') || strcmpi(optimisationParameters.options.resumeOptimisation, '')
     if isfield(optimisationParameters.options, 'headless') && optimisationParameters.options.headless
         button = 'No';
     else
@@ -367,7 +367,7 @@ else
     button = 'Yes';
 end
 if strcmpi(button, 'Yes')
-    if strcmpi(optimisationParameters.options.resumeOptimisation, '')
+    if ~isfield(optimisationParameters.options, 'resumeOptimisation') || strcmpi(optimisationParameters.options.resumeOptimisation, '')
         [popFilename, popPathname, filterIndex] = uigetfile({'*.mat','MAT files (*.mat)'},'Population file', 'last_population.mat');
     else
         [popPathname, popFilename] = fileparts(optimisationParameters.options.resumeOptimisation);
@@ -396,9 +396,9 @@ if strcmpi(button, 'Yes')
             if strcmpi(button, 'Yes')
                 initialPopulation = zeros(populationSize1,nVars);
                 initialPopulation(1,:) = distParameters;
-                base = distParameters - .1*(upBound-loBound);
+                base = distParameters - .05*(upBound-loBound);
                 base = max([base; loBound]);
-                ceiling = distParameters + .1*(upBound-loBound);
+                ceiling = distParameters + .05*(upBound-loBound);
                 ceiling = min([ceiling; upBound]);
                 initialPopulation(2:end,:) = repmat(base,populationSize1-1,1) + repmat(ceiling-base,populationSize1-1,1)...
                     .* rand(populationSize1-1,nVars);
@@ -450,28 +450,29 @@ f = @(x0)fitnessMinis(x0, dataDir, baseline, targetEvents1D, targetEvents1D_RT, 
     distributionType, detectionParameters, classificationParameters, optimisationParameters, simulationParameters, filtering, tSpectrum, tauRange,...
     cliff, measuredUF, measuredUFBottom, measuredUFMid, measuredUFTop, histoData, costFuncStruct, fullParallel, draw, parallelCores);
 
+eliteProportion = 0.05;
 if fullParallel
     if cluster
         if draw
-            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(0.02*populationSize1),...
+            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(eliteProportion*populationSize1),...
                 'InitialPopulation', initialPopulation, 'MutationFcn', {@mutationadaptfeasible},...
                 'PlotFcns',{@gaplotbestf @gaplotscorediversity @gaplotdistance @gaplotselection}, 'populationSize', populationSize1,...
                 'UseParallel', 'always', 'Vectorized', 'off', 'FitnessLimit', fitnessLimit, 'StallGenLimit', noGenerations); %#ok<*GAOPT>
         else
-            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(0.02*populationSize1),...
+            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(eliteProportion*populationSize1),...
                 'InitialPopulation', initialPopulation, 'MutationFcn', {@mutationadaptfeasible},...
                 'populationSize', populationSize1, 'UseParallel', 'always', 'Vectorized', 'off', 'FitnessLimit', fitnessLimit,...
                 'StallGenLimit', noGenerations); %#ok<*UNRCH>
         end
     else
         if draw
-            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(0.02*populationSize1),...
+            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(eliteProportion*populationSize1),...
                 'InitialPopulation', initialPopulation, 'MutationFcn', {@mutationadaptfeasible},...
                 'PlotFcns',{@gaplotbestf @gaplotscorediversity @gaplotdistance @gaplotselection}, 'populationSize', populationSize1,...
                 'UseParallel', 'always', 'Vectorized', 'off', 'FitnessLimit', fitnessLimit, 'StallGenLimit', noGenerations,...
                 'OutputFcn', outputFcn);
         else
-            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(0.02*populationSize1),...
+            options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(eliteProportion*populationSize1),...
                 'InitialPopulation', initialPopulation, 'MutationFcn', {@mutationadaptfeasible},...
                 'populationSize', populationSize1, 'UseParallel', 'always', 'Vectorized', 'off', 'FitnessLimit', fitnessLimit,...
                 'StallGenLimit', noGenerations, 'OutputFcn', outputFcn);
@@ -479,12 +480,12 @@ if fullParallel
     end
 else
     if draw
-        options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(0.02*populationSize1),...
+        options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(eliteProportion*populationSize1),...
             'InitialPopulation', initialPopulation, 'MutationFcn', {@mutationadaptfeasible},...
             'PlotFcns',{@gaplotbestf @gaplotscorediversity @gaplotdistance @gaplotselection}, 'populationSize', populationSize1,...
             'FitnessLimit', fitnessLimit, 'StallGenLimit', noGenerations, 'OutputFcn', outputFcn);
     else
-        options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(0.02*populationSize1),...
+        options = gaoptimset('PopInitRange', initRange, 'Generations', noGenerations, 'EliteCount', ceil(eliteProportion*populationSize1),...
             'InitialPopulation', initialPopulation, 'MutationFcn', {@mutationadaptfeasible}, 'populationSize', populationSize1,...
             'FitnessLimit', fitnessLimit, 'StallGenLimit', noGenerations, 'OutputFcn', outputFcn);
     end

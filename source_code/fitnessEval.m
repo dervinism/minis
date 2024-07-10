@@ -1,6 +1,6 @@
-function [fitness, evalVector, bestEvalVector, meanMinisRTs, medianMinisRTs, firstCost, tailMinis] = fitnessEval(targetEvents1D, simulatedEvents1D,...
-    targetEvents1D_RT, simulatedEvents1D_RT, targetEvents2D, simulatedEvents2D, SD, costFuncStruct, measuredUF, histoData, shapes, cliff, minis2D,...
-    optimisationParameters)
+function [fitness, evalVector, bestEvalVector, meanMinisRTs, medianMinisRTs, firstCost, tailMinis, constraintFitness, allCosts, cliff] = fitnessEval( ...
+    targetEvents1D, simulatedEvents1D, targetEvents1D_RT, simulatedEvents1D_RT, targetEvents2D, simulatedEvents2D, SD, costFuncStruct, measuredUF, ...
+    histoData, shapes, cliff, minis2D, optimisationParameters)
 
 [SAD, AmpsSAD, RTsSAD, MAD, AmpsMAD, RTsMAD, AmpsBottomSAD, AmpsBottomSADlow, AmpsBottomMAD, AmpsMidSAD, AmpsMidSADlow, AmpsMidMAD, AmpsTopSAD, AmpsTopSADlow,...
     AmpsTopMAD, tailMinis] = fitnessSingle(targetEvents1D, simulatedEvents1D, targetEvents1D_RT, simulatedEvents1D_RT, targetEvents2D, simulatedEvents2D,...
@@ -41,8 +41,18 @@ else
     multiEvalVector = zeros(1,15);
     bestEvalVector = zeros(1,15);
 end
-evalVector = [multiEvalVector evalVector SD];
+evalVector = [multiEvalVector evalVector SD]; % multiEvalVector is simulation comparison to all target files
+                                              % evalVector is simulation comprison to the single chosen target file
 
 meanMinisRTs = mean(shapes(:,3));
 medianMinisRTs = median(shapes(:,3));
-[fitness, firstCost] = fitnessCore(evalVector, meanMinisRTs, medianMinisRTs, cliff, minis2D, costFuncStruct, optimisationParameters);
+[fitness, constraintFitness, firstCost, allCosts, cliff] = fitnessCore(evalVector, meanMinisRTs, medianMinisRTs, cliff, minis2D, costFuncStruct, optimisationParameters);
+%criticalCosts = [2 5 13:15 17 20 28:30];
+criticalCosts = [2 5 13:15 17 20 30];
+if any(ismember(find(allCosts), criticalCosts))
+    criticalCosts = criticalCosts(ismember(criticalCosts, find(allCosts)));
+else
+    criticalCosts = [];
+end
+disp(['First cost: ' num2str(firstCost) '  Fitness: ' num2str(fitness) '  Cliffs: ' num2str(cliff) ...
+  '  Constraints: ' num2str(constraintFitness) '  Costs: ' num2str(find(allCosts)) '  Critical costs: ' num2str(criticalCosts)]);

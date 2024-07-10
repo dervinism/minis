@@ -14,4 +14,6 @@ input.options.estimateTauHi = true;
 input.options.optimisationData = 'errorBounds.mat';
 input.options.resumeOptimisation = '';
 input.options.cliff = 1;
+input.options.bounds(1,[1 7 13 19]) = -0.1;
+input.options.bounds(1,[1 7 13 19]+3) = -2.5;
 [status, output] = minisHeadless(input);

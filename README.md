@@ -3,8 +3,8 @@
 # minis
 'minis' is a software for electrophysiological data analysis.
 It allows you to:\
-(1) detect and analyse spontaneous postsynaptic potetnials/currents in whole-cell patch clamp recordings (Dervinis and Major, 2023);\
-(2) estimate the quantal size in the central synapse (Dervinis and Major, in preparation).
+(1) detect and analyse spontaneous postsynaptic potetnials/currents in whole-cell patch clamp recordings (Dervinis and Major, 2024a);\
+(2) estimate the quantal size in the central synapse (Dervinis and Major, 2024b).
 
 'minis' can be used as a standalone application with a graphical user interface (GUI), as a Matlab (Mathworks) function, or a Python (Python Software Foundation) package. 'minis' has been fully written in Matlab and its code base is open source.
 
@@ -94,4 +94,5 @@ You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main
 Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
 
 ## References
-Dervinis, M, Major, G (2023) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
+Dervinis, M, Major, G (2024) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
+Dervinis, M, Major, G (2024) bioRxiv 2024.07.05.602190; doi: https://doi.org/10.1101/2024.07.05.602190

@@ -89,8 +89,9 @@ simulatedEvents1D_RT = lengthRatio*simulatedEvents1D_RT;
 
 
 %% Evaluate Fitness:
-[fitness, evalVector, bestEvalVector, meanMinisRTs, medianMinisRTs, firstCost, tailMinis] = fitnessEval(targetEvents1D, simulatedEvents1D, targetEvents1D_RT,...
-    simulatedEvents1D_RT, targetEvents2D, simulatedEvents2D, SD, costFuncStruct, measuredUF, histoData, shapes, cliff, minis2D, optimisationParameters);
+[fitness, evalVector, bestEvalVector, meanMinisRTs, medianMinisRTs, firstCost, tailMinis, constraintFitness, allCosts, cliffEval] = fitnessEval( ...
+    targetEvents1D, simulatedEvents1D, targetEvents1D_RT, simulatedEvents1D_RT, targetEvents2D, simulatedEvents2D, SD, costFuncStruct, ...
+    measuredUF, histoData, shapes, cliff, minis2D, optimisationParameters);
 
 
 
@@ -445,6 +446,7 @@ if ~fullParallel && (individual == 1 || (individual > 1 && fitness < bestFitness
     
     % Save:
     dataFilename = strcat(filename,'.mat');
+    varsToSave.simulatedEvents = simulatedEvents;
     varsToSave.distParameters = distParameters;
     varsToSave.baseline = baseline;
     varsToSave.targetEvents1D = targetEvents1D;
@@ -491,7 +493,22 @@ if ~fullParallel && (individual == 1 || (individual > 1 && fitness < bestFitness
     varsToSave.simulatedEvents2D = simulatedEvents2D;
     varsToSave.simulatedEvents1DTail = simulatedEvents1DTail;
     varsToSave.simulatedEvents1D_RTTail = simulatedEvents1D_RTTail;
-    varsToSave.simEvents2DTail = simEvents2DTail; %#ok<*STRNU>
+    varsToSave.simEvents2DTail = simEvents2DTail;
+    varsToSave.constraintFitness = constraintFitness;
+    varsToSave.allCosts = allCosts;
+    %varsToSave.criticalCosts = [2 5 13:15 17 20 28:30];
+    varsToSave.criticalCosts = [2 5 13:15 17 20 30];
+    varsToSave.cliffEval = cliffEval;
+    if any(ismember(find(allCosts), varsToSave.criticalCosts))
+        varsToSave.satisfactoryFit = false;
+    else
+        varsToSave.satisfactoryFit = true;
+    end
+    if ~constraintFitness(1) && cliffEval(1) <= 0.99 && cliffEval(2) <= 0.5
+        varsToSave.satisfactoryConstraints = true;
+    else
+        varsToSave.satisfactoryConstraints = false;
+    end
     save(dataFilename, '-struct', 'varsToSave');
     
     if noiseProperties.nchans_to_save == 1

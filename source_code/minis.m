@@ -122,25 +122,25 @@ value = get(handles.distTypeEdit,'Value');
 distType = get(handles.distTypeEdit,'String');
 distType = distType(value);
 if strcmpi(distType,'Log Normal') || strcmpi(distType,'Bimodal Log Normal') || strcmpi(distType,'Trimodal Log Normal')
-    %         mu1_1       A_1  alpha_1 scale_1     mu2_1    B_1 beta_1    rho_1    mu1_2    A_2   alpha_2 scale_2  mu2_2      B_2   beta_2  rho_2     mu1_3    A_3  alpha_3  scale_3    mu2_3      B_3   beta_3    rho_3
-    loBounds = [.01,      .01,     .01,      0,      .25,   .01,   .01,      -1,     .01,   .01,      .01, -10000,   .25,     .01,     .01,    -1,      .01,   .01,     .01,  -10000,     .25,     .01,     .01,      -1];
-    upBounds = [  1,        1,     1.5,  10000,       10,    20,   1.5,       1,       1,     1,      1.5,  10000,    10,      20,     1.5,     1,        1,     1,     1.5,   10000,      10,      20,     1.5,       1];
+    %          mu1_1       A_1  alpha_1 scale_1     mu2_1    B_1 beta_1    rho_1    mu1_2    A_2   alpha_2 scale_2  mu2_2      B_2   beta_2  rho_2     mu1_3    A_3  alpha_3  scale_3    mu2_3      B_3   beta_3    rho_3
+    loBounds = [-0.1,      .01,     .01,      0,       -1,   .01,   .01,      -1,    -0.1,   .01,      .01, -10000,    -1,     .01,     .01,    -1,     -0.1,   .01,     .01,  -10000,      -1,     .01,     .01,      -1];
+    upBounds = [   1,        1,     1.5,  10000,       10,    20,   1.5,       1,       1,     1,      1.5,  10000,    10,      20,     1.5,     1,        1,     1,     1.5,   10000,      10,      20,     1.5,       1];
 elseif ~strcmpi(distType,'Skew-normal') && ~strcmpi(distType,'Bimodal skew-normal') && ~strcmpi(distType,'Trimodal skew-normal')
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     .01,      .01,  -10000,   .25,      .01,      -1];
-    upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	  1,        1,   10000,    10,       10,       1];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,   -0.1,      .01,  -10000,    -1,      .01,      -1];
+    upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	  1,        1,   10000,    10,       10,       1];
 elseif strcmpi(distType,'Skew-normal')
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  skew1_1  skew2_1
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,     -10,     -10, -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
-    upBounds = [  1,        1,   10000,    10,       10,     1,      10,      10,  10000,    10,       10,     1,     2,        1,   10000,    10,       10,     1,      10,      10,       10,    10,       10,      10];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  skew1_1  skew2_1
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,     -10,     -10, -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
+    upBounds = [   1,        1,   10000,    10,       10,     1,      10,      10,  10000,    10,       10,     1,     2,        1,   10000,    10,       10,     1,      10,      10,       10,    10,       10,      10];
 elseif ~strcmpi(distType,'Trimodal skew-normal')
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  skew1_1  skew2_1  skew1_2  skew2_2
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,     -10,     -10,   .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
-    upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,    10,     1,      10,      10,       10,    10,       10,      10];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  skew1_1  skew2_1  skew1_2  skew2_2
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,   .01,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,     -10,     -10,   .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
+    upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,    10,     1,      10,      10,       10,    10,       10,      10];
 else
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3  skew1_1  skew2_1  skew1_2  skew2_2  skew1_3  skew2_3
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,     -10,     -10,     -10,     -10];
-    upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,      10,      10];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3  skew1_1  skew2_1  skew1_2  skew2_2  skew1_3  skew2_3
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,     -10,     -10,     -10,     -10];
+    upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,      10,      10];
 end
 bounds = [loBounds; upBounds];
 
@@ -881,25 +881,25 @@ set(handles.distTypeEdit,'Value',value);
 distType = get(handles.distTypeEdit,'String');
 distType = distType(value);
 if strcmpi(distType,'Log Normal') || strcmpi(distType,'Bimodal Log Normal') || strcmpi(distType,'Trimodal Log Normal')
-    %         mu1_1       A_1  alpha_1 scale_1     mu2_1    B_1 beta_1    rho_1    mu1_2    A_2   alpha_2 scale_2  mu2_2      B_2   beta_2  rho_2     mu1_3    A_3  alpha_3  scale_3    mu2_3      B_3   beta_3    rho_3
-    loBounds = [.01,      .01,     .01,      0,      .25,   .01,   .01,      -1,     .01,   .01,      .01, -10000,   .25,     .01,     .01,    -1,      .01,   .01,     .01,  -10000,     .25,     .01,     .01,      -1];
-    upBounds = [  1,        1,     1.5,  10000,       10,    20,   1.5,       1,       1,     1,      1.5,  10000,    10,      20,     1.5,     1,        1,     1,     1.5,   10000,      10,      20,     1.5,       1];
+    %          mu1_1       A_1  alpha_1 scale_1     mu2_1    B_1 beta_1    rho_1    mu1_2    A_2   alpha_2 scale_2  mu2_2      B_2   beta_2  rho_2     mu1_3    A_3  alpha_3  scale_3    mu2_3      B_3   beta_3    rho_3
+    loBounds = [-0.1,      .01,     .01,      0,       -1,   .01,   .01,      -1,    -0.1,   .01,      .01, -10000,    -1,     .01,     .01,    -1,     -0.1,   .01,     .01,  -10000,      -1,     .01,     .01,      -1];
+    upBounds = [   1,        1,     1.5,  10000,       10,    20,   1.5,       1,       1,     1,      1.5,  10000,    10,      20,     1.5,     1,        1,     1,     1.5,   10000,      10,      20,     1.5,       1];
 elseif ~strcmpi(distType,'Skew-normal') && ~strcmpi(distType,'Bimodal skew-normal') && ~strcmpi(distType,'Trimodal skew-normal')
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     .01,      .01,  -10000,   .25,      .01,      -1];
-    upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	  1,        1,   10000,    10,       10,       1];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,   -0.1,      .01,  -10000,    -1,      .01,      -1];
+    upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	  1,        1,   10000,    10,       10,       1];
 elseif strcmpi(distType,'Skew-normal')
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  skew1_1  skew2_1
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,     -10,     -10, -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
-    upBounds = [  1,        1,   10000,    10,       10,     1,      10,      10,  10000,    10,       10,     1,     2,        1,   10000,    10,       10,     1,      10,      10,       10,    10,       10,      10];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  skew1_1  skew2_1
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,     -10,     -10, -10000,    -1,      .01,    -1,   .01,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
+    upBounds = [   1,        1,   10000,    10,       10,     1,      10,      10,  10000,    10,       10,     1,     2,        1,   10000,    10,       10,     1,      10,      10,       10,    10,       10,      10];
 elseif ~strcmpi(distType,'Trimodal skew-normal')
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  skew1_1  skew2_1  skew1_2  skew2_2
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,     -10,     -10,   .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
-    upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,    10,     1,      10,      10,       10,    10,       10,      10];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  skew1_1  skew2_1  skew1_2  skew2_2
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,     -10,     -10,   .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
+    upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,    10,     1,      10,      10,       10,    10,       10,      10];
 else
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3  skew1_1  skew2_1  skew1_2  skew2_2  skew1_3  skew2_3
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,     -10,     -10,     -10,     -10];
-    upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,      10,      10];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3  skew1_1  skew2_1  skew1_2  skew2_2  skew1_3  skew2_3
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,     -10,     -10,     -10,     -10];
+    upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,      10,      10];
 end
 handles.options.bounds = [loBounds; upBounds];
 
@@ -1749,9 +1749,9 @@ else
     set(handles.tau_PSPmEdit, 'string', 20);
 
     % Restore default options:
-    %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
-    loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     .01,      .01,  -10000,   .25,      .01,      -1];
-    upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	  1,        1,   10000,    10,       10,       1];
+    %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
+    loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,    -0.1,      .01,  -10000,    -1,      .01,      -1];
+    upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	   1,        1,   10000,    10,       10,       1];
     bounds = [loBounds; upBounds];
 
     pool = gcp('nocreate');
@@ -1851,25 +1851,25 @@ distributionType = distributionTypeString(distributionTypeValue);
 
 if ~isfield(handles.options, 'bounds')
     if strcmpi(distType,'Log Normal') || strcmpi(distType,'Bimodal Log Normal') || strcmpi(distType,'Trimodal Log Normal')
-        %         mu1_1       A_1  alpha_1 scale_1     mu2_1    B_1 beta_1    rho_1    mu1_2    A_2   alpha_2 scale_2  mu2_2      B_2   beta_2  rho_2     mu1_3    A_3  alpha_3  scale_3    mu2_3      B_3   beta_3    rho_3
-        loBounds = [.01,      .01,     .01,      0,      .25,   .01,   .01,      -1,     .01,   .01,      .01, -10000,   .25,     .01,     .01,    -1,      .01,   .01,     .01,  -10000,     .25,     .01,     .01,      -1];
-        upBounds = [  1,        1,     1.5,  10000,       10,    20,   1.5,       1,       1,     1,      1.5,  10000,    10,      20,     1.5,     1,        1,     1,     1.5,   10000,      10,      20,     1.5,       1];
+        %          mu1_1       A_1  alpha_1 scale_1     mu2_1    B_1 beta_1    rho_1    mu1_2    A_2   alpha_2 scale_2  mu2_2      B_2   beta_2  rho_2     mu1_3    A_3  alpha_3  scale_3    mu2_3      B_3   beta_3    rho_3
+        loBounds = [-0.1,      .01,     .01,      0,       -1,   .01,   .01,      -1,    -0.1,   .01,      .01, -10000,    -1,     .01,     .01,    -1,     -0.1,   .01,     .01,  -10000,      -1,     .01,     .01,      -1];
+        upBounds = [   1,        1,     1.5,  10000,       10,    20,   1.5,       1,       1,     1,      1.5,  10000,    10,      20,     1.5,     1,        1,     1,     1.5,   10000,      10,      20,     1.5,       1];
     elseif ~strcmpi(distType,'Skew-normal') && ~strcmpi(distType,'Bimodal skew-normal') && ~strcmpi(distType,'Trimodal skew-normal')
-        %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
-        loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     .01,      .01,  -10000,   .25,      .01,      -1];
-        upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	  1,        1,   10000,    10,       10,       1];
+        %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3    mu1_4  sigma1_4  scale_4  mu2_4  sigma2_4    rho_4
+        loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,    -0.1,      .01,  -10000,    -1,      .01,      -1];
+        upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,   	   1,        1,   10000,    10,       10,       1];
     elseif strcmpi(distType,'Skew-normal')
-        %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  skew1_1  skew2_1
-        loBounds = [.01,      .01,       0,   .25,      .01,    -1,     -10,     -10, -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
-        upBounds = [  1,        1,   10000,    10,       10,     1,      10,      10,  10000,    10,       10,     1,     2,        1,   10000,    10,       10,     1,      10,      10,       10,    10,       10,      10];
+        %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  skew1_1  skew2_1
+        loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,     -10,     -10, -10000,    -1,      .01,    -1,   .01,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
+        upBounds = [   1,        1,   10000,    10,       10,     1,      10,      10,  10000,    10,       10,     1,     2,        1,   10000,    10,       10,     1,      10,      10,       10,    10,       10,      10];
     elseif ~strcmpi(distType,'Trimodal skew-normal')
-        %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  skew1_1  skew2_1  skew1_2  skew2_2
-        loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,     -10,     -10,   .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
-        upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,    10,     1,      10,      10,       10,    10,       10,      10];
+        %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  skew1_1  skew2_1  skew1_2  skew2_2
+        loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,     -10,     -10,   .01,    -1,     -10,     -10,      -10,   -10,      -10,     -10];
+        upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,    10,     1,      10,      10,       10,    10,       10,      10];
     else
-        %         mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3  skew1_1  skew2_1  skew1_2  skew2_2  skew1_3  skew2_3
-        loBounds = [.01,      .01,       0,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,   .01,      .01,  -10000,   .25,      .01,    -1,     -10,     -10,     -10,     -10,     -10,     -10];
-        upBounds = [  1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,      10,      10];
+        %          mu1_1  sigma1_1  scale_1  mu2_1  sigma2_1  rho_1  mu1_2  sigma1_2  scale_2  mu2_2  sigma2_2  rho_2  mu1_3  sigma1_3  scale_3  mu2_3  sigma2_3  rho_3  skew1_1  skew2_1  skew1_2  skew2_2  skew1_3  skew2_3
+        loBounds = [-0.1,      .01,       0,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,  -0.1,      .01,  -10000,    -1,      .01,    -1,     -10,     -10,     -10,     -10,     -10,     -10];
+        upBounds = [   1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,     1,        1,   10000,    10,       10,     1,      10,      10,      10,      10,      10,      10];
     end
     handles.options.bounds = [loBounds; upBounds];
 end

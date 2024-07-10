@@ -23,7 +23,7 @@ if filterIndex
     axes('Position', [.04 .07 .92 .82]);
     l1 = line(tSweep,medianAmp10', 'LineStyle',':', 'LineWidth',1.5, 'Color','r');
     ax1 = gca;
-    xlabel('Recoeding time (s)');
+    xlabel('Recording time (s)');
     ylabel('mV or nA');
     
     ax2 = axes('Position', get(ax1,'Position'), 'XAxisLocation','top', 'YAxisLocation','left', 'Color','none', 'XColor','k', 'YColor','k');

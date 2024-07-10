@@ -79,8 +79,13 @@ if strcmpi(filename(end-2:end),'abf')
     nchans_to_read = length(hd.sampled_chan_mask(hd.sampled_chan_mask>0));
 
     dataDims = size(data);
-    abf_data = [reshape(data(:,desired_chan,:), [dataDims(1)*dataDims(3) 1]) ...
-      reshape(data(:,currentChan,:), [dataDims(1)*dataDims(3) 1])];
+    if numel(size(data)) == 3
+      abf_data = [reshape(data(:,desired_chan,:), [dataDims(1)*dataDims(3) 1]) ...
+        reshape(data(:,currentChan,:), [dataDims(1)*dataDims(3) 1])];
+    else
+      abf_data = [reshape(data(:,desired_chan), [dataDims(1) 1]) ...
+        reshape(data(:,currentChan), [dataDims(1) 1])];
+    end
 
     abf_hdr = [NaN, 0, si]; 
   end
