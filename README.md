@@ -94,5 +94,5 @@ You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main
 Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
 
 ## References
-Dervinis, M, Major, G (2024) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046
+Dervinis, M, Major, G (2024) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046 \
 Dervinis, M, Major, G (2024) bioRxiv 2024.07.05.602190; doi: https://doi.org/10.1101/2024.07.05.602190
