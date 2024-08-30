@@ -91,10 +91,16 @@ if strcmpi(button, 'Yes')
         fprintf(fid,'\r\nLine 5:  Mini IPSP MAD');
         fprintf(fid,'\r\n');
         
-        if expand
+        if strcmpi(expand, '15-score')
+            fprintf(fid,'\r\n15-score combined SAD 50th centile (corresponds to single score %2.2gth-EPSPs and %2.2gth-IPSPs centiles):\n',...
+                [optimData.prct optimData.prctNeg]);
+        elseif strcmpi(expand, '9-score')
+            fprintf(fid,'\r\n9-score combined SAD 50th centile (corresponds to single score %2.2gth-EPSPs and %2.2gth-IPSPs centiles):\n',...
+                [optimData.prct optimData.prctNeg]);
+        elseif strcmpi(expand, '6-score')
             fprintf(fid,'\r\n6-score combined SAD 50th centile (corresponds to single score %2.2gth-EPSPs and %2.2gth-IPSPs centiles):\n',...
                 [optimData.prct optimData.prctNeg]);
-        else
+        elsestrcmpi(expand, '3-score')
             fprintf(fid,'\r\n3-score combined SAD 50th centile (corresponds to single score %2.2gth-EPSPs and %2.2gth-IPSPs centiles):\n',...
                 [optimData.prct optimData.prctNeg]);
         end
@@ -161,9 +167,13 @@ if strcmpi(button, 'Yes')
         fprintf(fid,'\r\nLine 5:  Top 50%% mini IPSP amplitude MAD');
         fprintf(fid,'\r\n');
         
-        if expand
+        if strcmpi(expand, '15-score')
+            fprintf(fid,'\r\n15-score combined SAD 50th centile:\n');
+        elseif strcmpi(expand, '9-score')
+            fprintf(fid,'\r\n9-score combined SAD 50th centile:\n');
+        elseif strcmpi(expand, '6-score')
             fprintf(fid,'\r\n6-score combined SAD 50th centile:\n');
-        else
+        elseif strcmpi(expand, '3-score')
             fprintf(fid,'\r\n3-score combined SAD 50th centile:\n');
         end
         
@@ -194,9 +204,13 @@ if strcmpi(button, 'Yes')
         fprintf(fid,'\r\nLine 5:  Top 10%% mini IPSP amplitude MAD');
         fprintf(fid,'\r\n');
         
-        if expand
+        if strcmpi(expand, '15-score')
+            fprintf(fid,'\r\n15-score combined SAD 50th centile:\n');
+        elseif strcmpi(expand, '9-score')
+            fprintf(fid,'\r\n9-score combined SAD 50th centile:\n');
+        elseif strcmpi(expand, '6-score')
             fprintf(fid,'\r\n6-score combined SAD 50th centile:\n');
-        else
+        elseif strcmpi(expand, '3-score')
             fprintf(fid,'\r\n3-score combined SAD 50th centile:\n');
         end
         
@@ -227,9 +241,13 @@ if strcmpi(button, 'Yes')
         fprintf(fid,'\r\nLine 5:  top 2%% mini IPSP amplitude MAD');
         fprintf(fid,'\r\n');
         
-        if expand
+        if strcmpi(expand, '15-score')
+            fprintf(fid,'\r\n15-score combined SAD 50th centile:\n');
+        elseif strcmpi(expand, '9-score')
+            fprintf(fid,'\r\n9-score combined SAD 50th centile:\n');
+        elseif strcmpi(expand, '6-score')
             fprintf(fid,'\r\n6-score combined SAD 50th centile:\n');
-        else
+        elseif strcmpi(expand, '3-score')
             fprintf(fid,'\r\n3-score combined SAD 50th centile:\n');
         end
         
@@ -556,7 +574,33 @@ if strcmpi(button, 'Yes')
                 if UFest(est).estimate.estimated
                     fprintf(fid,'\r\nSAD and MAD bound estimates and predicted values for scaled files (when noise and target files differ in size)\n');
                     fprintf(fid,'\r\nEstimated values based on data:');
-                    if expand
+                    if strcmpi(expand, '15-score')
+                        fprintf(fid,'\r\nMini EPSP amplitude SAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(1));
+                        fprintf(fid,'\r\nMini EPSP amplitude MAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(2));
+                        fprintf(fid,'\r\nMini IPSP amplitude SAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(3));
+                        fprintf(fid,'\r\nMini IPSP amplitude MAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(4));
+                        fprintf(fid,'\r\nMini EPSP rise time SAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(5));
+                        fprintf(fid,'\r\nMini EPSP rise time MAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(6));
+                        fprintf(fid,'\r\nMini IPSP rise time SAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(7));
+                        fprintf(fid,'\r\nMini IPSP rise time MAD bound (15-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(8));
+                        fprintf(fid,'\r\nMini EPSP combined SAD bound (15-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(9));
+                        fprintf(fid,'\r\nMini EPSP combined MAD bound (15-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(10));
+                        fprintf(fid,'\r\nMini IPSP combined SAD bound (15-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(11));
+                        fprintf(fid,'\r\nMini IPSP combined MAD bound (15-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(12));
+                    elseif strcmpi(expand, '9-score')
+                        fprintf(fid,'\r\nMini EPSP amplitude SAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(1));
+                        fprintf(fid,'\r\nMini EPSP amplitude MAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(2));
+                        fprintf(fid,'\r\nMini IPSP amplitude SAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(3));
+                        fprintf(fid,'\r\nMini IPSP amplitude MAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(4));
+                        fprintf(fid,'\r\nMini EPSP rise time SAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(5));
+                        fprintf(fid,'\r\nMini EPSP rise time MAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(6));
+                        fprintf(fid,'\r\nMini IPSP rise time SAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(7));
+                        fprintf(fid,'\r\nMini IPSP rise time MAD bound (9-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(8));
+                        fprintf(fid,'\r\nMini EPSP combined SAD bound (9-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(9));
+                        fprintf(fid,'\r\nMini EPSP combined MAD bound (9-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(10));
+                        fprintf(fid,'\r\nMini IPSP combined SAD bound (9-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(11));
+                        fprintf(fid,'\r\nMini IPSP combined MAD bound (9-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(12));
+                    elseif strcmpi(expand, '6-score')
                         fprintf(fid,'\r\nMini EPSP amplitude SAD bound (6-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(1));
                         fprintf(fid,'\r\nMini EPSP amplitude MAD bound (6-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(2));
                         fprintf(fid,'\r\nMini IPSP amplitude SAD bound (6-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(3));
@@ -569,7 +613,7 @@ if strcmpi(button, 'Yes')
                         fprintf(fid,'\r\nMini EPSP combined MAD bound (6-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(10));
                         fprintf(fid,'\r\nMini IPSP combined SAD bound (6-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(11));
                         fprintf(fid,'\r\nMini IPSP combined MAD bound (6-score combined SAD 50th percentile):          %16.14g', UFest(est).estimate.measuredUF(12));
-                    else
+                    elseif strcmpi(expand, '3-score')
                         fprintf(fid,'\r\nMini EPSP amplitude SAD bound (3-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(1));
                         fprintf(fid,'\r\nMini EPSP amplitude MAD bound (3-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(2));
                         fprintf(fid,'\r\nMini IPSP amplitude SAD bound (3-score combined SAD 50th percentile):         %16.14g', UFest(est).estimate.measuredUF(3));
@@ -613,12 +657,22 @@ if strcmpi(button, 'Yes')
                     fprintf(fid,'\r\nMini IPSP combined MAD bound (max):                                           %16.14g', UFest(est).estimate.measuredUF(34));
                     fprintf(fid,'\r\n');
                     
-                    if expand
+                    if strcmpi(expand, '15-score')
+                        fprintf(fid,'\r\nTop 50%% mini EPSP amplitude SAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(1));
+                        fprintf(fid,'\r\nTop 50%% mini EPSP amplitude MAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(2));
+                        fprintf(fid,'\r\nTop 50%% mini IPSP amplitude SAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(3));
+                        fprintf(fid,'\r\nTop 50%% mini IPSP amplitude MAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(4));
+                    elseif strcmpi(expand, '9-score')
+                        fprintf(fid,'\r\nTop 50%% mini EPSP amplitude SAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(1));
+                        fprintf(fid,'\r\nTop 50%% mini EPSP amplitude MAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(2));
+                        fprintf(fid,'\r\nTop 50%% mini IPSP amplitude SAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(3));
+                        fprintf(fid,'\r\nTop 50%% mini IPSP amplitude MAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(4));
+                    elseif strcmpi(expand, '6-score')
                         fprintf(fid,'\r\nTop 50%% mini EPSP amplitude SAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(1));
                         fprintf(fid,'\r\nTop 50%% mini EPSP amplitude MAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(2));
                         fprintf(fid,'\r\nTop 50%% mini IPSP amplitude SAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(3));
                         fprintf(fid,'\r\nTop 50%% mini IPSP amplitude MAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(4));
-                    else
+                    elseif strcmpi(expand, '3-score')
                         fprintf(fid,'\r\nTop 50%% mini EPSP amplitude SAD bound (3-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(1));
                         fprintf(fid,'\r\nTop 50%% mini EPSP amplitude MAD bound (3-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(2));
                         fprintf(fid,'\r\nTop 50%% mini IPSP amplitude SAD bound (3-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFBottom(3));
@@ -638,12 +692,22 @@ if strcmpi(button, 'Yes')
                     fprintf(fid,'\r\nTop 50%% mini IPSP amplitude MAD bound (max):                                  %16.14g', UFest(est).estimate.measuredUFBottom(12));
                     fprintf(fid,'\r\n');
                     
-                    if expand
+                    if strcmpi(expand, '15-score')
+                        fprintf(fid,'\r\nTop 10%% mini EPSP amplitude SAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(1));
+                        fprintf(fid,'\r\nTop 10%% mini EPSP amplitude MAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(2));
+                        fprintf(fid,'\r\nTop 10%% mini IPSP amplitude SAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(3));
+                        fprintf(fid,'\r\nTop 10%% mini IPSP amplitude MAD bound (15-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(4));
+                    elseif strcmpi(expand, '9-score')
+                        fprintf(fid,'\r\nTop 10%% mini EPSP amplitude SAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(1));
+                        fprintf(fid,'\r\nTop 10%% mini EPSP amplitude MAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(2));
+                        fprintf(fid,'\r\nTop 10%% mini IPSP amplitude SAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(3));
+                        fprintf(fid,'\r\nTop 10%% mini IPSP amplitude MAD bound (9-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(4));
+                    elseif strcmpi(expand, '6-score')
                         fprintf(fid,'\r\nTop 10%% mini EPSP amplitude SAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(1));
                         fprintf(fid,'\r\nTop 10%% mini EPSP amplitude MAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(2));
                         fprintf(fid,'\r\nTop 10%% mini IPSP amplitude SAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(3));
                         fprintf(fid,'\r\nTop 10%% mini IPSP amplitude MAD bound (6-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(4));
-                    else
+                    elseif strcmpi(expand, '3-score')
                         fprintf(fid,'\r\nTop 10%% mini EPSP amplitude SAD bound (3-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(1));
                         fprintf(fid,'\r\nTop 10%% mini EPSP amplitude MAD bound (3-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(2));
                         fprintf(fid,'\r\nTop 10%% mini IPSP amplitude SAD bound (3-score combined SAD 50th percentile): %16.14g', UFest(est).estimate.measuredUFMid(3));
@@ -663,12 +727,22 @@ if strcmpi(button, 'Yes')
                     fprintf(fid,'\r\nTop 10%% mini IPSP amplitude MAD bound (max):                                  %16.14g', UFest(est).estimate.measuredUFMid(12));
                     fprintf(fid,'\r\n');
                     
-                    if expand
+                    if strcmpi(expand, '15-score')
+                        fprintf(fid,'\r\ntop 2%% mini EPSP amplitude SAD bound (15-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(1));
+                        fprintf(fid,'\r\ntop 2%% mini EPSP amplitude MAD bound (15-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(2));
+                        fprintf(fid,'\r\ntop 2%% mini IPSP amplitude SAD bound (15-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(3));
+                        fprintf(fid,'\r\ntop 2%% mini IPSP amplitude MAD bound (15-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(4));
+                    elseif strcmpi(expand, '9-score')
+                        fprintf(fid,'\r\ntop 2%% mini EPSP amplitude SAD bound (9-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(1));
+                        fprintf(fid,'\r\ntop 2%% mini EPSP amplitude MAD bound (9-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(2));
+                        fprintf(fid,'\r\ntop 2%% mini IPSP amplitude SAD bound (9-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(3));
+                        fprintf(fid,'\r\ntop 2%% mini IPSP amplitude MAD bound (9-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(4));
+                    elseif strcmpi(expand, '6-score')
                         fprintf(fid,'\r\ntop 2%% mini EPSP amplitude SAD bound (6-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(1));
                         fprintf(fid,'\r\ntop 2%% mini EPSP amplitude MAD bound (6-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(2));
                         fprintf(fid,'\r\ntop 2%% mini IPSP amplitude SAD bound (6-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(3));
                         fprintf(fid,'\r\ntop 2%% mini IPSP amplitude MAD bound (6-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(4));
-                    else
+                    elseif strcmpi(expand, '3-score')
                         fprintf(fid,'\r\ntop 2%% mini EPSP amplitude SAD bound (3-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(1));
                         fprintf(fid,'\r\ntop 2%% mini EPSP amplitude MAD bound (3-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(2));
                         fprintf(fid,'\r\ntop 2%% mini IPSP amplitude SAD bound (3-score combined SAD 50th percentile):  %16.14g', UFest(est).estimate.measuredUFTop(3));
@@ -1003,10 +1077,16 @@ if strcmpi(button, 'Yes')
     saveas(dataF(3), 'Mini_IPSP_amplitude_histograms', 'fig');
     saveas(dataF(4), 'Mini_IPSP_rise_time_histograms', 'fig');
     % Centiles:
-    if expand
+    if strcmpi(expand, '15-score')
+        saveas(cntF(1), 'EPSP 15-score combined SAD 50th centile', 'fig');
+        saveas(cntF(2), 'IPSP 15-score combined SAD 50th centile', 'fig');
+    elseif strcmpi(expand, '9-score')
+        saveas(cntF(1), 'EPSP 9-score combined SAD 50th centile', 'fig');
+        saveas(cntF(2), 'IPSP 9-score combined SAD 50th centile', 'fig');
+    elseif strcmpi(expand, '6-score')
         saveas(cntF(1), 'EPSP 6-score combined SAD 50th centile', 'fig');
         saveas(cntF(2), 'IPSP 6-score combined SAD 50th centile', 'fig');
-    else
+    elseif strcmpi(expand, '3-score')
         saveas(cntF(1), 'EPSP 3-score combined SAD 50th centile', 'fig');
         saveas(cntF(2), 'IPSP 3-score combined SAD 50th centile', 'fig');
     end

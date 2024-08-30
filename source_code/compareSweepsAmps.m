@@ -1,5 +1,5 @@
 function [prctAmps, prctAmpsDev, prctAmpsNeg, prctAmpsNegDev, minAmps, minAmpsDev, minAmpsNeg, minAmpsNegDev, maxAmps, maxAmpsDev, maxAmpsNeg,...
-    maxAmpsNegDev] = compareSweepsAmps(sweepcount, filtfs, Amps, AmpsNeg, prct, prctNeg)
+    maxAmpsNegDev] = compareSweepsAmps(sweepcount, filtfs, Amps, AmpsNeg, prct, prctNeg, prctMAD, prctNegMAD)
 
 target = str2double(filtfs{1});
 noise = str2double(filtfs{2});
@@ -53,9 +53,9 @@ for iTarget = 1:nTargRed
 end
 
 prctAmps = prctile(diffAmps, prct);
-prctAmpsDev = prctile(diffAmpsDev, prct);
+prctAmpsDev = prctile(diffAmpsDev, prctMAD);
 prctAmpsNeg = prctile(diffAmpsNeg, prctNeg);
-prctAmpsNegDev = prctile(diffAmpsNegDev, prctNeg);
+prctAmpsNegDev = prctile(diffAmpsNegDev, prctNegMAD);
 
 minAmps = min(diffAmps);
 minAmpsDev = min(diffAmpsDev);

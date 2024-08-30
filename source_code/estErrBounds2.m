@@ -244,7 +244,7 @@ for sweepSize = 1:largestSweep
         Bottom = .5;
         Mid = .9;
         Top = .98;
-        if expand
+        if strcmpi(expand, '6-score') || strcmpi(expand, '9-score') || strcmpi(expand, '15-score')
             combAmps = sum(initAmps,1);
             Ampcs = cumsum(combAmps)/sum(combAmps);
             combAmpsNeg = sum(initAmpsNeg,1);
@@ -256,7 +256,7 @@ for sweepSize = 1:largestSweep
             initAmpsNegBottom = initAmpsNeg;
             AmpcsNeg = find(AmpcsNeg > Bottom, 1);
             initAmpsNegBottom(:,1:AmpcsNeg-1) = zeros(size(initAmpsNegBottom,1), AmpcsNeg-1);
-            [diffAmpsBottom, diffAmpsNegBottom] = compareSweepsPartial(reduceComp, initAmpsBottom, initAmpsNegBottom);
+            [diffAmpsBottomAbs, diffAmpsNegBottomAbs, diffAmpsBottom, diffAmpsNegBottom, diffAmpsBottomMaxAbs, diffAmpsNegBottomMaxAbs] = compareSweepsPartial(reduceComp, initAmpsBottom, initAmpsNegBottom);
             
             initAmpsMid = initAmps;
             Ampcs = find(Ampcs > Mid, 1);
@@ -264,7 +264,7 @@ for sweepSize = 1:largestSweep
             initAmpsNegMid = initAmpsNeg;
             AmpcsNeg = find(AmpcsNeg > Mid, 1);
             initAmpsNegMid(:,1:AmpcsNeg-1) = zeros(size(initAmpsNegMid,1), AmpcsNeg-1);
-            [diffAmpsMid, diffAmpsNegMid] = compareSweepsPartial(reduceComp, initAmpsMid, initAmpsNegMid);
+            [diffAmpsMidAbs, diffAmpsNegMidAbs, diffAmpsMid, diffAmpsNegMid, diffAmpsMidMaxAbs, diffAmpsNegMidMaxAbs] = compareSweepsPartial(reduceComp, initAmpsMid, initAmpsNegMid);
             
             initAmpsTop = initAmps;
             Ampcs = find(Ampcs > Top, 1);
@@ -272,29 +272,48 @@ for sweepSize = 1:largestSweep
             initAmpsNegTop = initAmpsNeg;
             AmpcsNeg = find(AmpcsNeg > Top, 1);
             initAmpsNegTop(:,1:AmpcsNeg-1) = zeros(size(initAmpsNegTop,1), AmpcsNeg-1);
-            [diffAmpsTop, diffAmpsNegTop] = compareSweepsPartial(reduceComp, initAmpsTop, initAmpsNegTop);
-            
-            prct = calc50thCentileExpand(diffAmps{1}, diffRTs{1}, diffTwoDs{1}, diffAmpsBottom, diffAmpsMid, diffAmpsTop, 50);
-            prctNeg = calc50thCentileExpand(diffAmpsNeg{1}, diffRTsNeg{1}, diffTwoDsNeg{1}, diffAmpsNegBottom, diffAmpsNegMid, diffAmpsNegTop, 50);
-        else
-            prct = calc50thCentile(diffAmps{1}, diffRTs{1}, diffTwoDs{1}, diffAmpsNegBottom, diffAmpsNegMid, diffAmpsNegTop, 50);
+            [diffAmpsTopAbs, diffAmpsNegTopAbs, diffAmpsTop, diffAmpsNegTop, diffAmpsTopMaxAbs, diffAmpsNegTopMaxAbs] = compareSweepsPartial(reduceComp, initAmpsTop, initAmpsNegTop);
+            if strcmpi(expand, '6-score')
+                prct = calc50thCentileExpand(diffAmps{1}, diffAmpsBottomAbs, diffAmpsMidAbs, diffAmpsTopAbs, diffRTs{1}, diffTwoDs{1}, 50);
+                prctNeg = calc50thCentileExpand(diffAmpsNeg{1}, diffAmpsNegBottomAbs, diffAmpsNegMidAbs, diffAmpsNegTopAbs, diffRTsNeg{1}, diffTwoDsNeg{1}, 50);
+                prctMAD = prct;
+                prctNegMAD = prctNeg;
+            elseif strcmpi(expand, '9-score')
+                prct = calc50thCentileExpandMore(diffAmps{1}, diffAmpsBottomAbs, diffAmpsMidAbs, diffAmpsTopAbs, diffAmpsBottom, diffAmpsMid, diffAmpsTop, diffRTs{1}, diffTwoDs{1}, 50);
+                prctNeg = calc50thCentileExpandMore(diffAmpsNeg{1}, diffAmpsNegBottomAbs, diffAmpsNegMidAbs, diffAmpsNegTopAbs, diffAmpsNegBottom, diffAmpsNegMid, diffAmpsNegTop, diffRTsNeg{1}, diffTwoDsNeg{1}, 50);
+                prctMAD = calc50thCentileExpand(diffAmps{1}, diffAmpsBottomAbs, diffAmpsMidAbs, diffAmpsTopAbs, diffRTs{1}, diffTwoDs{1}, 50);
+                prctNegMAD = calc50thCentileExpand(diffAmpsNeg{1}, diffAmpsNegBottomAbs, diffAmpsNegMidAbs, diffAmpsNegTopAbs, diffRTsNeg{1}, diffTwoDsNeg{1}, 50);
+            elseif strcmpi(expand, '15-score')
+                prct = calc50thCentileCombined(diffAmps{1}, diffAmpsBottomAbs, diffAmpsMidAbs, diffAmpsTopAbs, diffAmpsBottom, diffAmpsMid, diffAmpsTop, diffRTs{1}, diffTwoDs{1}, ...
+                  diffAmpsDev{1}, diffAmpsBottomMaxAbs, diffAmpsMidMaxAbs, diffAmpsTopMaxAbs, diffRTsDev{1}, diffTwoDsDev{1}, 50);
+                prctNeg = calc50thCentileCombined(diffAmpsNeg{1}, diffAmpsNegBottomAbs, diffAmpsNegMidAbs, diffAmpsNegTopAbs, diffAmpsNegBottom, diffAmpsNegMid, diffAmpsNegTop, diffRTsNeg{1}, diffTwoDsNeg{1}, ...
+                  diffAmpsNegDev{1}, diffAmpsNegBottomMaxAbs, diffAmpsNegMidMaxAbs, diffAmpsNegTopMaxAbs, diffRTsNegDev{1}, diffTwoDsNegDev{1}, 50);
+                prctMAD = prct;
+                prctNegMAD = prctNeg;
+            end
+        elseif strcmpi(expand, '3-score')
+            prct = calc50thCentile(diffAmps{1}, diffRTs{1}, diffTwoDs{1}, 50);
             prctNeg = calc50thCentile(diffAmpsNeg{1}, diffRTsNeg{1}, diffTwoDsNeg{1}, 50);
+            prctMAD = prct;
+            prctNegMAD = prctNeg;
+        else
+            error('Incorrect type of centile calculation specified.');
         end
         optimData.prct = prct;
         optimData.prctNeg = prctNeg;
     end
     prctAmpsDiff(sweepSize) = prctile(diffAmps{sweepSize},prct);
-    prctAmpsDevDiff(sweepSize) = prctile(diffAmpsDev{sweepSize},prct);
+    prctAmpsDevDiff(sweepSize) = prctile(diffAmpsDev{sweepSize},prctMAD);
     prctAmpsNegDiff(sweepSize) = prctile(diffAmpsNeg{sweepSize},prctNeg);
-    prctAmpsNegDevDiff(sweepSize) = prctile(diffAmpsNegDev{sweepSize},prctNeg);
+    prctAmpsNegDevDiff(sweepSize) = prctile(diffAmpsNegDev{sweepSize},prctNegMAD);
     prctRTsDiff(sweepSize) = prctile(diffRTs{sweepSize},prct);
-    prctRTsDevDiff(sweepSize) = prctile(diffRTsDev{sweepSize},prct);
+    prctRTsDevDiff(sweepSize) = prctile(diffRTsDev{sweepSize},prctMAD);
     prctRTsNegDiff(sweepSize) = prctile(diffRTsNeg{sweepSize},prctNeg);
-    prctRTsNegDevDiff(sweepSize) = prctile(diffRTsNegDev{sweepSize},prctNeg);
+    prctRTsNegDevDiff(sweepSize) = prctile(diffRTsNegDev{sweepSize},prctNegMAD);
     prctTwoDsDiff(sweepSize) = prctile(diffTwoDs{sweepSize},prct);
-    prctTwoDsDevDiff(sweepSize) = prctile(diffTwoDsDev{sweepSize},prct);
+    prctTwoDsDevDiff(sweepSize) = prctile(diffTwoDsDev{sweepSize},prctMAD);
     prctTwoDsNegDiff(sweepSize) = prctile(diffTwoDsNeg{sweepSize},prctNeg);
-    prctTwoDsNegDevDiff(sweepSize) = prctile(diffTwoDsNegDev{sweepSize},prctNeg);
+    prctTwoDsNegDevDiff(sweepSize) = prctile(diffTwoDsNegDev{sweepSize},prctNegMAD);
     
     waitText = [waitText1 num2str(progress(sweepSize)) waitText2];
     waitbar(progress(sweepSize)/100, h, waitText);
@@ -329,15 +348,15 @@ optimData.SD = SD;
     meanAmpsNegDevDiffBottom, medianAmpsDiffBottom, medianAmpsDevDiffBottom, medianAmpsNegDiffBottom, medianAmpsNegDevDiffBottom, prctAmpsDiffBottom,...
     prctAmpsDevDiffBottom, prctAmpsNegDiffBottom, prctAmpsNegDevDiffBottom, minAmpsDiffBottom, minAmpsDevDiffBottom, minAmpsNegDiffBottom,...
     minAmpsNegDevDiffBottom, maxAmpsDiffBottom, maxAmpsDevDiffBottom, maxAmpsNegDiffBottom, maxAmpsNegDevDiffBottom, initAmpsBottom,...
-    initAmpsNegBottom] = errorAmps(sweepcount, initAmps, initAmpsNeg, prct, prctNeg, Bottom);
+    initAmpsNegBottom] = errorAmps(sweepcount, initAmps, initAmpsNeg, prct, prctNeg, prctMAD, prctNegMAD, Bottom);
 [AmpsMeanMid, AmpsMedianMid, AmpsMinMid, AmpsMaxMid, AmpsPrctMid, meanAmpsDiffMid, meanAmpsDevDiffMid, meanAmpsNegDiffMid, meanAmpsNegDevDiffMid,...
     medianAmpsDiffMid, medianAmpsDevDiffMid, medianAmpsNegDiffMid, medianAmpsNegDevDiffMid, prctAmpsDiffMid, prctAmpsDevDiffMid, prctAmpsNegDiffMid,...
     prctAmpsNegDevDiffMid, minAmpsDiffMid, minAmpsDevDiffMid, minAmpsNegDiffMid, minAmpsNegDevDiffMid, maxAmpsDiffMid, maxAmpsDevDiffMid, maxAmpsNegDiffMid,...
-    maxAmpsNegDevDiffMid, initAmpsMid, initAmpsNegMid] = errorAmps(sweepcount, initAmps, initAmpsNeg, prct, prctNeg, Mid);
+    maxAmpsNegDevDiffMid, initAmpsMid, initAmpsNegMid] = errorAmps(sweepcount, initAmps, initAmpsNeg, prct, prctNeg, prctMAD, prctNegMAD, Mid);
 [AmpsMeanTop, AmpsMedianTop, AmpsMinTop, AmpsMaxTop, AmpsPrctTop, meanAmpsDiffTop, meanAmpsDevDiffTop, meanAmpsNegDiffTop, meanAmpsNegDevDiffTop,...
     medianAmpsDiffTop, medianAmpsDevDiffTop, medianAmpsNegDiffTop, medianAmpsNegDevDiffTop, prctAmpsDiffTop, prctAmpsDevDiffTop, prctAmpsNegDiffTop,...
     prctAmpsNegDevDiffTop, minAmpsDiffTop, minAmpsDevDiffTop, minAmpsNegDiffTop, minAmpsNegDevDiffTop, maxAmpsDiffTop, maxAmpsDevDiffTop, maxAmpsNegDiffTop,...
-    maxAmpsNegDevDiffTop, initAmpsTop, initAmpsNegTop] = errorAmps(sweepcount, initAmps, initAmpsNeg, prct, prctNeg, Top);
+    maxAmpsNegDevDiffTop, initAmpsTop, initAmpsNegTop] = errorAmps(sweepcount, initAmps, initAmpsNeg, prct, prctNeg, prctMAD, prctNegMAD, Top);
 
 
 
@@ -484,16 +503,26 @@ warning('on', 'MATLAB:nearlySingularMatrix');
 
 
 %% Plot the 50th centile of combined mini EPSP and IPSP data:
-if expand
+if strcmpi(expand, '6-score')
     centFig = plotCentiles(meanAmpsDiff(1), meanRTsDiff(1), medianAmpsDiff(1), medianRTsDiff(1), diffAmps{1}, diffRTs{1}, prctAmpsDiff(1),...
-        prctRTsDiff(1), 'EPSP 6-score combined SAD 50th centile');
+      prctRTsDiff(1), 'EPSP 6-score combined SAD 50th centile');
     centFigNeg = plotCentiles(meanAmpsNegDiff(1), meanRTsNegDiff(1), medianAmpsNegDiff(1), medianRTsNegDiff(1), diffAmpsNeg{1}, diffRTsNeg{1},...
-        prctAmpsNegDiff(1), prctRTsNegDiff(1), 'IPSP 6-score combined SAD 50th centile');
+      prctAmpsNegDiff(1), prctRTsNegDiff(1), 'IPSP 6-score combined SAD 50th centile');
+elseif strcmpi(expand, '9-score')
+    centFig = plotCentiles(meanAmpsDiff(1), meanRTsDiff(1), medianAmpsDiff(1), medianRTsDiff(1), diffAmps{1}, diffRTs{1}, prctAmpsDiff(1),...
+      prctRTsDiff(1), 'EPSP 9-score combined SAD 50th centile');
+    centFigNeg = plotCentiles(meanAmpsNegDiff(1), meanRTsNegDiff(1), medianAmpsNegDiff(1), medianRTsNegDiff(1), diffAmpsNeg{1}, diffRTsNeg{1},...
+      prctAmpsNegDiff(1), prctRTsNegDiff(1), 'IPSP 9-score combined SAD 50th centile');
+elseif strcmpi(expand, '15-score')
+    centFig = plotCentiles(meanAmpsDiff(1), meanRTsDiff(1), medianAmpsDiff(1), medianRTsDiff(1), diffAmps{1}, diffRTs{1}, prctAmpsDiff(1),...
+      prctRTsDiff(1), 'EPSP 15-score combined SAD 50th centile');
+    centFigNeg = plotCentiles(meanAmpsNegDiff(1), meanRTsNegDiff(1), medianAmpsNegDiff(1), medianRTsNegDiff(1), diffAmpsNeg{1}, diffRTsNeg{1},...
+      prctAmpsNegDiff(1), prctRTsNegDiff(1), 'IPSP 15-score combined SAD 50th centile');
 else
     centFig = plotCentiles(meanAmpsDiff(1), meanRTsDiff(1), medianAmpsDiff(1), medianRTsDiff(1), diffAmps{1}, diffRTs{1}, prctAmpsDiff(1),...
-        prctRTsDiff(1), 'EPSP 3-score combined SAD 50th centile');
+      prctRTsDiff(1), 'EPSP 3-score combined SAD 50th centile');
     centFigNeg = plotCentiles(meanAmpsNegDiff(1), meanRTsNegDiff(1), medianAmpsNegDiff(1), medianRTsNegDiff(1), diffAmpsNeg{1}, diffRTsNeg{1},...
-        prctAmpsNegDiff(1), prctRTsNegDiff(1), 'IPSP 3-score combined SAD 50th centile');
+      prctAmpsNegDiff(1), prctRTsNegDiff(1), 'IPSP 3-score combined SAD 50th centile');
 end
 cntF = [centFig centFigNeg];
 
@@ -886,26 +915,26 @@ if strcmpi(button, 'Yes')
                 diffTwoDsNeg, diffTwoDsNegDev, minAmps, minAmpsDev, minAmpsNeg, minAmpsNegDev, minRTs, minRTsDev, minRTsNeg, minRTsNegDev, minTwoDs,...
                 minTwoDsDev, minTwoDsNeg, minTwoDsNegDev, maxAmps, maxAmpsDev, maxAmpsNeg, maxAmpsNegDev, maxRTs, maxRTsDev, maxRTsNeg, maxRTsNegDev,...
                 maxTwoDs, maxTwoDsDev, maxTwoDsNeg, maxTwoDsNegDev, lengthRatio] = compareUneqSweeps(sweepcount, filtfs, initAmps, initAmpsNeg,...
-                initRTs, initRTsNeg, inittwoDs, inittwoDsNeg, prct, prctNeg);
+                initRTs, initRTsNeg, inittwoDs, inittwoDsNeg, prct, prctNeg, prctMAD, prctNegMAD);
             if estimated
                 measuredUF = [diffAmps; diffAmpsDev; diffAmpsNeg; diffAmpsNegDev; diffRTs; diffRTsDev; diffRTsNeg; diffRTsNegDev; diffTwoDs;...
                     diffTwoDsDev; diffTwoDsNeg; diffTwoDsNegDev; minAmps; minAmpsDev; minAmpsNeg; minAmpsNegDev; minRTs; minRTsDev; minRTsNeg;...
                     minRTsNegDev; minTwoDs; minTwoDsDev; minTwoDsNeg; minTwoDsNegDev; maxAmps; maxAmpsDev; maxAmpsNeg; maxAmpsNegDev; maxRTs;...
                     maxRTsDev; maxRTsNeg; maxRTsNegDev; maxTwoDs; maxTwoDsDev; maxTwoDsNeg; maxTwoDsNegDev];
-                [diffAmpsBottom, diffAmpsDevBottom, diffAmpsNegBottom, diffAmpsNegDevBottom, minAmpsBottom, minAmpsDevBottom, minAmpsNegBottom,...
+                [diffAmpsBottomAbs, diffAmpsDevBottom, diffAmpsNegBottomAbs, diffAmpsNegDevBottom, minAmpsBottom, minAmpsDevBottom, minAmpsNegBottom,...
                     minAmpsNegDevBottom, maxAmpsBottom, maxAmpsDevBottom, maxAmpsNegBottom, maxAmpsNegDevBottom] = compareSweepsAmps(sweepcount, filtfs,...
-                    initAmpsBottom, initAmpsNegBottom, prct, prctNeg);
-                measuredUFBottom = [diffAmpsBottom; diffAmpsDevBottom; diffAmpsNegBottom; diffAmpsNegDevBottom; minAmpsBottom; minAmpsDevBottom;...
+                    initAmpsBottom, initAmpsNegBottom, prct, prctNeg, prctMAD, prctNegMAD);
+                measuredUFBottom = [diffAmpsBottomAbs; diffAmpsDevBottom; diffAmpsNegBottomAbs; diffAmpsNegDevBottom; minAmpsBottom; minAmpsDevBottom;...
                     minAmpsNegBottom; minAmpsNegDevBottom; maxAmpsBottom; maxAmpsDevBottom; maxAmpsNegBottom; maxAmpsNegDevBottom];
-                [diffAmpsMid, diffAmpsDevMid, diffAmpsNegMid, diffAmpsNegDevMid, minAmpsMid, minAmpsDevMid, minAmpsNegMid, minAmpsNegDevMid,...
+                [diffAmpsMidAbs, diffAmpsDevMid, diffAmpsNegMidAbs, diffAmpsNegDevMid, minAmpsMid, minAmpsDevMid, minAmpsNegMid, minAmpsNegDevMid,...
                     maxAmpsMid, maxAmpsDevMid, maxAmpsNegMid, maxAmpsNegDevMid] = compareSweepsAmps(sweepcount, filtfs, initAmpsMid, initAmpsNegMid,...
-                    prct, prctNeg);
-                measuredUFMid = [diffAmpsMid; diffAmpsDevMid; diffAmpsNegMid; diffAmpsNegDevMid; minAmpsMid; minAmpsDevMid; minAmpsNegMid;...
+                    prct, prctNeg, prctMAD, prctNegMAD);
+                measuredUFMid = [diffAmpsMidAbs; diffAmpsDevMid; diffAmpsNegMidAbs; diffAmpsNegDevMid; minAmpsMid; minAmpsDevMid; minAmpsNegMid;...
                     minAmpsNegDevMid; maxAmpsMid; maxAmpsDevMid; maxAmpsNegMid; maxAmpsNegDevMid];
-                [diffAmpsTop, diffAmpsDevTop, diffAmpsNegTop, diffAmpsNegDevTop, minAmpsTop, minAmpsDevTop, minAmpsNegTop, minAmpsNegDevTop,...
+                [diffAmpsTopAbs, diffAmpsDevTop, diffAmpsNegTopAbs, diffAmpsNegDevTop, minAmpsTop, minAmpsDevTop, minAmpsNegTop, minAmpsNegDevTop,...
                     maxAmpsTop, maxAmpsDevTop, maxAmpsNegTop, maxAmpsNegDevTop] = compareSweepsAmps(sweepcount, filtfs, initAmpsTop, initAmpsNegTop,...
-                    prct, prctNeg);
-                measuredUFTop = [diffAmpsTop; diffAmpsDevTop; diffAmpsNegTop; diffAmpsNegDevTop; minAmpsTop; minAmpsDevTop; minAmpsNegTop;...
+                    prct, prctNeg, prctMAD, prctNegMAD);
+                measuredUFTop = [diffAmpsTopAbs; diffAmpsDevTop; diffAmpsNegTopAbs; diffAmpsNegDevTop; minAmpsTop; minAmpsDevTop; minAmpsNegTop;...
                     minAmpsNegDevTop; maxAmpsTop; maxAmpsDevTop; maxAmpsNegTop; maxAmpsNegDevTop];
             else
                 measuredUF = NaN(36,1);
@@ -1331,6 +1360,146 @@ while ~proceed
     
     combinedPrct = sum([diffAmpsPrct diffAmpsPrctBottom diffAmpsPrctMid diffAmpsPrctTop diffRTsPrct diffTwoDsPrct], 2);
     combinedPrct(combinedPrct < 6) = 0;
+    combinedPrct = logical(combinedPrct);
+    if sum(combinedPrct) < ceil(length(combinedPrct)/2)
+        prct = prct + 1;
+    else
+        proceed = true;
+    end
+end
+end
+
+
+
+function prct = calc50thCentileExpandMore(diffAmps, diffAmpsBottomAbs, diffAmpsMidAbs, diffAmpsTopAbs, diffAmpsBottom, diffAmpsMid, diffAmpsTop, diffRTs, diffTwoDs, prct)
+
+proceed = false;
+while ~proceed
+    diffAmpsPrct = diffAmps;
+    diffAmpsPrctBottomAbs = diffAmpsBottomAbs;
+    diffAmpsPrctMidAbs = diffAmpsMidAbs;
+    diffAmpsPrctTopAbs = diffAmpsTopAbs;
+    diffAmpsPrctBottom = diffAmpsBottom;
+    diffAmpsPrctMid = diffAmpsMid;
+    diffAmpsPrctTop = diffAmpsTop;
+    diffRTsPrct = diffRTs;
+    diffTwoDsPrct = diffTwoDs;
+    
+    prctAmps = prctile(diffAmpsPrct, prct);
+    prctAmpsBottomAbs = prctile(diffAmpsPrctBottomAbs, prct);
+    prctAmpsMidAbs = prctile(diffAmpsPrctMidAbs, prct);
+    prctAmpsTopAbs = prctile(diffAmpsPrctTopAbs, prct);
+    prctAmpsBottom = prctile(diffAmpsPrctBottom, prct);
+    prctAmpsMid = prctile(diffAmpsPrctMid, prct);
+    prctAmpsTop = prctile(diffAmpsPrctTop, prct);
+    prctRTs = prctile(diffRTsPrct, prct);
+    prctTwoDs = prctile(diffTwoDsPrct, prct);
+    
+    diffAmpsPrct(diffAmpsPrct > prctAmps) = 0;
+    diffAmpsPrctBottomAbs(diffAmpsPrctBottomAbs > prctAmpsBottomAbs) = 0;
+    diffAmpsPrctMidAbs(diffAmpsPrctMidAbs > prctAmpsMidAbs) = 0;
+    diffAmpsPrctTopAbs(diffAmpsPrctTopAbs > prctAmpsTopAbs) = 0;
+    diffAmpsPrctBottom(diffAmpsPrctBottom > prctAmpsBottom) = 0;
+    diffAmpsPrctMid(diffAmpsPrctMid > prctAmpsMid) = 0;
+    diffAmpsPrctTop(diffAmpsPrctTop > prctAmpsTop) = 0;
+    diffRTsPrct(diffRTsPrct > prctRTs) = 0;
+    diffTwoDsPrct(diffTwoDsPrct > prctTwoDs) = 0;
+    
+    diffAmpsPrct = logical(diffAmpsPrct);
+    diffAmpsPrctBottomAbs = logical(diffAmpsPrctBottomAbs);
+    diffAmpsPrctMidAbs = logical(diffAmpsPrctMidAbs);
+    diffAmpsPrctTopAbs = logical(diffAmpsPrctTopAbs);
+    diffAmpsPrctBottom = logical(diffAmpsPrctBottom);
+    diffAmpsPrctMid = logical(diffAmpsPrctMid);
+    diffAmpsPrctTop = logical(diffAmpsPrctTop);
+    diffRTsPrct = logical(diffRTsPrct);
+    diffTwoDsPrct = logical(diffTwoDsPrct);
+    
+    combinedPrct = sum([diffAmpsPrct diffAmpsPrctBottomAbs diffAmpsPrctMidAbs diffAmpsPrctTopAbs diffAmpsPrctBottom diffAmpsPrctMid diffAmpsPrctTop diffRTsPrct diffTwoDsPrct], 2);
+    combinedPrct(combinedPrct < 9) = 0;
+    combinedPrct = logical(combinedPrct);
+    if sum(combinedPrct) < ceil(length(combinedPrct)/2)
+        prct = prct + 1;
+    else
+        proceed = true;
+    end
+end
+end
+
+
+
+function prct = calc50thCentileCombined(sadAmps, sadAmpsBottomAbs, sadAmpsMidAbs, sadAmpsTopAbs, sadAmpsBottom, sadAmpsMid, sadAmpsTop, sadRTs, sadTwoDs, ...
+  madAmps, madAmpsBottomAbs, madAmpsMidAbs, madAmpsTopAbs, madRTs, madTwoDs, prct)
+
+proceed = false;
+while ~proceed
+    sadAmpsPrct = sadAmps;
+    sadAmpsPrctBottomAbs = sadAmpsBottomAbs;
+    sadAmpsPrctMidAbs = sadAmpsMidAbs;
+    sadAmpsPrctTopAbs = sadAmpsTopAbs;
+    sadAmpsPrctBottom = sadAmpsBottom;
+    sadAmpsPrctMid = sadAmpsMid;
+    sadAmpsPrctTop = sadAmpsTop;
+    sadRTsPrct = sadRTs;
+    sadTwoDsPrct = sadTwoDs;
+    madAmpsPrct = madAmps;
+    madAmpsPrctBottomAbs = madAmpsBottomAbs;
+    madAmpsPrctMidAbs = madAmpsMidAbs;
+    madAmpsPrctTopAbs = madAmpsTopAbs;
+    madRTsPrct = madRTs;
+    madTwoDsPrct = madTwoDs;
+    
+    prctAmps_SAD = prctile(sadAmpsPrct, prct);
+    prctAmpsBottomAbs_SAD = prctile(sadAmpsPrctBottomAbs, prct);
+    prctAmpsMidAbs_SAD = prctile(sadAmpsPrctMidAbs, prct);
+    prctAmpsTopAbs_SAD = prctile(sadAmpsPrctTopAbs, prct);
+    prctAmpsBottom_SAD = prctile(sadAmpsPrctBottom, prct);
+    prctAmpsMid_SAD = prctile(sadAmpsPrctMid, prct);
+    prctAmpsTop_SAD = prctile(sadAmpsPrctTop, prct);
+    prctRTs_SAD = prctile(sadRTsPrct, prct);
+    prctTwoDs_SAD = prctile(sadTwoDsPrct, prct);
+    prctAmps_MAD = prctile(madAmpsPrct, prct);
+    prctAmpsBottomAbs_MAD = prctile(madAmpsPrctBottomAbs, prct);
+    prctAmpsMidAbs_MAD = prctile(madAmpsPrctMidAbs, prct);
+    prctAmpsTopAbs_MAD = prctile(madAmpsPrctTopAbs, prct);
+    prctRTs_MAD = prctile(madRTsPrct, prct);
+    prctTwoDs_MAD = prctile(madTwoDsPrct, prct);
+    
+    sadAmpsPrct(sadAmpsPrct > prctAmps_SAD) = 0;
+    sadAmpsPrctBottomAbs(sadAmpsPrctBottomAbs > prctAmpsBottomAbs_SAD) = 0;
+    sadAmpsPrctMidAbs(sadAmpsPrctMidAbs > prctAmpsMidAbs_SAD) = 0;
+    sadAmpsPrctTopAbs(sadAmpsPrctTopAbs > prctAmpsTopAbs_SAD) = 0;
+    sadAmpsPrctBottom(sadAmpsPrctBottom > prctAmpsBottom_SAD) = 0;
+    sadAmpsPrctMid(sadAmpsPrctMid > prctAmpsMid_SAD) = 0;
+    sadAmpsPrctTop(sadAmpsPrctTop > prctAmpsTop_SAD) = 0;
+    sadRTsPrct(sadRTsPrct > prctRTs_SAD) = 0;
+    sadTwoDsPrct(sadTwoDsPrct > prctTwoDs_SAD) = 0;
+    madAmpsPrct(madAmpsPrct > prctAmps_MAD) = 0;
+    madAmpsPrctBottomAbs(madAmpsPrctBottomAbs > prctAmpsBottomAbs_MAD) = 0;
+    madAmpsPrctMidAbs(madAmpsPrctMidAbs > prctAmpsMidAbs_MAD) = 0;
+    madAmpsPrctTopAbs(madAmpsPrctTopAbs > prctAmpsTopAbs_MAD) = 0;
+    madRTsPrct(madRTsPrct > prctRTs_MAD) = 0;
+    madTwoDsPrct(madTwoDsPrct > prctTwoDs_MAD) = 0;
+    
+    sadAmpsPrct = logical(sadAmpsPrct);
+    sadAmpsPrctBottomAbs = logical(sadAmpsPrctBottomAbs);
+    sadAmpsPrctMidAbs = logical(sadAmpsPrctMidAbs);
+    sadAmpsPrctTopAbs = logical(sadAmpsPrctTopAbs);
+    sadAmpsPrctBottom = logical(sadAmpsPrctBottom);
+    sadAmpsPrctMid = logical(sadAmpsPrctMid);
+    sadAmpsPrctTop = logical(sadAmpsPrctTop);
+    sadRTsPrct = logical(sadRTsPrct);
+    sadTwoDsPrct = logical(sadTwoDsPrct);
+    madAmpsPrct = logical(madAmpsPrct);
+    madAmpsPrctBottomAbs = logical(madAmpsPrctBottomAbs);
+    madAmpsPrctMidAbs = logical(madAmpsPrctMidAbs);
+    madAmpsPrctTopAbs = logical(madAmpsPrctTopAbs);
+    madRTsPrct = logical(madRTsPrct);
+    madTwoDsPrct = logical(madTwoDsPrct);
+    
+    combinedPrct = sum([sadAmpsPrct sadAmpsPrctBottomAbs sadAmpsPrctMidAbs sadAmpsPrctTopAbs sadAmpsPrctBottom sadAmpsPrctMid sadAmpsPrctTop sadRTsPrct sadTwoDsPrct ...
+                        madAmpsPrct madAmpsPrctBottomAbs' madAmpsPrctMidAbs' madAmpsPrctTopAbs' madRTsPrct madTwoDsPrct], 2);
+    combinedPrct(combinedPrct < 15) = 0;
     combinedPrct = logical(combinedPrct);
     if sum(combinedPrct) < ceil(length(combinedPrct)/2)
         prct = prct + 1;

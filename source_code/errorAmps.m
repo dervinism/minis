@@ -1,7 +1,7 @@
 function [AmpsMean, AmpsMedian, AmpsMin, AmpsMax, AmpsPrct, meanAmpsDiff, meanAmpsDevDiff, meanAmpsNegDiff, meanAmpsNegDevDiff, medianAmpsDiff, medianAmpsDevDiff,...
     medianAmpsNegDiff, medianAmpsNegDevDiff, prctAmpsDiff, prctAmpsDevDiff, prctAmpsNegDiff, prctAmpsNegDevDiff, minAmpsDiff, minAmpsDevDiff, minAmpsNegDiff,...
     minAmpsNegDevDiff, maxAmpsDiff, maxAmpsDevDiff, maxAmpsNegDiff, maxAmpsNegDevDiff, initAmps, initAmpsNeg] = errorAmps(sweepcount, initAmps, initAmpsNeg,...
-    prct, prctNeg, prctHisto)
+    prct, prctNeg, prctMAD, prctNegMAD, prctHisto)
 
 diffAmps = struct([]);
 diffAmpsDev = diffAmps;
@@ -85,9 +85,9 @@ for sweepSize = 1:largestSweep
     maxAmpsNegDevDiff(sweepSize) = max(diffAmpsNegDev{sweepSize});
     
     prctAmpsDiff(sweepSize) = prctile(diffAmps{sweepSize},prct);
-    prctAmpsDevDiff(sweepSize) = prctile(diffAmpsDev{sweepSize},prct);
+    prctAmpsDevDiff(sweepSize) = prctile(diffAmpsDev{sweepSize},prctMAD);
     prctAmpsNegDiff(sweepSize) = prctile(diffAmpsNeg{sweepSize},prctNeg);
-    prctAmpsNegDevDiff(sweepSize) = prctile(diffAmpsNegDev{sweepSize},prctNeg);
+    prctAmpsNegDevDiff(sweepSize) = prctile(diffAmpsNegDev{sweepSize},prctNegMAD);
 end
 X = (1:sweepSize);
 AmpsMean = [X; meanAmpsDiff'; meanAmpsDevDiff'; meanAmpsNegDiff'; meanAmpsNegDevDiff'];

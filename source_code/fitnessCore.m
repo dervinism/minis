@@ -1,16 +1,19 @@
 function [fitness, constraints, firstCost, allCosts, cliff] = fitnessCore( ...
-  evalVector, meanMinisRTs, medianMinisRTs, cliff, minis2D, costFuncStruct, optimisationParameters)
+  evalVector, meanMinisRTs, medianMinisRTs, stdMinisRTs, cliff, minis2D, ...
+  shapes, costFuncStruct, optimisationParameters)
 
-costFuncType = 'parallel';
+costFuncType = 'parallel'; % 'serial' or 'parallel'
 
 % Complying with the skewness constraint:
 iCostBasis = ceil(0.03*numel(costFuncStruct.costBasis));
-firstCost = 0;
+firstCost = 0; %#ok<*NASGU>
 allCosts = zeros(size(evalVector));
-constraints = [0 0 0];
-skewness = meanMinisRTs/medianMinisRTs;
-if skewness <= 1
-    fitness = costFuncStruct.costBasis(iCostBasis) + (1/skewness)*costFuncStruct.costBasis(end-1);
+constraints = [0 0 0 0 0];
+skewness = (meanMinisRTs - medianMinisRTs)/stdMinisRTs;
+if skewness <= 0
+    fitness = costFuncStruct.costBasis(iCostBasis) + (0.5/1e-9)*costFuncStruct.costBasis(end-1);
+elseif skewness < 0.5
+    fitness = costFuncStruct.costBasis(iCostBasis) + (0.5/skewness)*costFuncStruct.costBasis(end-1);
 else
     fitness = 0;
 end
@@ -34,8 +37,26 @@ else
     cliff = [0 0];
 end
 
+% Complying with the unimodality constraint
+amps = shapes(:,2);
+[bfAmp, bcAmp] = bimodalitycoeff(amps);
+if bfAmp
+  constraints(4) = costFuncStruct.costBasis(iCostBasis) + (bcAmp-0.5)*costFuncStruct.costBasis(end-1);
+  fitness = fitness + constraints(4);
+end
+
+RTs = shapes(:,3);
+[bfRTs, bcRTs] = bimodalitycoeff(RTs);
+if bfRTs
+  constraints(5) = costFuncStruct.costBasis(iCostBasis) + (bcRTs-0.5)*costFuncStruct.costBasis(end-1);
+  fitness = fitness + constraints(5);
+end
+
+%figure; plot(0:0.01:10, sum(minis2D));
+%figure; plot(0:0.5:11, sum(minis2D,2));
+
 if strcmpi(costFuncType, 'serial') && fitness
-    fitness = fitness + costFuncStruct.costBasis(1) + costFuncStruct.costScale(1)*evalVector(1);
+    fitness = fitness + costFuncStruct.costBasis(1) + costFuncStruct.costScale(1)*evalVector(1); %#ok<*UNRCH>
     return
 end
 

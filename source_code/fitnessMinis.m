@@ -580,7 +580,7 @@ elseif (individual == 1 || (~isempty(bestFitness) && (individual > 1 && fitness 
         if exist(strcat(filename, '.mat'), 'file')
             fileCount = fileCount + 1;
             fileCountStr = num2str(fileCount);
-            if length(fileCountStr) == 1
+            if length(fileCountStr) == 1 %#ok<ISCL>
                 fileCountStr = strcat('_0', fileCountStr);
             else
                 fileCountStr = strcat('_', fileCountStr);

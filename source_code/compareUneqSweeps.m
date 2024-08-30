@@ -1,7 +1,7 @@
 function [estimated, prctAmps, prctAmpsDev, prctAmpsNeg, prctAmpsNegDev, prctRTs, prctRTsDev, prctRTsNeg, prctRTsNegDev, prctTwoDs, prctTwoDsDev, prctTwoDsNeg,...
     prctTwoDsNegDev, minAmps, minAmpsDev, minAmpsNeg, minAmpsNegDev, minRTs, minRTsDev, minRTsNeg, minRTsNegDev, minTwoDs, minTwoDsDev, minTwoDsNeg, minTwoDsNegDev,...
     maxAmps, maxAmpsDev, maxAmpsNeg, maxAmpsNegDev, maxRTs, maxRTsDev, maxRTsNeg, maxRTsNegDev, maxTwoDs, maxTwoDsDev, maxTwoDsNeg, maxTwoDsNegDev,...
-    lengthRatio] = compareUneqSweeps(sweepcount, filtfs, Amps, AmpsNeg, RTs, RTsNeg, TwoDs, TwoDsNeg, prct, prctNeg)
+    lengthRatio] = compareUneqSweeps(sweepcount, filtfs, Amps, AmpsNeg, RTs, RTsNeg, TwoDs, TwoDsNeg, prct, prctNeg, prctMAD, prctNegMAD)
 
 target = str2double(filtfs{1});
 noise = str2double(filtfs{2});
@@ -180,17 +180,17 @@ for iTarget = 1:nTargRed
 end
 
 prctAmps = prctile(diffAmps, prct);
-prctAmpsDev = prctile(diffAmpsDev, prct);
+prctAmpsDev = prctile(diffAmpsDev, prctMAD);
 prctAmpsNeg = prctile(diffAmpsNeg, prctNeg);
-prctAmpsNegDev = prctile(diffAmpsNegDev, prctNeg);
+prctAmpsNegDev = prctile(diffAmpsNegDev, prctNegMAD);
 prctRTs = prctile(diffRTs, prct);
-prctRTsDev = prctile(diffRTsDev, prct);
+prctRTsDev = prctile(diffRTsDev, prctMAD);
 prctRTsNeg = prctile(diffRTsNeg, prctNeg);
-prctRTsNegDev = prctile(diffRTsNegDev, prctNeg);
+prctRTsNegDev = prctile(diffRTsNegDev, prctNegMAD);
 prctTwoDs = prctile(diffTwoDs, prct);
-prctTwoDsDev = prctile(diffTwoDsDev, prct);
+prctTwoDsDev = prctile(diffTwoDsDev, prctMAD);
 prctTwoDsNeg = prctile(diffTwoDsNeg, prctNeg);
-prctTwoDsNegDev = prctile(diffTwoDsNegDev, prctNeg);
+prctTwoDsNegDev = prctile(diffTwoDsNegDev, prctNegMAD);
 
 minAmps = min(diffAmps);
 minAmpsDev = min(diffAmpsDev);
