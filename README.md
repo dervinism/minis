@@ -12,7 +12,7 @@ It allows you to:\
 1. You can run 'minis' in parallel fashion. To do so, go to the Optimisation options menu and click on Change options. In the Options window change the Number of parallel cores parameter to another value (e.g., 4). Click OK.
 2. 'minis' can also be executed on a computing cluster. The ```source_code``` directory contains a Matlab script file called ```minisCluster.m``` that can be used to launch 'minis' on a cluster.
 3. If the Down-going tick box is marked, the recording trace will be inverted.
-4. Software documentation is available [here](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf).
+4. Software documentation is available [here](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) (now partly outdated, refer to the manuscripts).
 5. Read all of the instructions in the README file before you use minis.
 
 ## Installation and launch instructions
@@ -91,7 +91,7 @@ To install follow these steps:
 You can use [p131c_0011_sw6-10.abf](https://github.com/dervinism/minis/blob/main/p131c_0011_sw6-10.abf) file with the testPython.py script to test your installation. Make sure you adapt the script to load your files. It is important that you always import the minisPy package before you import the matlab package. [Here](https://uk.mathworks.com/help/compiler_sdk/python/initialize-the-matlab-runtime.html) you can find further info on how to initialise Matlab Runtime and minisPY.
 
 ## Documentation
-Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
+Software user documentation file [minis_documentation.pdf](https://github.com/dervinism/minis/blob/main/minis_documentation.pdf) (now partly outdated, refer to the manuscripts) is available for a detailed explanation of how to use the software graphical user interface. Examples on how to use programming interfaces in Matlab and Python are given in [testMatlab.m](https://github.com/dervinism/minis/blob/main/testMatlab.m), [testMatlab_preload.m](https://github.com/dervinism/minis/blob/main/testMatlab_preload.m), [testPython.py](https://github.com/dervinism/minis/blob/main/testPython.py), and [testPython_preload.py](https://github.com/dervinism/minis/blob/main/testPython_preload.py) files.
 
 ## References
 Dervinis, M, Major, G (2024) bioRxiv 2022.03.20.485046; doi: https://doi.org/10.1101/2022.03.20.485046 \

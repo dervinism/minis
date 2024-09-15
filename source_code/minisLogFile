@@ -1,0 +1,56 @@
+Logging is on, see C:\Users\44079\code_repositories\minis\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 8 workers.
+Task completed
+close all
+edit minis
+uiopen('C:\Users\44079\Phd\previous\Guy_Major\Data\p103a\data\pre-processed_data\figures\p103a_0003_10sw_40s___no3_sw1-10.fig',1)
+[Warning: Error updating Text.
+
+ String scalar or character vector must have valid interpreter syntax:
+Smoothed data from file p103a_0003_10sw_40s___no3_sw1-10
+] 
+[> In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('defaulterrorcallback', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\defaulterrorcallback.m', 12)" style="font-weight:bold">defaulterrorcallback</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\defaulterrorcallback.m',12,0)">line 12</a>)
+In matlab.graphics.illustration/Legend/get.PlotChildren
+In matlab.graphics.illustration/Legend/setStringImpl
+In matlab.graphics.illustration/Legend/set.String_I
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('hgloadStructClass', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\hgloadStructClass.m', 10)" style="font-weight:bold">hgloadStructClass</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\hgloadStructClass.m',10,0)">line 10</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('loadFigure', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\loadFigure.m', 40)" style="font-weight:bold">loadFigure</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\loadFigure.m',40,0)">line 40</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('openfig>localOpenFigure', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m', 75)" style="font-weight:bold">openfig>localOpenFigure</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m',75,0)">line 75</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('openfig', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m', 40)" style="font-weight:bold">openfig</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m',40,0)">line 40</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('open', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\general\open.m', 139)" style="font-weight:bold">open</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\general\open.m',139,0)">line 139</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('uiopen', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\uitools\uiopen.m', 125)" style="font-weight:bold">uiopen</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\uitools\uiopen.m',125,0)">line 125</a>)] 
+IdleTimeout has been reached.
+Parallel pool using the 'Processes' profile is shutting down.
+uiopen('C:\Users\44079\Phd\previous\Guy_Major\Data\p103a\data\pre-processed_data\figures\p103a_0003_10sw_40s___no3_sw1-10.fig',1)
+[Warning: Error updating Text.
+
+ String scalar or character vector must have valid interpreter syntax:
+Smoothed data from file p103a_0003_10sw_40s___no3_sw1-10
+] 
+[> In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('defaulterrorcallback', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\defaulterrorcallback.m', 12)" style="font-weight:bold">defaulterrorcallback</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\defaulterrorcallback.m',12,0)">line 12</a>)
+In matlab.graphics.illustration/Legend/get.PlotChildren
+In matlab.graphics.illustration/Legend/setStringImpl
+In matlab.graphics.illustration/Legend/set.String_I
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('hgloadStructClass', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\hgloadStructClass.m', 10)" style="font-weight:bold">hgloadStructClass</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\hgloadStructClass.m',10,0)">line 10</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('loadFigure', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\loadFigure.m', 40)" style="font-weight:bold">loadFigure</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\private\loadFigure.m',40,0)">line 40</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('openfig>localOpenFigure', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m', 75)" style="font-weight:bold">openfig>localOpenFigure</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m',75,0)">line 75</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('openfig', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m', 40)" style="font-weight:bold">openfig</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\graphics\objectsystem\openfig.m',40,0)">line 40</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('open', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\general\open.m', 139)" style="font-weight:bold">open</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\general\open.m',139,0)">line 139</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('uiopen', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\uitools\uiopen.m', 125)" style="font-weight:bold">uiopen</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\uitools\uiopen.m',125,0)">line 125</a>)] 
+Detection task initiated
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\source_code\peel.m',45,1)">45  </a>sweepDuration = floor(length(V)/nSweeps);
+draw = true;
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Imaginary parts of complex X and/or Y arguments ignored.] 
+[> In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('peel', 'C:\Users\44079\code_repositories\minis\source_code\peel.m', 175)" style="font-weight:bold">peel</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\source_code\peel.m',175,0)">line 175</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('doublePeel', 'C:\Users\44079\code_repositories\minis\source_code\doublePeel.m', 50)" style="font-weight:bold">doublePeel</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\source_code\doublePeel.m',50,0)">line 50</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('initWaveform', 'C:\Users\44079\code_repositories\minis\source_code\initWaveform.m', 24)" style="font-weight:bold">initWaveform</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\source_code\initWaveform.m',24,0)">line 24</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis>startTool_ClickedCallback', 'C:\Users\44079\code_repositories\minis\source_code\minis.m', 2053)" style="font-weight:bold">minis>startTool_ClickedCallback</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\source_code\minis.m',2053,0)">line 2053</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('gui_mainfcn', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m', 95)" style="font-weight:bold">gui_mainfcn</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m',95,0)">line 95</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis', 'C:\Users\44079\code_repositories\minis\source_code\minis.m', 42)" style="font-weight:bold">minis</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\source_code\minis.m',42,0)">line 42</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis(''startTool_ClickedCallback'',hObject,eventdata,guidata(hObject))')" style="font-weight:bold">matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis('startTool_ClickedCallback',hObject,eventdata,guidata(hObject))</a>] 
+if system_dependent('IsDebugMode')==1, dbquit; end
+Logging is off

@@ -39,15 +39,15 @@ end
 
 % Complying with the unimodality constraint
 amps = shapes(:,2);
-[bfAmp, bcAmp] = bimodalitycoeff(amps);
-if bfAmp
+[~, bcAmp] = bimodalitycoeff(amps);
+if bcAmp > 0.5
   constraints(4) = costFuncStruct.costBasis(iCostBasis) + (bcAmp-0.5)*costFuncStruct.costBasis(end-1);
   fitness = fitness + constraints(4);
 end
 
 RTs = shapes(:,3);
-[bfRTs, bcRTs] = bimodalitycoeff(RTs);
-if bfRTs
+[~, bcRTs] = bimodalitycoeff(RTs);
+if bcRTs > 0.5
   constraints(5) = costFuncStruct.costBasis(iCostBasis) + (bcRTs-0.5)*costFuncStruct.costBasis(end-1);
   fitness = fitness + constraints(5);
 end

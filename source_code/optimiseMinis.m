@@ -169,9 +169,9 @@ upBound = [upBound 3];
 % bounds on tau_m
 if tauRange
     nVars = nVars + 1;
-    loBound = [loBound 0.95*simulationParameters.tau_m];
+    loBound = [loBound 0.9*simulationParameters.tau_m];
     if ~isempty(waveformT)
-        upBound = [upBound 1.05*waveformT.parameters.tau_m];
+        upBound = [upBound 1.1*waveformT.parameters.tau_m];
     else
         upBound = [upBound simulationParameters.tau_PSPm];
     end
