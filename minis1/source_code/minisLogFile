@@ -1,0 +1,380 @@
+Logging is on, see C:\Users\44079\code_repositories\minis\minis1\source_code\minisLogFile
+Parallel pool using the 'Processes' profile is shutting down.
+minis is ready
+if system_dependent('IsDebugMode')==1, dbquit all; end
+clear all
+distroFittingStats
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 8 workers.
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbcont; end
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+if system_dependent('IsDebugMode')==1, dbquit; end
+iFileAdjusted
+
+iFileAdjusted =
+
+     9
+
+fileparts(detectionFile)
+
+ans =
+
+    '.\minis-benchmarking-data\recs\p106b\txt_minis_real'
+
+[a,b] = fileparts(detectionFile)
+
+a =
+
+    '.\minis-benchmarking-data\recs\p106b\txt_minis_real'
+
+
+b =
+
+    'p106b_0043'
+
+help fileparts
+ <strong>fileparts</strong> - Get parts of file name
+    This MATLAB function returns the path name, file name, and extension for
+    the specified file.
+
+    Syntax
+      [filepath,name,ext] = <strong>fileparts</strong>(filename)
+
+    Input Arguments
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024a\help\matlab\ref/fileparts.html#d126e499065')">filename</a> - File name
+        string array | character vector | cell array of character vectors
+
+    Output Arguments
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024a\help\matlab\ref/fileparts.html#d126e499129')">filepath</a> - File path
+        string array | character vector | cell array of character vectors
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024a\help\matlab\ref/fileparts.html#d126e499166')">name</a> - File name
+        string array | character vector | cell array of character vectors
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024a\help\matlab\ref/fileparts.html#d126e499206')">ext</a> - File extension
+        string array | character vector | cell array of character vectors
+
+    Examples
+      <a href="matlab:openExample('matlab/GetPartsOfFileNameWindowsExample')">Get Parts of File Name for Windows</a>
+      <a href="matlab:openExample('matlab/GetPartsofFileNameForLinuxExample')">Get Parts of Dotfile Name for Linux</a>
+      <a href="matlab:openExample('matlab/GetPartsOfFileNamesFromAStringArrayExample')">Get Parts of File Names from a String Array</a>
+
+    See also <a href="matlab:help filesep -displayBanner">filesep</a>, <a href="matlab:help fullfile -displayBanner">fullfile</a>, <a href="matlab:help pathsep -displayBanner">pathsep</a>
+
+    Introduced in MATLAB before R2006a
+    <a href="matlab:doc fileparts">Documentation for fileparts</a>
+
+files(iFile).name
+
+ans =
+
+    'p106b_0043.txt'
+
+files(iFile).name
+
+ans =
+
+    'p106b_0043.txt'
+
+fileparts(files(iFile).name)
+
+ans =
+
+  0×0 empty <a href="matlab:helpPopup('char')" style="font-weight:bold">char</a> array
+
+[~,a] = fileparts(files(iFile).name)
+
+a =
+
+    'p106b_0043'
+
+[~, recFilename] = fileparts(files(iFile).name)
+
+recFilename =
+
+    'p106b_0043'
+
+contains(settings.loadTargetFileInput, recFilename)
+
+ans =
+
+  <a href="matlab:helpPopup('logical')" style="font-weight:bold">logical</a>
+
+   1
+
+IdleTimeout has been reached.
+Parallel pool using the 'Processes' profile is shutting down.
+distroFittingStats
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 8 workers.
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis-benchmarking\distroFittingStats.m',488,1)">488 </a>  close(fT);
+if system_dependent('IsDebugMode')==1, dbquit; end
+distroFittingStats
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis-benchmarking\distroFittingStats.m',457,1)">457 </a>  plot(rtBinsInterp.*1000, targetRTDistroInterp, 'g', 'LineWidth',1.25); hold on
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbquit all; end
+distroFittingStats
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis-benchmarking\distroFittingStats.m',488,1)">488 </a>  close(fT);
+if system_dependent('IsDebugMode')==1, dbquit all; end
+distroFittingStats
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable names.] 
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis-benchmarking\distroFittingStats.m',491,1)">491 </a>  close(fT);
+if system_dependent('IsDebugMode')==1, dbquit all; end
+Logging is off
