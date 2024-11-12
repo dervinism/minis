@@ -496,8 +496,8 @@ if ~fullParallel && (individual == 1 || (individual > 1 && fitness < bestFitness
     varsToSave.simEvents2DTail = simEvents2DTail;
     varsToSave.constraintFitness = constraintFitness;
     varsToSave.allCosts = allCosts;
-    %varsToSave.criticalCosts = [2 5 13:15 17 20 28:30];
-    varsToSave.criticalCosts = [2 5 13:15 17 20 30];
+    varsToSave.criticalCosts = [2 5 13:15 17 20 28:30];
+    %varsToSave.criticalCosts = [2 5 13:15 17 20 30];
     varsToSave.cliffEval = cliffEval;
     if any(ismember(find(allCosts), varsToSave.criticalCosts))
         varsToSave.satisfactoryFit = false;

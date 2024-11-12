@@ -381,9 +381,9 @@ if strcmpi(button, 'Yes')
         if ~exist('population','var')
             initialPopulation = zeros(populationSize1,nVars);
             initialPopulation(1,:) = distParameters;
-            base = distParameters - .05*(upBound-loBound);
+            base = distParameters - .25*(upBound-loBound);
             base = max([base; loBound]);
-            ceiling = distParameters + .05*(upBound-loBound);
+            ceiling = distParameters + .25*(upBound-loBound);
             ceiling = min([ceiling; upBound]);
             initialPopulation(2:end,:) = repmat(base,populationSize1-1,1) + repmat(ceiling-base,populationSize1-1,1)...
                 .* rand(populationSize1-1,nVars);
@@ -396,9 +396,9 @@ if strcmpi(button, 'Yes')
             if strcmpi(button, 'Yes')
                 initialPopulation = zeros(populationSize1,nVars);
                 initialPopulation(1,:) = distParameters;
-                base = distParameters - .05*(upBound-loBound);
+                base = distParameters - .25*(upBound-loBound);
                 base = max([base; loBound]);
-                ceiling = distParameters + .05*(upBound-loBound);
+                ceiling = distParameters + .25*(upBound-loBound);
                 ceiling = min([ceiling; upBound]);
                 initialPopulation(2:end,:) = repmat(base,populationSize1-1,1) + repmat(ceiling-base,populationSize1-1,1)...
                     .* rand(populationSize1-1,nVars);

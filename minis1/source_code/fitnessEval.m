@@ -49,8 +49,8 @@ medianMinisRTs = median(shapes(:,3));
 stdMinisRTs = std(shapes(:,3));
 
 [fitness, constraintFitness, firstCost, allCosts, cliff] = fitnessCore(evalVector, meanMinisRTs, medianMinisRTs, stdMinisRTs, cliff, minis2D, shapes, costFuncStruct, optimisationParameters);
-%criticalCosts = [2 5 13:15 17 20 28:30];
-criticalCosts = [2 5 13:15 17 20 30];
+criticalCosts = [2 5 13:15 17 20 28:30];
+%criticalCosts = [2 5 13:15 17 20 30];
 if any(ismember(find(allCosts), criticalCosts))
     criticalCosts = criticalCosts(ismember(criticalCosts, find(allCosts)));
 else

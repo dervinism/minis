@@ -42,14 +42,14 @@ Thr = 0.45;
 amps = shapes(:,2);
 [~, bcAmp] = bimodalitycoeff(amps);
 if bcAmp > Thr
-  constraints(4) = costFuncStruct.costBasis(iCostBasis) + (bcAmp-Thr)*costFuncStruct.costBasis(end-1);
+  constraints(4) = costFuncStruct.costBasis(iCostBasis) + 2*(bcAmp-Thr)*costFuncStruct.costBasis(end-1);
   fitness = fitness + constraints(4);
 end
 
 RTs = shapes(:,3);
 [~, bcRTs] = bimodalitycoeff(RTs);
 if bcRTs > Thr
-  constraints(5) = costFuncStruct.costBasis(iCostBasis) + (bcRTs-Thr)*costFuncStruct.costBasis(end-1);
+  constraints(5) = costFuncStruct.costBasis(iCostBasis) + 2*(bcRTs-Thr)*costFuncStruct.costBasis(end-1);
   fitness = fitness + constraints(5);
 end
 
