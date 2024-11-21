@@ -64,9 +64,28 @@ if strcmpi(filename(end-2:end),'abf')
     desired_chan = find(startsWith(hd.recChNames,'V'));
     currentChan = find(startsWith(hd.recChNames,'I'));
     if isempty(desired_chan)
-      desired_chan = currentChan;
+      warning('Cannot locate voltage recording channel. Expecting voltage channel name to start with letter V');
+      if isscalar(currentChan)
+        desired_chan = currentChan;
+      elseif numel(currentChan) == 2
+        desired_chan = currentChan(2);
+        currentChan = currentChan(1);
+      elseif isempty(currentChan)
+        desired_chan = 1;
+        currentChan = 2;
+      end
     end
     if isempty(currentChan)
+      warning('Cannot locate current recording channel. Expecting current channel name to start with letter I');
+      if isscalar(desired_chan)
+        currentChan = desired_chan;
+      elseif numel(desired_chan) == 2
+        currentChan = desired_chan(2);
+        desired_chan = desired_chan(1);
+      end
+    end
+
+    if isempty(currentChan) && isscalar(desired_chan)
       currentChan = desired_chan;
     end
 

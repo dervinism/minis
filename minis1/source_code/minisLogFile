@@ -378,3 +378,69 @@ Set 'VariableNamingRule' to 'preserve' to use the original column headers as tab
 <a href="matlab: opentoline('C:\Users\44079\code_repositories\minis-benchmarking\distroFittingStats.m',491,1)">491 </a>  close(fT);
 if system_dependent('IsDebugMode')==1, dbquit all; end
 Logging is off
+Logging is on, see C:\Users\44079\code_repositories\minis\minis1\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Program execution failed
+{Error using <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('reshape')" style="font-weight:bold">reshape</a>
+Number of elements must not change. Use [] as one of the size inputs to automatically calculate the appropriate size for that dimension.
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('loadABF', 'C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m', 86)" style="font-weight:bold">loadABF</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m',86,0)">line 86</a>)
+      abf_data = [reshape(data(:,desired_chan), [dataDims(1) 1]) ...
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('detectMinisStandalone', 'C:\Users\44079\code_repositories\minis\minis1\source_code\detectMinisStandalone.m', 173)" style="font-weight:bold">detectMinisStandalone</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\detectMinisStandalone.m',173,0)">line 173</a>)
+        dataProperties = loadABF(filename);
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis>startTool_ClickedCallback', 'C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m', 2061)" style="font-weight:bold">minis>startTool_ClickedCallback</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m',2061,0)">line 2061</a>)
+        [minisArray, ~, waveform, ~, F] = detectMinisStandalone(true, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('gui_mainfcn', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m', 95)" style="font-weight:bold">gui_mainfcn</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m',95,0)">line 95</a>)
+        feval(varargin{:});
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis', 'C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m', 42)" style="font-weight:bold">minis</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m',42,0)">line 42</a>)
+    gui_mainfcn(gui_State, varargin{:});
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis(''startTool_ClickedCallback'',hObject,eventdata,guidata(hObject))')" style="font-weight:bold">matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis('startTool_ClickedCallback',hObject,eventdata,guidata(hObject))</a>
+} 
+Error while evaluating PushTool ClickedCallback.
+
+Detection task initiated
+Program execution failed
+{Error using <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('reshape')" style="font-weight:bold">reshape</a>
+Number of elements must not change. Use [] as one of the size inputs to automatically calculate the appropriate size for that dimension.
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('loadABF', 'C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m', 86)" style="font-weight:bold">loadABF</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m',86,0)">line 86</a>)
+      abf_data = [reshape(data(:,desired_chan), [dataDims(1) 1]) ...
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('detectMinisStandalone', 'C:\Users\44079\code_repositories\minis\minis1\source_code\detectMinisStandalone.m', 173)" style="font-weight:bold">detectMinisStandalone</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\detectMinisStandalone.m',173,0)">line 173</a>)
+        dataProperties = loadABF(filename);
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis>startTool_ClickedCallback', 'C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m', 2061)" style="font-weight:bold">minis>startTool_ClickedCallback</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m',2061,0)">line 2061</a>)
+        [minisArray, ~, waveform, ~, F] = detectMinisStandalone(true, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('gui_mainfcn', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m', 95)" style="font-weight:bold">gui_mainfcn</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m',95,0)">line 95</a>)
+        feval(varargin{:});
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis', 'C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m', 42)" style="font-weight:bold">minis</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m',42,0)">line 42</a>)
+    gui_mainfcn(gui_State, varargin{:});
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis(''startTool_ClickedCallback'',hObject,eventdata,guidata(hObject))')" style="font-weight:bold">matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis('startTool_ClickedCallback',hObject,eventdata,guidata(hObject))</a>
+} 
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m',2328,1)">2328 </a>        rethrow(me);
+opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m',86,0)
+if system_dependent('IsDebugMode')==1, dbquit; end
+Detection task initiated
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m',86,1)">86  </a>      abf_data = [reshape(data(:,desired_chan), [dataDims(1) 1]) ...
+if system_dependent('IsDebugMode')==1, dbquit all; end
+Detection task initiated
+[Warning: Cannot locate voltage recording channel. Expecting voltage channel name to start with letter V] 
+[> In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('loadABF', 'C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m', 67)" style="font-weight:bold">loadABF</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m',67,0)">line 67</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('detectMinisStandalone', 'C:\Users\44079\code_repositories\minis\minis1\source_code\detectMinisStandalone.m', 173)" style="font-weight:bold">detectMinisStandalone</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\detectMinisStandalone.m',173,0)">line 173</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis>startTool_ClickedCallback', 'C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m', 2061)" style="font-weight:bold">minis>startTool_ClickedCallback</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m',2061,0)">line 2061</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('gui_mainfcn', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m', 95)" style="font-weight:bold">gui_mainfcn</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m',95,0)">line 95</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis', 'C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m', 42)" style="font-weight:bold">minis</a> (<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\minis.m',42,0)">line 42</a>)
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis(''startTool_ClickedCallback'',hObject,eventdata,guidata(hObject))')" style="font-weight:bold">matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis('startTool_ClickedCallback',hObject,eventdata,guidata(hObject))</a>] 
+<a href="matlab: opentoline('C:\Users\44079\code_repositories\minis\minis1\source_code\loadABF.m',105,1)">105 </a>      abf_data = [reshape(data(:,desired_chan), [dataDims(1) 1]) ...
+if system_dependent('IsDebugMode')==1, dbcont; end
+Task completed
+Logging is off
