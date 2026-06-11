@@ -51,7 +51,11 @@ if strcmpi(button, 'Yes')
     if filterIndex
         ld = figurePathname;
         figFullName = fullfile(figurePathname, figureFilename);
-        saveas(F(3), figFullName);
+        if length(F) >= 3 && ishghandle(F(3))
+            saveas(F(3), figFullName);
+        else
+            disp('Warning: detected event figure handle is no longer valid; skipping figure save.');
+        end
     end
 end
 
@@ -62,13 +66,21 @@ if strcmpi(button, 'Yes')
     if filterIndex
         ld = figurePathname;
         figFullName = fullfile(figurePathname, figureFilename);
-        saveas(F(1), figFullName);
+        if length(F) >= 1 && ishghandle(F(1))
+            saveas(F(1), figFullName);
+        else
+            disp('Warning: event histogram figure handle is no longer valid; skipping figure save.');
+        end
     end
     [figureFilename, figurePathname, filterIndex] = uiputfile(graphicsFormats,'Save Event 2D Histogram as', ld);
     if filterIndex
         ld = figurePathname;
         figFullName = fullfile(figurePathname, figureFilename);
-        saveas(F(2), figFullName);
+        if length(F) >= 2 && ishghandle(F(2))
+            saveas(F(2), figFullName);
+        else
+            disp('Warning: event 2D histogram figure handle is no longer valid; skipping figure save.');
+        end
     end
 end
 
@@ -80,7 +92,11 @@ if strcmpi(filtering.state,'on')
         if filterIndex
             ld = figurePathname;
             figFullName = fullfile(figurePathname, figureFilename);
-            saveas(F(4), figFullName);
+            if length(F) >= 4 && ishghandle(F(4))
+                saveas(F(4), figFullName);
+            else
+                disp('Warning: frequency spectrum figure handle is no longer valid; skipping figure save.');
+            end
         end
     end
 end

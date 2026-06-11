@@ -284,8 +284,8 @@ function loadTargetFileButton_Callback(hObject, ~, handles)
 % hObject    handle to loadTargetFileButton (see GCBO)
 % handles    structure with handles and user data (see GUIDATA)
 
-% Load a target minis+noise abf file:
-[targetFilename, targetPathname, button] = uigetfile({'*.abf', 'Axon ABF files (*.abf)'}, 'Select a Target File', handles.ld);
+% Load a target minis+noise abf file (or a .mat checkpoint file):
+[targetFilename, targetPathname, button] = uigetfile({'*.abf', 'Axon ABF files (*.abf)'; '*.mat', 'MAT checkpoint files (*.mat)'; '*.*', 'All files (*.*)'}, 'Select a Target File', handles.ld);
 if button
     targetFilename = fullfile(targetPathname, targetFilename);
     set(handles.loadTargetFileInput,'String',targetFilename);
@@ -2038,6 +2038,21 @@ try
             end
         end
 
+        % Validate checkpoint .mat if the user supplied one instead of an ABF:
+        if endsWith(lower(targetFilename), '.mat')
+            if ~isfile(targetFilename)
+                msgbox('Checkpoint file not found.','Error','Error');
+                return
+            end
+            tmp = whos('-file', targetFilename);
+            if ~any(strcmp({tmp.name}, 'checkpoint'))
+                msgbox(['The selected .mat file does not contain a valid minis ' ...
+                    'checkpoint. Please select a checkpoint file that was ' ...
+                    'created using the ''w'' key during manual detection.'],'Error','Error');
+                return
+            end
+        end
+
         % Pulses and glitches:
         [initialised, targetExcludedTimes] = initExclTimesTarget(handles);
         if ~initialised
@@ -2145,6 +2160,21 @@ try
             if ~preprocess && (strcmpi(targetFilename, '>>> <<<') || isempty(targetFilename))
                 errmsgNoFile = 'Error: no target file supplied';
                 msgbox(errmsgNoFile,'Error','Error');
+                return
+            end
+        end
+
+        % Validate checkpoint .mat if the user supplied one instead of an ABF:
+        if endsWith(lower(targetFilename), '.mat')
+            if ~isfile(targetFilename)
+                msgbox('Checkpoint file not found.','Error','Error');
+                return
+            end
+            tmp = whos('-file', targetFilename);
+            if ~any(strcmp({tmp.name}, 'checkpoint'))
+                msgbox(['The selected .mat file does not contain a valid minis ' ...
+                    'checkpoint. Please select a checkpoint file that was ' ...
+                    'created using the ''w'' key during manual detection.'],'Error','Error');
                 return
             end
         end

@@ -158,9 +158,47 @@ function [minis, filterV, waveform, dataProperties, F, spectrum] = detectMinisSt
 %
 
 
+% checkpointLoaded is initialised here (outside the if/else nargin block)
+% so that it is always in scope for the detection block below, regardless
+% of whether the function is called from the GUI (nargin>0) or standalone
+% (nargin=0) mode.
+checkpointLoaded = false;
 
 if nargin
     filename = varargin{1};
+
+    %% Checkpoint resume: if a .mat file with a 'checkpoint' variable is
+    %  supplied instead of an ABF file, load the cached detection results
+    %  and skip the detection step entirely.
+    if ischar(filename) && endsWith(lower(filename), '.mat') && isfile(filename)
+        try
+            chk = load(filename, 'checkpoint');
+            if isfield(chk, 'checkpoint')
+                chk = chk.checkpoint;
+                minis              = chk.minis;
+                filterV            = chk.filterV;
+                spectrum           = chk.spectrum;
+                waveform           = chk.waveform;
+                detectionParameters = chk.detectionParameters;
+                % Reconstruct a minimal dataProperties struct so that the
+                % code below (waveform estimation etc.) can still access
+                % dataProperties.dt and related fields.
+                dataProperties           = struct();
+                dataProperties.dt        = detectionParameters.sampleInterval;
+                dataProperties.sweep     = filterV;  % filtered trace serves as the sweep
+                dataProperties.current   = filterV;
+                dataProperties.hd.lActualEpisodes = 1;
+                dataProperties.lActualEpisodes    = 1;
+                checkpointLoaded = true;
+                disp(['Checkpoint loaded: ' filename ' — detection skipped.']);
+            end
+        catch loadErr
+            disp(['Warning: could not load checkpoint (' loadErr.message '). Running detection normally.']);
+        end
+    end
+
+    if ~checkpointLoaded
+    % ---- START of normal (non-checkpoint) initialisation ----
     if ischar(filename)
         filenameSplit = regexp(filename, '\\*', 'split');
         filenameShort = char(filenameSplit(end));
@@ -251,6 +289,58 @@ if nargin
         options.edit = true;
     end
     clear endGlitch endPulse exclTimesAction filename filenameShort filenameSplit startGlitch startPulse sweepDuration varargin
+    end % ~checkpointLoaded (normal initialisation)
+    % When loading from a checkpoint many of the variables set above are
+    % not available; provide safe defaults for the ones used later:
+    if checkpointLoaded
+        if nargin >= 5
+            parallelCores = varargin{5};
+        else
+            parallelCores = 1;
+        end
+        if nargin >= 4
+            classificationParameters = varargin{4};
+            amplitudeArray = classificationParameters.amplitudeArray;
+            ampLim2D = (amplitudeArray(2) - amplitudeArray(1))/2;
+            riseTimeArray = classificationParameters.riseTimeArray;
+            RTLim2D = (riseTimeArray(2) - riseTimeArray(1))/2;
+        end
+        if nargin >= 8
+            options.edit = varargin{7};
+        else
+            options.edit = true;
+        end
+        if nargin == 12
+            options.display = varargin{11};
+        else
+            options.display = true;
+        end
+        options.summaryPlot = options.display;
+        excludedTimes = [];
+        if nargin >= 3
+            excludedTimesArg = varargin{3};
+            if isstruct(excludedTimesArg)
+                % calcExcludedTimes expects a struct; build a safe empty one
+                excludedTimes = struct('startPulse',[],'endPulse',[],'startGlitch',[],'endGlitch',[]);
+                sweepDuration = length(filterV) * detectionParameters.sampleInterval / 1000;
+                numSweeps = 1;
+                excludedTimes = calcExcludedTimes(sweepDuration, numSweeps, [], [], [], [], detectionParameters.sampleInterval);
+            end
+        end
+        if nargin >= 9
+            waveformIn = varargin{8};
+            % Preserve waveform fields loaded from checkpoint but allow
+            % caller to override nSweeps / riseTimeArrayExt.
+            if isfield(waveformIn,'tau_m'), waveform.tau_m = waveformIn.tau_m; end
+            if isfield(waveformIn,'riseTimeArrayExt'), waveform.riseTimeArrayExt = waveformIn.riseTimeArrayExt; end
+            waveform.nSweeps = 1;
+        end
+        if nargin >= 11
+            options.SD = varargin{10};
+        end
+        options.filename = '';
+        filenameShort = '';
+    end
 else
     %% Load an abf data file:
     dataProperties = loadABF;
@@ -319,15 +409,27 @@ else
 end
 
 
-%% Detect events:
-if isfield(detectionParameters,'voltageClamp') && detectionParameters.voltageClamp
-    [minis, filterV, spectrum, waveform, F] = detectMinis(dataProperties.current, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
-    %[minis, filterV, spectrum, waveform, F, smoothV] = detectMinis(dataProperties.current, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
-    %writeABF(single([dataProperties.sweep; smoothV]), ['D:\PhD\previous\Guy_Major\Data\Voltage_clamp' filesep 'p131a_0015_sw7,8,0016_sw5,10,0017sw1_smoothed.abf'], 1000/dataProperties.dt, {'mV';'pA'});
+%% Detect events (or resume from checkpoint):
+F = zeros(1, 0);  % initialise before detection so the histogram append below is safe
+if ~checkpointLoaded
+    if isfield(detectionParameters,'voltageClamp') && detectionParameters.voltageClamp
+        [minis, filterV, spectrum, waveform, F] = detectMinis(dataProperties.current, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
+        %[minis, filterV, spectrum, waveform, F, smoothV] = detectMinis(dataProperties.current, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
+        %writeABF(single([dataProperties.sweep; smoothV]), ['D:\PhD\previous\Guy_Major\Data\Voltage_clamp' filesep 'p131a_0015_sw7,8,0016_sw5,10,0017sw1_smoothed.abf'], 1000/dataProperties.dt, {'mV';'pA'});
+    else
+        [minis, filterV, spectrum, waveform, F] = detectMinis(dataProperties.sweep, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
+        %[minis, filterV, spectrum, waveform, F, smoothV] = detectMinis(dataProperties.sweep, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
+        %writeABF(single([smoothV; dataProperties.current]), [dataProperties.filename '_smoothed.abf'], 1000/dataProperties.dt, {'mV';'pA'});
+    end
 else
-    [minis, filterV, spectrum, waveform, F] = detectMinis(dataProperties.sweep, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
-    %[minis, filterV, spectrum, waveform, F, smoothV] = detectMinis(dataProperties.sweep, excludedTimes, detectionParameters, filtering, waveform, parallelCores, options);
-    %writeABF(single([smoothV; dataProperties.current]), [dataProperties.filename '_smoothed.abf'], 1000/dataProperties.dt, {'mV';'pA'});
+    % Checkpoint resume: pass filterV as the trace with filtering disabled so
+    % the band-stop filter is not rerun. options.preloadedMinis instructs
+    % detectMinis to skip the detection loop and use the checkpoint minis
+    % directly, while still showing the summary figure and entering the
+    % manualAdjust editing session.
+    checkpointFiltering.state = 'off';
+    options.preloadedMinis = minis;
+    [minis, filterV, spectrum, waveform, F] = detectMinis(filterV, excludedTimes, detectionParameters, checkpointFiltering, waveform, parallelCores, options);
 end
 
 

@@ -265,6 +265,9 @@ if nargin == 7
     if isfield(options,'edit') && options.edit
         edit = true;
     end
+    if isfield(options,'preloadedMinis') && ~isempty(options.preloadedMinis)
+        preloadedMinis = options.preloadedMinis;
+    end
     if (isfield(options,'smooth') && ~options.smooth) ||...
             (isfield(searchParameters,'smoothWindow') && ~searchParameters.smoothWindow)
         smooth = false;
@@ -345,131 +348,166 @@ filterV = V;
 
 
 %% Detection Algorithm:
-% Detect initial peaks:
-if smooth
-    initvsmooth = gsmooth(V, smoothWindows(1), 3);
-else
-    initvsmooth = V;
-end
-[~, origPeakIndexArray] = findpeaks(double(initvsmooth));
-clear smooth filter
-
-% Calculate excluded times:
-excludedT(excludedT < 0 & excludedT > initt(end)) = [];
-excludedIndices = round(excludedT/dt) + 1;
-exclIndLogical = zeros(1, length(initt));
-exclIndLogical(excludedIndices) = 1;
-circ = searchParameters.SWstart + round(searchParameters.BLduration/dt);
-response = ones(1, 1 + 2*circ);
-excludedIndices = logical(conv(exclIndLogical, response, 'same'));
-excludedIndices(1 : (searchParameters.SWstart + searchParameters.refractoryPeriod)/dt - 1) = true;
-excludedT = initt(excludedIndices);
-
-% Remove peaks falling within excluded times:
-peaksToKeep = zeros(1, length(initt));
-peaksToKeep(origPeakIndexArray) = 1;
-peaksToKeep(logical(peaksToKeep) & excludedIndices) = 0;
-initPeakIndexArray = find(logical(peaksToKeep));
-
-% Plot membrane potential data:
-if interactMode
-    inspectSmoothing = true;                                                % Set to true if you want to inspect the smoothing of data
-    if inspectSmoothing
-        vplotf2 = [V; initvsmooth];
-        nameStringf2 = 'Examine smoothing: Raw vs. smoothed data';
-        titleStringf2 = sprintf('Data from %s', filename);
-        optionsf2 = struct('nameString', nameStringf2, 'titleString', titleStringf2, 'dataType', dataType, 'dataUnits', dataUnits);
-        f2 = plotData(initt, vplotf2, optionsf2);
-        
-        vsmoothLight = gsmooth(V, smoothWindows(2), 3);
-        vplotf3 = [vsmoothLight; initvsmooth];
-        nameStringf3 = 'Examine smoothing: Lightly vs. normally smoothed data';
-        titleStringf3 = sprintf('Smoothed data from %s', filename);
-        optionsf3 = struct('nameString', nameStringf3, 'titleString', titleStringf3, 'dataType', dataType, 'dataUnits', dataUnits);
-        f3 = plotData(initt, vplotf3, optionsf3);
-        pause
-        if ishandle(f2)
-            close(f2)
-        end
-        if ishandle(f3)
-            close(f3)
-        end
+if exist('preloadedMinis', 'var')
+    % Checkpoint resume: skip detection and use the supplied minis matrix.
+    minis = preloadedMinis;
+    clear preloadedMinis
+    % Compute initvsmooth from the (already filtered) V so the summary
+    % figure and manualAdjust have a valid smoothed trace to display:
+    if searchParameters.smoothWindow > 0
+        initvsmooth = gsmooth(V, smoothWindows(1), 3);
+    else
+        initvsmooth = V;
     end
-    
-    % Initialise the figure for visualising minis detection:
-    nameStringf4 = 'Examine events: Smoothed data only';
-    titleStringf4 = sprintf('Smoothed data from %s', filename);
-    optionsf4 = struct('nameString', nameStringf4, 'titleString', titleStringf4, 'dataType', dataType, 'dataUnits', dataUnits);
-    f4 = plotData(initt, initvsmooth, optionsf4);
-    figure(f4);
-    axes3 = get(gcf,'CurrentAxes');
-    hold on
-    % Plot excluded times:
-    vexcluded = initvsmooth(excludedIndices);
-    plot(excludedT, vexcluded, 'y.', 'markersize', 5);
-    pause(pauseTime*2);
-end
-clear V smoothWindows;
+    % Set empty excluded times vector if not provided:
+    if ~exist('excludedT', 'var') || isempty(excludedT)
+        excludedT = zeros(1, 0);
+    end
+    % Compute exclIndLogical (simple sample-point mask) and the expanded
+    % excludedT needed by the SD estimation block that runs after this block.
+    % This mirrors lines 377-386 of the normal detection path.
+    if isempty(excludedT)
+        exclIndLogical = false(1, length(initt));
+    else
+        rawExclInd = round(excludedT/dt) + 1;
+        rawExclInd(rawExclInd < 1 | rawExclInd > length(initt)) = [];
+        exclIndLogical = false(1, length(initt));
+        exclIndLogical(rawExclInd) = true;
+        % Expand the exclusion region with the same convolution used in
+        % normal detection (needed for SD(2) / SD(4) window-based calc):
+        circ = searchParameters.SWstart + round(searchParameters.BLduration/dt);
+        response = ones(1, 1 + 2*circ);
+        excludedIndices = logical(conv(double(exclIndLogical), response, 'same'));
+        excludedIndices(1 : min(end, round((searchParameters.SWstart + searchParameters.refractoryPeriod)/dt) - 1)) = true;
+        excludedT = initt(excludedIndices);
+    end
+else
+    % Detect initial peaks:
+    if smooth
+        initvsmooth = gsmooth(V, smoothWindows(1), 3);
+    else
+        initvsmooth = V;
+    end
+    [~, origPeakIndexArray] = findpeaks(double(initvsmooth));
+    clear smooth filter
 
-% PLOT1 - Examine the initial peaks and then dim them:
-if interactMode
-    peakTimes = initPeakIndexArray*dt - dt;
-    initialPeaks = initvsmooth(initPeakIndexArray);
-    figure(f4);
-    hold on;
-    p1 = plot(peakTimes, initialPeaks, '^', 'markersize', 10, 'markerfacecolor', 'r', 'markeredgecolor', 'r');
-    pause
-    delete(p1);
-    plot(peakTimes, initialPeaks, '^', 'color', 'r');
-    hold off;
-end
+    % Calculate excluded times:
+    excludedT(excludedT < 0 & excludedT > initt(end)) = [];
+    excludedIndices = round(excludedT/dt) + 1;
+    exclIndLogical = zeros(1, length(initt));
+    exclIndLogical(excludedIndices) = 1;
+    circ = searchParameters.SWstart + round(searchParameters.BLduration/dt);
+    response = ones(1, 1 + 2*circ);
+    excludedIndices = logical(conv(exclIndLogical, response, 'same'));
+    excludedIndices(1 : (searchParameters.SWstart + searchParameters.refractoryPeriod)/dt - 1) = true;
+    excludedT = initt(excludedIndices);
 
-% Detect minis-like events:
-switch parallelCores
-    case 1                                                                  % Serial detection
-        if interactMode
-            finalMinis = detectionAlgorithmSerial(initt, initvsmooth, searchParameters, initPeakIndexArray, origPeakIndexArray, interactMode, pauseTime,...
-                f4, axes3);
-        else
-            finalMinis = detectionAlgorithmSerial(initt, initvsmooth, searchParameters, initPeakIndexArray, origPeakIndexArray);
-        end
-    otherwise                                                               % Parallel detection
-        % Divide the recording sweep for parallel processing:
-        add = 20;
-        addOrig = ceil((length(origPeakIndexArray) - length(initPeakIndexArray))/parallelCores);
-        initLength = ceil(length(initPeakIndexArray)/parallelCores);
-        origLength = ceil(length(origPeakIndexArray)/parallelCores);
-        peakIndexArray = zeros(parallelCores, initLength+add);
-        originalPeakIndexArray = zeros(parallelCores, origLength+add+2*addOrig);
-        peakIndexArray(1,:) = initPeakIndexArray(1:initLength+add);
-        originalPeakIndexArray(1,:) = origPeakIndexArray(1:origLength+add+2*addOrig);
-        peakIndexArray(end,:) = initPeakIndexArray(end-initLength-add+1:end);
-        originalPeakIndexArray(end,:) = origPeakIndexArray(end-origLength-add-2*addOrig+1:end);
-        for iCores = 2:parallelCores-1
-            peakIndexArray(iCores,:) = initPeakIndexArray((iCores-1)*initLength-add/2+1:iCores*initLength+add/2);
-            originalPeakIndexArray(iCores,:) = origPeakIndexArray((iCores-1)*origLength-add/2-addOrig+1:iCores*origLength+add/2+addOrig);
-        end
-        % Carry out the detection:
-        finalMinis = zeros(initLength+add,22,parallelCores);
-        parfor iCore = 1:parallelCores
-            coreMinis = detectionAlgorithmParallel(initt, initvsmooth, searchParameters, peakIndexArray(iCore,:), originalPeakIndexArray(iCore,:));
-            finalMinis(:,:,iCore) = coreMinis;
-        end
-end
+    % Remove peaks falling within excluded times:
+    peaksToKeep = zeros(1, length(initt));
+    peaksToKeep(origPeakIndexArray) = 1;
+    peaksToKeep(logical(peaksToKeep) & excludedIndices) = 0;
+    initPeakIndexArray = find(logical(peaksToKeep));
 
-% Concatenate the detection output:
-vdim = size(finalMinis,1);
-hdim = size(finalMinis,2);
-tempMinis = zeros(parallelCores*vdim,hdim);
-for iCore = 1:parallelCores
-    tempMinis((iCore-1)*vdim+1:iCore*vdim,:) = finalMinis(:,:,iCore);
-end
-uniqueMinis = unique(tempMinis,'rows','first');
-minis = sortrows(uniqueMinis,2);
-minis(1,:) = [];
-minis = minis(~minis(:,3)==0,:);
-assert(~sum(minis(:,3)==0));
-clear parallelCores interactMode peakIndexArray pauseTime f4 axes3 finalMinis iCore coreMinis vdim hdim tempMinis uniqueMinis
+    % Plot membrane potential data:
+    if interactMode
+        inspectSmoothing = true;                                                % Set to true if you want to inspect the smoothing of data
+        if inspectSmoothing
+            vplotf2 = [V; initvsmooth];
+            nameStringf2 = 'Examine smoothing: Raw vs. smoothed data';
+            titleStringf2 = sprintf('Data from %s', filename);
+            optionsf2 = struct('nameString', nameStringf2, 'titleString', titleStringf2, 'dataType', dataType, 'dataUnits', dataUnits);
+            f2 = plotData(initt, vplotf2, optionsf2);
+            
+            vsmoothLight = gsmooth(V, smoothWindows(2), 3);
+            vplotf3 = [vsmoothLight; initvsmooth];
+            nameStringf3 = 'Examine smoothing: Lightly vs. normally smoothed data';
+            titleStringf3 = sprintf('Smoothed data from %s', filename);
+            optionsf3 = struct('nameString', nameStringf3, 'titleString', titleStringf3, 'dataType', dataType, 'dataUnits', dataUnits);
+            f3 = plotData(initt, vplotf3, optionsf3);
+            pause
+            if ishandle(f2)
+                close(f2)
+            end
+            if ishandle(f3)
+                close(f3)
+            end
+        end
+        
+        % Initialise the figure for visualising minis detection:
+        nameStringf4 = 'Examine events: Smoothed data only';
+        titleStringf4 = sprintf('Smoothed data from %s', filename);
+        optionsf4 = struct('nameString', nameStringf4, 'titleString', titleStringf4, 'dataType', dataType, 'dataUnits', dataUnits);
+        f4 = plotData(initt, initvsmooth, optionsf4);
+        figure(f4);
+        axes3 = get(gcf,'CurrentAxes');
+        hold on
+        % Plot excluded times:
+        vexcluded = initvsmooth(excludedIndices);
+        plot(excludedT, vexcluded, 'y.', 'markersize', 5);
+        pause(pauseTime*2);
+    end
+    clear V smoothWindows;
+
+    % PLOT1 - Examine the initial peaks and then dim them:
+    if interactMode
+        peakTimes = initPeakIndexArray*dt - dt;
+        initialPeaks = initvsmooth(initPeakIndexArray);
+        figure(f4);
+        hold on;
+        p1 = plot(peakTimes, initialPeaks, '^', 'markersize', 10, 'markerfacecolor', 'r', 'markeredgecolor', 'r');
+        pause
+        delete(p1);
+        plot(peakTimes, initialPeaks, '^', 'color', 'r');
+        hold off;
+    end
+
+    % Detect minis-like events:
+    switch parallelCores
+        case 1                                                                  % Serial detection
+            if interactMode
+                finalMinis = detectionAlgorithmSerial(initt, initvsmooth, searchParameters, initPeakIndexArray, origPeakIndexArray, interactMode, pauseTime,...
+                    f4, axes3);
+            else
+                finalMinis = detectionAlgorithmSerial(initt, initvsmooth, searchParameters, initPeakIndexArray, origPeakIndexArray);
+            end
+        otherwise                                                               % Parallel detection
+            % Divide the recording sweep for parallel processing:
+            add = 20;
+            addOrig = ceil((length(origPeakIndexArray) - length(initPeakIndexArray))/parallelCores);
+            initLength = ceil(length(initPeakIndexArray)/parallelCores);
+            origLength = ceil(length(origPeakIndexArray)/parallelCores);
+            peakIndexArray = zeros(parallelCores, initLength+add);
+            originalPeakIndexArray = zeros(parallelCores, origLength+add+2*addOrig);
+            peakIndexArray(1,:) = initPeakIndexArray(1:initLength+add);
+            originalPeakIndexArray(1,:) = origPeakIndexArray(1:origLength+add+2*addOrig);
+            peakIndexArray(end,:) = initPeakIndexArray(end-initLength-add+1:end);
+            originalPeakIndexArray(end,:) = origPeakIndexArray(end-origLength-add-2*addOrig+1:end);
+            for iCores = 2:parallelCores-1
+                peakIndexArray(iCores,:) = initPeakIndexArray((iCores-1)*initLength-add/2+1:iCores*initLength+add/2);
+                originalPeakIndexArray(iCores,:) = origPeakIndexArray((iCores-1)*origLength-add/2-addOrig+1:iCores*origLength+add/2+addOrig);
+            end
+            % Carry out the detection:
+            finalMinis = zeros(initLength+add,22,parallelCores);
+            parfor iCore = 1:parallelCores
+                coreMinis = detectionAlgorithmParallel(initt, initvsmooth, searchParameters, peakIndexArray(iCore,:), originalPeakIndexArray(iCore,:));
+                finalMinis(:,:,iCore) = coreMinis;
+            end
+    end
+
+    % Concatenate the detection output:
+    vdim = size(finalMinis,1);
+    hdim = size(finalMinis,2);
+    tempMinis = zeros(parallelCores*vdim,hdim);
+    for iCore = 1:parallelCores
+        tempMinis((iCore-1)*vdim+1:iCore*vdim,:) = finalMinis(:,:,iCore);
+    end
+    uniqueMinis = unique(tempMinis,'rows','first');
+    minis = sortrows(uniqueMinis,2);
+    minis(1,:) = [];
+    minis = minis(~minis(:,3)==0,:);
+    assert(~sum(minis(:,3)==0));
+    clear parallelCores interactMode peakIndexArray pauseTime f4 axes3 finalMinis iCore coreMinis vdim hdim tempMinis uniqueMinis
+end  % end detection block
 
 % PLOT6 - Mark detected minis for examination:
 if summaryPlot || (exist('edit','var') && edit)
@@ -499,7 +537,8 @@ if summaryPlot || (exist('edit','var') && edit)
             bringHelp;
             axes5 = get(gcf,'CurrentAxes');
             [minis, f5] = manualAdjust(minis, initt, initvsmooth, f5, [p10, p11, p12, p13, p14, p15], axes5,...
-                searchParameters.BLduration, searchParameters.RTinterval);
+                searchParameters.BLduration, searchParameters.RTinterval, filename, waveform, excludedT,...
+                filterV, spectrum, searchParameters, filename);
         end
     end
     if exist('f1','var')
@@ -1318,11 +1357,12 @@ end
 
 
 
-function [minis, f, p] = manualAdjust(minis, t, V, f, p, figureAxes, tBLduration, RTtype)
+function [minis, f, p] = manualAdjust(minis, t, V, f, p, figureAxes, tBLduration, RTtype, varargin)
 % MANUALADJUST is a helper subfunction of DETECTMINIS. It allows the user
 % to manually edit the events detected by the detectMinis program.
 %
-%   [MINIS, F, P] = MANUALADJUST(minis, t, V, f, p, figureAxes, tBLduration)
+%   [MINIS, F, P] = MANUALADJUST(minis, t, V, f, p, figureAxes,
+%       tBLduration, RTtype)
 %   controls the manual event edition. MINIS is a matrix output of the
 %   minis detection algorithm as used by the detectMinis program. T is a
 %   time vector (ms). V is electrophysiological recording vector (mV or
@@ -1334,6 +1374,19 @@ function [minis, f, p] = manualAdjust(minis, t, V, f, p, figureAxes, tBLduration
 %   The output variables MINIS correspond to the input variable but after
 %   the manual event edition. F is the summary figure handle with P being
 %   the set of handles of the graphical objects in the figure.
+%
+%   [MINIS, F, P] = MANUALADJUST(..., filename, waveform, excludedT)
+%   In addition enables intermediate saving via the 'w' key. FILENAME is
+%   the name of the data file used to suggest default paths in the
+%   intermediate save dialogs. WAVEFORM is a structure variable with
+%   fields:
+%       'estimate' - controls whether average waveform estimation is
+%           performed (see DETECTMINIS for details).
+%       'tau_m' - the dendritic passive membrane time constant (ms).
+%       'riseTimeArrayExt' - a vector with the rise time range for
+%           classification extended by one element.
+%   EXCLUDEDT is a vector containing excluded times (ms), required for
+%   the on-the-fly average waveform estimation during intermediate saves.
 %
 %   The events are edited using left and right mouse buttons and certain
 %   keyboard buttons:
@@ -1357,6 +1410,13 @@ function [minis, f, p] = manualAdjust(minis, t, V, f, p, figureAxes, tBLduration
 %   'i' - Zoom in.
 %   'o' - Zoom out.
 %   'h' - Bring back the help window.
+%   'w' - Intermediate save. On the first press, prompts the user to
+%       choose file paths for the event text file, the summary figure
+%       showing detected events, and (if applicable) the average waveform
+%       figure. On subsequent presses, silently overwrites those same
+%       files. If any dialog is cancelled on the first press, the save is
+%       aborted and no paths are stored, so the next press will prompt
+%       again.
 %
 
 
@@ -1372,6 +1432,51 @@ p2 = zeros(1,2);
 dt = t(2)-t(1);
 nBLduration = round(tBLduration/dt);
 
+% Parse optional arguments for intermediate saving:
+if nargin >= 9
+    filenameArg = varargin{1};
+    [saveDir, baseName, ~] = fileparts(filenameArg);
+    if nargin >= 10
+        waveform = varargin{2};
+    else
+        waveform = [];
+    end
+    if nargin >= 11
+        excludedT = varargin{3};
+    else
+        excludedT = [];
+    end
+else
+    saveDir = '';
+    baseName = '';
+    waveform = [];
+    excludedT = [];
+end
+
+% Cached intermediate save paths (populated on the first 'w' press):
+intermediateTxtFile = '';
+intermediateFigFile = '';
+intermediateWavFile = '';
+intermediateMatFile = '';   % NEW: checkpoint .mat file path
+% Handles of hidden intermediate waveform figures from the previous save
+% (closed at the start of the next save to avoid a GUI-flush side-effect):
+prevWaveformF = [];
+
+% Parse extra checkpoint arguments (varargin{4..7}):
+% varargin{4} = filterV, {5} = spectrum, {6} = detectionParameters,
+% {7} = full source filename (used only to seed the save dialog).
+if nargin >= 12
+    filterVChk            = varargin{4};
+    spectrumChk           = varargin{5};
+    detectionParamsChk    = varargin{6};
+    [cpSuggestDir, cpSuggestBase, ~] = fileparts(varargin{7});
+else
+    filterVChk = []; spectrumChk = []; detectionParamsChk = [];
+    cpSuggestDir = saveDir;
+    cpSuggestBase = baseName;
+end
+isFirstCheckpoint = true;  % becomes false after first successful checkpoint save
+
 % Edit minis:
 edit = 1;
 while edit
@@ -1380,11 +1485,23 @@ while edit
     catch %#ok<CTCH>
     end
     if ~exist('button', 'var') || ~ishghandle(figureAxes, 'axes')
+        % On-exit checkpoint save (figure closed unexpectedly):
+        if ~isempty(intermediateMatFile)
+            manualAdjustSave(minis, V, f, waveform, RTtype,...
+                intermediateTxtFile, intermediateFigFile, intermediateWavFile, excludedT, dt,...
+                intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint);
+        end
         return
     end
     if isempty(button) || button == 27
         XLim = [t(1) t(end)];
         set(figureAxes, 'XLim', XLim);
+        % On-exit checkpoint save (Esc / Enter):
+        if ~isempty(intermediateMatFile)
+            manualAdjustSave(minis, V, f, waveform, RTtype,...
+                intermediateTxtFile, intermediateFigFile, intermediateWavFile, excludedT, dt,...
+                intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint);
+        end
         return
     end
     XLim = get(figureAxes, 'XLim');
@@ -1582,6 +1699,79 @@ while edit
             
         case 'h' % Help
             bringHelp;
+
+        case 'w' % Intermediate save
+            % On the first press, prompt the user to choose file paths:
+            if isempty(intermediateTxtFile)
+                suggestedTxt = fullfile(saveDir, [baseName '_intermediate.txt']);
+                [tName, tPath, tIdx] = uiputfile({'*.txt','Text files (*.txt)'},...
+                    'Save Intermediate Event Log as', suggestedTxt);
+                if tIdx
+                    suggestedFig = fullfile(saveDir, [baseName '_intermediate.fig']);
+                    [fName, fPath, fIdx] = uiputfile({'*.fig','MATLAB figure (*.fig)'},...
+                        'Save Intermediate Summary Figure as', suggestedFig);
+                    if fIdx
+                        intermediateTxtFile = fullfile(tPath, tName);
+                        intermediateFigFile = fullfile(fPath, fName);
+                        % Prompt for the waveform path only if estimation
+                        % was requested:
+                        if ~isempty(waveform) && isfield(waveform, 'estimate') && waveform.estimate > 0
+                            suggestedWav = fullfile(saveDir, [baseName '_intermediate_waveform.fig']);
+                            [wName, wPath, wIdx] = uiputfile({'*.fig','MATLAB figure (*.fig)'},...
+                                'Save Intermediate Average Waveform Figure as', suggestedWav);
+                            if wIdx
+                                intermediateWavFile = fullfile(wPath, wName);
+                            else
+                                % User cancelled waveform dialog: reset all
+                                % cached paths and abort:
+                                intermediateTxtFile = '';
+                                intermediateFigFile = '';
+                            end
+                        end
+                        % Prompt for the checkpoint .mat path:
+                        if ~isempty(intermediateTxtFile)
+                            suggestedMat = fullfile(cpSuggestDir, [cpSuggestBase '_checkpoint.mat']);
+                            [mName, mPath, mIdx] = uiputfile({'*.mat','MAT files (*.mat)'},...
+                                'Save Checkpoint as', suggestedMat);
+                            if mIdx
+                                intermediateMatFile = fullfile(mPath, mName);
+                            else
+                                % User cancelled checkpoint dialog: reset all
+                                % cached paths and abort:
+                                intermediateTxtFile = '';
+                                intermediateFigFile = '';
+                                intermediateWavFile = '';
+                            end
+                        end
+                    end
+                end
+            end
+            % Save using the cached paths if they have been set:
+            if ~isempty(intermediateTxtFile)
+                % Close any hidden waveform figures left from the previous
+                % intermediate save before creating new ones:
+                if ~isempty(prevWaveformF)
+                    validF = prevWaveformF(ishghandle(prevWaveformF));
+                    if ~isempty(validF)
+                        close(validF);
+                    end
+                    prevWaveformF = [];
+                end
+                prevWaveformF = manualAdjustSave(minis, V, f, waveform, RTtype,...
+                    intermediateTxtFile, intermediateFigFile, intermediateWavFile, excludedT, dt,...
+                    intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint);
+                isFirstCheckpoint = false;
+                % Restore the summary figure as the active figure so that
+                % subsequent ginput calls continue to receive input from it.
+                % Only call figure(f) if f is still valid; if the user
+                % accidentally closed the summary figure during the save
+                % dialogs, warn them rather than creating a blank figure:
+                if ishghandle(f)
+                    figure(f);
+                else
+                    disp('Warning: the summary figure was closed during the intermediate save.');
+                end
+            end
     end
 end
 end
@@ -1621,10 +1811,181 @@ helpText20 = 'i or downward arrow key  -  Zoom in.';
 helpText21 = 'o or upward arrow key -  Zoom out.';
 helpText22 = 'f  -  Freeze/unfreeze y-axis limits.';
 helpText23 = 'h  -  Bring back the help window.';
+helpText24 = 'w  -  Intermediate save (first press: choose file paths; subsequent presses: overwrite).';
 helpText = char(helpText1,helpText2,helpText3,helpText4,helpText5,helpText6,helpText7,helpText8,helpText9,helpText10,helpText11,...
-    helpText12,helpText13,helpText14,helpText15,helpText16,helpText17,helpText18,helpText19,helpText20,helpText21,helpText22,helpText23);
+    helpText12,helpText13,helpText14,helpText15,helpText16,helpText17,helpText18,helpText19,helpText20,helpText21,helpText22,helpText23,helpText24);
 uiwait(helpdlg(helpText,'Help for Manual Event Editing'));
 end
+
+
+
+function waveformF = manualAdjustSave(minis, V, f, waveform, RTtype, txtFile, figFile, wavFile, excludedT, dt,...
+    checkpointFile, filterV, spectrum, detectionParameters, filename, isFirstSave)
+% MANUALADJUSTSAVE is a helper subfunction of DETECTMINIS. It saves
+% intermediate results during the manual editing of detected minis-like
+% events in response to a 'w' keypress. It saves the event text file, the
+% summary figure showing detected events, and the average waveform figure
+% (if the waveform estimation was requested) to user-specified paths,
+% overwriting any previously saved intermediate files.
+%
+%   WAVEFORMF = MANUALADJUSTSAVE(minis, V, f, waveform, RTtype, txtFile,
+%       figFile, wavFile, excludedT, dt)
+%   saves the intermediate results and returns WAVEFORMF, an array of
+%   figure handles for any intermediate waveform figures that were created
+%   and hidden (Visible = off) during the save. The caller is responsible
+%   for closing these figures when they are no longer needed. MINIS is the
+%   detected events matrix (the same format as returned by DETECTMINIS). V
+%   is the smoothed electrophysiological recording vector (mV or nA) used
+%   for waveform estimation. F is the handle to the summary figure showing
+%   the detected events. WAVEFORM is a structure variable with fields
+%   'estimate' (controls whether average waveform estimation is performed),
+%   'tau_m' (dendritic membrane time constant, ms), and 'riseTimeArrayExt'
+%   (rise time classification range extended by one element). RTTYPE is the
+%   rise-time interval string ('10-90%' or '20-80%'). TXTFILE is the full
+%   path to the output event text file. FIGFILE is the full path to the
+%   output summary figure file. WAVFILE is the full path to the output
+%   average waveform figure file (may be empty if waveform estimation was
+%   not requested). EXCLUDEDT is a vector containing excluded times (ms),
+%   required for the average waveform estimation. DT is the data sampling
+%   interval in milliseconds (ms).
+%
+%   At the time this function is called the MINIS matrix contains only the
+%   22 basic detection columns (SD columns and waveform statistics are
+%   appended later in the pipeline). When waveform estimation is enabled,
+%   MANUALADJUSTSAVE calls AVERAGEWAVEEFFECT internally to compute the
+%   average waveform statistics and appends them directly to produce a
+%   25-column output (22 basic + mean top 10% + median top 10% + tau).
+%
+
+% Initialise the waveform figure output:
+waveformF = [];
+
+% Compute waveform stats (draw=false to avoid creating figures that
+% would interfere with the ginput loop in manualAdjust):
+minisToSave = minis;
+doWaveform = ~isempty(waveform) && isfield(waveform, 'estimate') ...
+    && waveform.estimate > 0 && ~isempty(excludedT) && ~isempty(V);
+if doWaveform
+    try
+        [~, averageAmp, medianAmp, ~, waveformParams] = averageWaveEffect(...
+            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, false);
+        if ~isempty(waveformParams) && isfield(waveformParams, 'tau_m') && ~isempty(waveformParams.tau_m)
+            minisToSave = [minis repmat([averageAmp medianAmp waveformParams.tau_m], size(minis,1), 1)];
+        end
+    catch waveErr
+        disp(['Intermediate waveform computation skipped: ' waveErr.message]);
+    end
+end
+
+% Save the average waveform figure (if applicable). The figures are hidden
+% (Visible = off) rather than closed so that no GUI event flush occurs
+% that could inadvertently affect other figure handles. The caller closes
+% them on the next 'w' press:
+if ~isempty(wavFile) && doWaveform
+    try
+        [~, ~, ~, ~, ~, waveformF] = averageWaveEffect(...
+            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, true);
+        if ~isempty(waveformF)
+            saveas(waveformF(1), wavFile);
+            set(waveformF, 'Visible', 'off');
+            disp(['Intermediate average waveform figure saved: ' wavFile]);
+        end
+    catch waveErr
+        disp(['Intermediate waveform figure save skipped: ' waveErr.message]);
+    end
+end
+
+% Save the event text file:
+fid = fopen(txtFile, 'wt+');
+if fid ~= -1
+    nCols = size(minisToSave, 2);
+    if strcmpi(RTtype, '10-90%')
+        if nCols == 25
+            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
+                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+                'BL end index', 'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
+                '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential', 'decay time',...
+                'mean top 10%', 'median top 10%', 'tau');
+            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+        else
+            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
+                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+                'BL end index', 'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
+                '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential', 'decay time');
+            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+        end
+    elseif strcmpi(RTtype, '20-80%')
+        if nCols == 25
+            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
+                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+                'BL end index', 'Rise time (RT) length', 'RT', '20-80% RT', '20% RT time mark', '50% RT time mark', '80% RT time mark',...
+                '20% RT index', '50% RT index', '80% RT index', '20% RT potential', '50% RT potential', '80% RT potential', 'decay time',...
+                'mean top 10%', 'median top 10%', 'tau');
+            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+        else
+            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
+                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+                'BL end index', 'Rise time (RT) length', 'RT', '20-80% RT', '20% RT time mark', '50% RT time mark', '80% RT time mark',...
+                '20% RT index', '50% RT index', '80% RT index', '20% RT potential', '50% RT potential', '80% RT potential', 'decay time');
+            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+        end
+    end
+    fclose(fid);
+    disp(['Intermediate event text file saved: ' txtFile]);
+end
+
+% Save the summary figure:
+if ishghandle(f)
+    saveas(f, figFile);
+    disp(['Intermediate summary figure saved: ' figFile]);
+end
+
+%% Write / update checkpoint file:
+% checkpointFile, filterV, spectrum, detectionParameters, filename, isFirstSave
+% are optional arguments (nargin >= 11). When isFirstSave is true the full
+% checkpoint is written; on subsequent calls only minis and waveform are
+% updated so that the large filterV / spectrum arrays are not rewritten.
+if nargin >= 11 && ~isempty(checkpointFile)
+    if isFirstSave
+        % Full save on the first 'w' press:
+        checkpoint.minis               = minis;
+        checkpoint.filterV             = filterV;
+        checkpoint.spectrum            = spectrum;
+        checkpoint.waveform            = waveform;
+        checkpoint.detectionParameters = detectionParameters;
+        checkpoint.filename            = filename;
+        checkpoint.timestamp           = now;
+        try
+            save(checkpointFile, 'checkpoint', '-v7.3');
+            disp(['Checkpoint saved: ' checkpointFile]);
+        catch saveErr
+            disp(['Checkpoint save failed: ' saveErr.message]);
+        end
+    else
+        % Fast update on subsequent presses and on exit: only minis + waveform.
+        checkpoint = struct();
+        if isfile(checkpointFile)
+            try
+                tmp = load(checkpointFile, 'checkpoint');
+                checkpoint = tmp.checkpoint;
+            catch
+                % If the file is unreadable start fresh (will be missing
+                % filterV / spectrum until the user presses 'w' again).
+            end
+        end
+        checkpoint.minis     = minis;
+        checkpoint.waveform  = waveform;
+        checkpoint.timestamp = now;
+        try
+            save(checkpointFile, 'checkpoint', '-v7.3');
+            disp(['Checkpoint updated: ' checkpointFile]);
+        catch saveErr
+            disp(['Checkpoint update failed: ' saveErr.message]);
+        end
+    end
+end
+end
+
 
 
 

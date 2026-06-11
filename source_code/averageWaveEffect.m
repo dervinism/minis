@@ -77,6 +77,26 @@ end
 
 % Average selected minis:
 iStart = minis90prc - midWave;
+% Exclude any event whose extraction window would fall outside [1, length(V)].
+% This can happen when large-amplitude events are very close to the start or
+% end of the recording (a pre-existing edge case that is more easily reached
+% after manual editing with the checkpoint resume feature).
+iEndWave = minis90prc + midWave + 1;
+validWindow = (iStart >= 1) & (iEndWave <= length(V));
+if ~all(validWindow)
+    nExcl = sum(~validWindow);
+    disp(['averageWaveEffect: excluding ' num2str(nExcl) ' event(s) whose waveform ' ...
+          'window exceeds the recording boundary.']);
+    minis90prc = minis90prc(validWindow);
+    iStart     = iStart(validWindow);
+end
+if isempty(minis90prc)
+    waveform   = [];
+    waveformRT = [];
+    parameters.tau_m = [];
+    varargout = {[]};
+    return
+end
 waveformArray = repmat(iStart, 1, 2*midWave + 1);
 waveformArray = waveformArray + repmat(1:2*midWave + 1, length(minis90prc), 1);
 waveformArray = V(waveformArray);
