@@ -316,14 +316,24 @@ if h.fFileVersionNumber>=2
   % 'clampfit', 'axoscope' or patchxpress' begin
   progString={'clampex','clampfit','axoscope','patchxpress'};
   goodstart=[];
+  bigStringLower=lower(char(BigString)');
   for i=1:numel(progString)
-    goodstart=cat(1,goodstart,strfind(lower(char(BigString)'),progString{i}));
+    matches=strfind(bigStringLower,progString{i});
+    if ~isempty(matches)
+      goodstart=[goodstart, matches(:)']; %#ok<AGROW>
+    end
   end
   % if either none or more than one were found, we're likely in trouble
-  if numel(goodstart)~=1
-    warning('problems in StringsSection');
+  if isempty(goodstart)
+    warning('problems in StringsSection: no program anchor found; using start of StringsSection');
+    goodstart=1;
+  elseif numel(goodstart)~=1
+    warning('problems in StringsSection: multiple program anchors found; using earliest');
+    goodstart=min(goodstart);
+  else
+    goodstart=goodstart(1);
   end
-  BigString=BigString(goodstart(1):end)';
+  BigString=BigString(goodstart:end)';
   stringends=find(BigString==0);
   stringends=[0 stringends];
   for i=1:length(stringends)-1

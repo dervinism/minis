@@ -167,7 +167,15 @@ Amps = zeros(nSweeps,fftDuration/2+1);
 power = Amps;
 phase = Amps;
 for iSweep = 1:nSweeps
-    iAmps = fftshift(fft(V(iSweep*sweepDuration-fftDuration+1:iSweep*sweepDuration)))/fftDuration;
+    idx1 = iSweep*sweepDuration - fftDuration + 1;
+    idx2 = iSweep*sweepDuration;
+  
+    if idx1 < 1 || idx2 > length(V)
+      warning('Skipping sweep %d: index exceeds data length.', iSweep);
+      continue
+    end
+  
+    iAmps = fftshift(fft(V(idx1:idx2))) / fftDuration;
     Amps(iSweep,:) = fliplr(2*abs(iAmps(1:fftDuration/2+1)));               % Multiply by 2 to compensate for the energy loss due to truncation
     power(iSweep,:) = (Amps(iSweep,:).^2*length(f)^2)./(sum(f.^2)*f);
     power(iSweep,1) = 0;
