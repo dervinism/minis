@@ -1475,6 +1475,14 @@ else
     cpSuggestDir = saveDir;
     cpSuggestBase = baseName;
 end
+% Extract downGoing flag so it can be forwarded to manualAdjustSave.
+% detectionParamsChk is the searchParameters struct passed from detectMinis;
+% it contains the downGoing field set before the inversion step.
+if isstruct(detectionParamsChk) && isfield(detectionParamsChk, 'downGoing')
+    chkDownGoing = detectionParamsChk.downGoing;
+else
+    chkDownGoing = false;
+end
 isFirstCheckpoint = true;  % becomes false after first successful checkpoint save
 
 % Edit minis:
@@ -1489,7 +1497,7 @@ while edit
         if ~isempty(intermediateMatFile)
             manualAdjustSave(minis, V, f, waveform, RTtype,...
                 intermediateTxtFile, intermediateFigFile, intermediateWavFile, excludedT, dt,...
-                intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint);
+                intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint, chkDownGoing);
         end
         return
     end
@@ -1500,7 +1508,7 @@ while edit
         if ~isempty(intermediateMatFile)
             manualAdjustSave(minis, V, f, waveform, RTtype,...
                 intermediateTxtFile, intermediateFigFile, intermediateWavFile, excludedT, dt,...
-                intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint);
+                intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint, chkDownGoing);
         end
         return
     end
@@ -1759,7 +1767,7 @@ while edit
                 end
                 prevWaveformF = manualAdjustSave(minis, V, f, waveform, RTtype,...
                     intermediateTxtFile, intermediateFigFile, intermediateWavFile, excludedT, dt,...
-                    intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint);
+                    intermediateMatFile, filterVChk, spectrumChk, detectionParamsChk, filenameArg, isFirstCheckpoint, chkDownGoing);
                 isFirstCheckpoint = false;
                 % Restore the summary figure as the active figure so that
                 % subsequent ginput calls continue to receive input from it.
@@ -1820,7 +1828,7 @@ end
 
 
 function waveformF = manualAdjustSave(minis, V, f, waveform, RTtype, txtFile, figFile, wavFile, excludedT, dt,...
-    checkpointFile, filterV, spectrum, detectionParameters, filename, isFirstSave)
+    checkpointFile, filterV, spectrum, detectionParameters, filename, isFirstSave, downGoing)
 % MANUALADJUSTSAVE is a helper subfunction of DETECTMINIS. It saves
 % intermediate results during the manual editing of detected minis-like
 % events in response to a 'w' keypress. It saves the event text file, the
@@ -1860,6 +1868,11 @@ function waveformF = manualAdjustSave(minis, V, f, waveform, RTtype, txtFile, fi
 % Initialise the waveform figure output:
 waveformF = [];
 
+% Default downGoing to false when not supplied:
+if nargin < 17
+    downGoing = false;
+end
+
 % Compute waveform stats (draw=false to avoid creating figures that
 % would interfere with the ginput loop in manualAdjust):
 minisToSave = minis;
@@ -1896,38 +1909,59 @@ if ~isempty(wavFile) && doWaveform
 end
 
 % Save the event text file:
+% When downGoing is true the trace was inverted before detection, so all
+% voltage-domain values (peak, baseline, RT potentials) are stored in
+% inverted units. Prefix the relevant column headers with '(inv)' to make
+% this explicit in the output file.
+if downGoing
+    peakHdr  = '(inv) Peak potential';
+    blHdr    = '(inv) Baseline (BL)';
+    v10Hdr   = '(inv) 10% RT potential';
+    v50Hdr   = '(inv) 50% RT potential';
+    v90Hdr   = '(inv) 90% RT potential';
+    v20Hdr   = '(inv) 20% RT potential';
+    v80Hdr   = '(inv) 80% RT potential';
+else
+    peakHdr  = 'Peak potential';
+    blHdr    = 'Baseline (BL)';
+    v10Hdr   = '10% RT potential';
+    v50Hdr   = '50% RT potential';
+    v90Hdr   = '90% RT potential';
+    v20Hdr   = '20% RT potential';
+    v80Hdr   = '80% RT potential';
+end
 fid = fopen(txtFile, 'wt+');
 if fid ~= -1
     nCols = size(minisToSave, 2);
     if strcmpi(RTtype, '10-90%')
         if nCols == 25
-            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\t %16s\t %16s\t %16s\n',...
+                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
                 'BL end index', 'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
-                '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential', 'decay time',...
+                '10% RT index', '50% RT index', '90% RT index', v10Hdr, v50Hdr, v90Hdr, 'decay time',...
                 'mean top 10%', 'median top 10%', 'tau');
-            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
         else
-            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\n',...
+                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
                 'BL end index', 'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
-                '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential', 'decay time');
-            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+                '10% RT index', '50% RT index', '90% RT index', v10Hdr, v50Hdr, v90Hdr, 'decay time');
+            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\n', minisToSave');
         end
     elseif strcmpi(RTtype, '20-80%')
         if nCols == 25
-            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\t %16s\t %16s\t %16s\n',...
+                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
                 'BL end index', 'Rise time (RT) length', 'RT', '20-80% RT', '20% RT time mark', '50% RT time mark', '80% RT time mark',...
-                '20% RT index', '50% RT index', '80% RT index', '20% RT potential', '50% RT potential', '80% RT potential', 'decay time',...
+                '20% RT index', '50% RT index', '80% RT index', v20Hdr, v50Hdr, v80Hdr, 'decay time',...
                 'mean top 10%', 'median top 10%', 'tau');
-            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
         else
-            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-                'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index',...
+            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\n',...
+                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
                 'BL end index', 'Rise time (RT) length', 'RT', '20-80% RT', '20% RT time mark', '50% RT time mark', '80% RT time mark',...
-                '20% RT index', '50% RT index', '80% RT index', '20% RT potential', '50% RT potential', '80% RT potential', 'decay time');
-            fprintf(fid, '%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
+                '20% RT index', '50% RT index', '80% RT index', v20Hdr, v50Hdr, v80Hdr, 'decay time');
+            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\n', minisToSave');
         end
     end
     fclose(fid);
@@ -1949,11 +1983,16 @@ if nargin >= 11 && ~isempty(checkpointFile)
     if isFirstSave
         % Full save on the first 'w' press:
         checkpoint.minis               = minis;
+        % NOTE: filterV is stored in the inverted space when downGoing is
+        % true (the inversion is applied inside detectMinis before filterV
+        % is assigned). checkpoint.downGoing records this so that the
+        % resume path in detectMinisStandalone can skip re-inverting.
         checkpoint.filterV             = filterV;
         checkpoint.spectrum            = spectrum;
         checkpoint.waveform            = waveform;
         checkpoint.detectionParameters = detectionParameters;
         checkpoint.filename            = filename;
+        checkpoint.downGoing           = downGoing;
         checkpoint.timestamp           = now;
         try
             save(checkpointFile, 'checkpoint', '-v7.3');

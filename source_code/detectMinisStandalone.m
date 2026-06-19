@@ -189,6 +189,10 @@ if nargin
                 dataProperties.current   = filterV;
                 dataProperties.hd.lActualEpisodes = 1;
                 dataProperties.lActualEpisodes    = 1;
+                % Record whether the checkpoint was created with downGoing
+                % so the resume call to detectMinis can skip re-inverting
+                % the already-inverted filterV (see Bug 4 fix below).
+                checkpointDownGoing = isfield(chk,'downGoing') && chk.downGoing;
                 checkpointLoaded = true;
                 disp(['Checkpoint loaded: ' filename ' — detection skipped.']);
             end
@@ -429,7 +433,18 @@ else
     % manualAdjust editing session.
     checkpointFiltering.state = 'off';
     options.preloadedMinis = minis;
-    [minis, filterV, spectrum, waveform, F] = detectMinis(filterV, excludedTimes, detectionParameters, checkpointFiltering, waveform, parallelCores, options);
+    % Down-going fix: filterV stored in the checkpoint is already inverted
+    % (detectMinis applies V = -V before assigning filterV). Temporarily
+    % clear the downGoing flag so detectMinis does not invert it a second
+    % time. The flag is restored immediately afterwards so that any
+    % downstream code (e.g. saveTargetEventLog) still sees the correct value.
+    if exist('checkpointDownGoing','var') && checkpointDownGoing
+        detectionParameters.downGoing = false;
+        [minis, filterV, spectrum, waveform, F] = detectMinis(filterV, excludedTimes, detectionParameters, checkpointFiltering, waveform, parallelCores, options);
+        detectionParameters.downGoing = true;  % restore
+    else
+        [minis, filterV, spectrum, waveform, F] = detectMinis(filterV, excludedTimes, detectionParameters, checkpointFiltering, waveform, parallelCores, options);
+    end
 end
 
 

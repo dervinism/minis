@@ -2051,6 +2051,24 @@ try
                     'created using the ''w'' key during manual detection.'],'Error','Error');
                 return
             end
+            % Warn if the checkpoint's downGoing flag does not match the
+            % current GUI checkbox setting, to prevent silent polarity errors:
+            try
+                chkTmp = load(targetFilename, 'checkpoint');
+                if isfield(chkTmp.checkpoint, 'downGoing')
+                    chkDownGoingVal = chkTmp.checkpoint.downGoing;
+                    guiDownGoingVal = logical(get(handles.downGoingCheckbox, 'value'));
+                    if chkDownGoingVal ~= guiDownGoingVal
+                        warndlg(['The checkpoint was created with ''Down-going'' = ' ...
+                            num2str(chkDownGoingVal) ' but the GUI checkbox is currently ' ...
+                            num2str(guiDownGoingVal) '. The checkpoint setting (' ...
+                            num2str(chkDownGoingVal) ') will be used.'], ...
+                            'Down-going Setting Mismatch', 'modal');
+                    end
+                end
+            catch
+                % Non-critical: if the check fails, proceed without warning.
+            end
         end
 
         % Pulses and glitches:
@@ -2176,6 +2194,24 @@ try
                     'checkpoint. Please select a checkpoint file that was ' ...
                     'created using the ''w'' key during manual detection.'],'Error','Error');
                 return
+            end
+            % Warn if the checkpoint's downGoing flag does not match the
+            % current GUI checkbox setting, to prevent silent polarity errors:
+            try
+                chkTmp = load(targetFilename, 'checkpoint');
+                if isfield(chkTmp.checkpoint, 'downGoing')
+                    chkDownGoingVal = chkTmp.checkpoint.downGoing;
+                    guiDownGoingVal = logical(get(handles.downGoingCheckbox, 'value'));
+                    if chkDownGoingVal ~= guiDownGoingVal
+                        warndlg(['The checkpoint was created with ''Down-going'' = ' ...
+                            num2str(chkDownGoingVal) ' but the GUI checkbox is currently ' ...
+                            num2str(guiDownGoingVal) '. The checkpoint setting (' ...
+                            num2str(chkDownGoingVal) ') will be used.'], ...
+                            'Down-going Setting Mismatch', 'modal');
+                    end
+                end
+            catch
+                % Non-critical: if the check fails, proceed without warning.
             end
         end
 

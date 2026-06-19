@@ -1,0 +1,20 @@
+Logging is on, see C:\Users\m329786\Matlab_libraries\minis\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Intermediate average waveform figure saved: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_intermediate_waveform.fig
+Intermediate event text file saved: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_intermediate.txt
+Intermediate summary figure saved: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_intermediate.fig
+Checkpoint saved: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_checkpoint.mat
+Intermediate average waveform figure saved: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_intermediate_waveform.fig
+Intermediate event text file saved: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_intermediate.txt
+Checkpoint updated: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_checkpoint.mat
+Warning: detected event figure handle is no longer valid; skipping figure save.
+Task completed
+close all
+Detection task initiated
+Checkpoint loaded: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_checkpoint.mat — detection skipped.
+Task completed
+Detection task initiated
+Checkpoint loaded: C:\Users\m329786\Matlab_libraries\minis\p131c_0011_sw6-10_checkpoint.mat — detection skipped.
+Task completed
+Logging is off
