@@ -433,18 +433,17 @@ else
     % manualAdjust editing session.
     checkpointFiltering.state = 'off';
     options.preloadedMinis = minis;
-    % Down-going fix: filterV stored in the checkpoint is already inverted
-    % (detectMinis applies V = -V before assigning filterV). Temporarily
-    % clear the downGoing flag so detectMinis does not invert it a second
-    % time. The flag is restored immediately afterwards so that any
-    % downstream code (e.g. saveTargetEventLog) still sees the correct value.
+    % Down-going fix: filterV stored in the checkpoint is already in the
+    % original (non-inverted) convention — the conversion block in detectMinis
+    % un-inverts it before saving. Set skipInversion=true so detectMinis skips
+    % the V=-V step, while keeping detectionParameters.downGoing unchanged so
+    % that the summary plot marker, averageWaveEffect, and manualAdjust all
+    % behave correctly for down-going events:
     if exist('checkpointDownGoing','var') && checkpointDownGoing
-        detectionParameters.downGoing = false;
-        [minis, filterV, spectrum, waveform, F] = detectMinis(filterV, excludedTimes, detectionParameters, checkpointFiltering, waveform, parallelCores, options);
-        detectionParameters.downGoing = true;  % restore
-    else
-        [minis, filterV, spectrum, waveform, F] = detectMinis(filterV, excludedTimes, detectionParameters, checkpointFiltering, waveform, parallelCores, options);
+        options.skipInversion = true;
     end
+    [minis, filterV, spectrum, waveform, F] = detectMinis(filterV, excludedTimes, detectionParameters, checkpointFiltering, waveform, parallelCores, options);
+    options.skipInversion = false;  % reset in case options is used again below
 end
 
 

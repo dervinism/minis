@@ -1,5 +1,5 @@
 function [waveform, averageAmp, medianAmp, waveformRT, parameters, varargout] = averageWaveEffect(minis, V, dt, tau_m, excludedT,...
-  tBLduration, RTtype, riseTimeArrayExt, draw)
+  tBLduration, RTtype, riseTimeArrayExt, draw, varargin)
 % AVERAGEWAVEEFFECT is a helper function of DETECTMINIS. It estimates the
 % average waveform of the 10% largest minis-like events as detected using
 % the MINIS program.
@@ -47,9 +47,25 @@ function [waveform, averageAmp, medianAmp, waveformRT, parameters, varargout] = 
 %
 
 
+% Optional downGoing flag (default false). When true, minis(:,4) contains
+% negative amplitudes (original trace convention) so we must select the top
+% 10% by magnitude and search for a minimum (trough) in the average waveform:
+if ~isempty(varargin)
+    downGoing = varargin{1};
+else
+    downGoing = false;
+end
+
 % Find minis larger than the 90th percentile of minis amplitudes:
-prct90 = prctile(minis(:,4),90);
-iPrct90 = minis(:,4) >= prct90;
+if downGoing
+    % Amplitudes are negative; pick the 10% with the most negative values
+    % (i.e. the 10th percentile of amplitude = largest magnitude):
+    prct90 = prctile(minis(:,4), 10);
+    iPrct90 = minis(:,4) <= prct90;
+else
+    prct90 = prctile(minis(:,4), 90);
+    iPrct90 = minis(:,4) >= prct90;
+end
 minis90prc = minis(iPrct90,3);
 averageAmp = mean(minis(iPrct90,4));
 medianAmp = median(minis(iPrct90,4));
@@ -103,7 +119,12 @@ waveformArray = V(waveformArray);
 waveform = mean(waveformArray,1);
 
 % Estimate the peak, the baseline, the amplitude, and the 10-90% or 20-80% rise time:
-[parameters.peak, iPeak] = max(waveform(midWave-100:midWave+1));
+if downGoing
+    % Waveform is negative-going; find the minimum (trough) as the peak:
+    [parameters.peak, iPeak] = min(waveform(midWave-100:midWave+1));
+else
+    [parameters.peak, iPeak] = max(waveform(midWave-100:midWave+1));
+end
 iPeak = midWave - 101 + iPeak;
 halfBL = round(tBLduration/2/dt);
 BL1 = waveform(iPeak-BLtime-halfBL+1:iPeak-BLtime+halfBL);
@@ -111,18 +132,36 @@ BL2 = waveform(iPeak+BLtime-halfBL:iPeak+BLtime+halfBL-1);
 parameters.BL = (mean(BL1) + mean(BL2))/2;
 parameters.amplitude = parameters.peak - parameters.BL;
 waveTimeline = (1:length(waveform))*dt - dt;
-[parameters.risetime, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, waveTimeline(1:iPeak), waveform(1:iPeak), parameters.BL);
+if downGoing
+    % calcRT always expects a positive-going waveform (peak > BL); pass
+    % negated segment and negated baseline:
+    [parameters.risetime, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, waveTimeline(1:iPeak), -waveform(1:iPeak), -parameters.BL);
+else
+    [parameters.risetime, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, waveTimeline(1:iPeak), waveform(1:iPeak), parameters.BL);
+end
 
 % Find the effective time constant:
 waveformNorm = waveform - parameters.BL;
 waveformNorm = gsmooth(waveformNorm, round(5/dt), 3);
-iStart = find(waveformNorm(iPeak:end) <= 2/3*parameters.amplitude, 1);
+if downGoing
+    % For down-going events the normalised amplitude is negative; find the
+    % point that exceeds 2/3 of the (negative) amplitude (i.e. the decay
+    % has returned 1/3 of the way back toward BL):
+    iStart = find(waveformNorm(iPeak:end) >= 2/3*parameters.amplitude, 1);
+else
+    iStart = find(waveformNorm(iPeak:end) <= 2/3*parameters.amplitude, 1);
+end
 if isempty(iStart)
     iStart = 1;
 end
 Vstart = waveformNorm(iPeak+iStart-1);
 Vend = Vstart*1/exp(1);
-iEnd = find(waveformNorm(iPeak:end) <= Vend, 1);
+if downGoing
+    % Decay goes back toward 0 (less negative); find where it rises above Vend:
+    iEnd = find(waveformNorm(iPeak:end) >= Vend, 1);
+else
+    iEnd = find(waveformNorm(iPeak:end) <= Vend, 1);
+end
 if isempty(iEnd)
     iEnd = length(waveformNorm)-iPeak+1;
 end
@@ -140,7 +179,12 @@ if draw
     plot(waveTimeline, waveform, 'k', 'markersize', 4);
     hold on
     xlim([waveTimeline(1) waveTimeline(end)]);
-    plot(waveTimeline(iPeak), waveform(iPeak), '^', 'markersize', 10, 'markeredgecolor', 'r');
+    if downGoing
+        peakMarkWave = 'v';   % downward triangle for down-going events
+    else
+        peakMarkWave = '^';   % upward triangle for up-going events
+    end
+    plot(waveTimeline(iPeak), waveform(iPeak), peakMarkWave, 'markersize', 10, 'markeredgecolor', 'r');
     plot([t10 t50 t90], [waveform(i10) waveform(i50) waveform(i90)], 'r.', 'markersize', 10);
     plot(waveTimeline, BL, 'r');
     plot([waveTimeline(iPeak+iStart-1) waveTimeline(iPeak+iEnd-1)], [Vstart Vend], 'mx', 'markersize', 10);

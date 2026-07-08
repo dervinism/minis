@@ -268,6 +268,12 @@ if nargin == 7
     if isfield(options,'preloadedMinis') && ~isempty(options.preloadedMinis)
         preloadedMinis = options.preloadedMinis;
     end
+    % skipInversion: used by the checkpoint-resume path so that the
+    % already-unconverted filterV is not inverted a second time while
+    % still leaving searchParameters.downGoing intact so that the
+    % summary plot, averageWaveEffect, and manualAdjust all behave
+    % correctly for down-going events:
+    skipInversion = isfield(options,'skipInversion') && options.skipInversion;
     if (isfield(options,'smooth') && ~options.smooth) ||...
             (isfield(searchParameters,'smoothWindow') && ~searchParameters.smoothWindow)
         smooth = false;
@@ -285,6 +291,7 @@ else
     edit = false;
     smooth = true;
     SD = [false false false false];
+    skipInversion = false;
 end
 clear options varargin
 
@@ -321,7 +328,7 @@ end
 
 
 %% Invert data
-if isfield(searchParameters,'downGoing') && searchParameters.downGoing
+if isfield(searchParameters,'downGoing') && searchParameters.downGoing && ~skipInversion
     V = -V;
 end
 
@@ -509,6 +516,20 @@ else
     clear parallelCores interactMode peakIndexArray pauseTime f4 axes3 finalMinis iCore coreMinis vdim hdim tempMinis uniqueMinis
 end  % end detection block
 
+%% Convert detected event values to original (non-inverted) convention:
+% When downGoing is true the trace was inverted (V = -V) before detection.
+% After detection, negate the voltage-domain columns so all values are stored
+% in the original trace convention (negative peaks, negative amplitudes for
+% down-going events). Also un-invert filterV and initvsmooth so the summary
+% plot and manualAdjust UI display the original trace.
+% skipInversion is true on checkpoint resume, where minis/filterV/initvsmooth
+% are already in original convention — skip to avoid double-negation:
+if isfield(searchParameters,'downGoing') && searchParameters.downGoing && ~skipInversion
+    minis(:,[1,4,5,19,20,21]) = -minis(:,[1,4,5,19,20,21]);
+    filterV     = -filterV;
+    initvsmooth = -initvsmooth;
+end
+
 % PLOT6 - Mark detected minis for examination:
 if summaryPlot || (exist('edit','var') && edit)
     nameStringf5 = 'Summary: Detected mini-like events';
@@ -517,7 +538,12 @@ if summaryPlot || (exist('edit','var') && edit)
     f5 = plotData(initt, initvsmooth, optionsf5);
     figure(f5);
     hold on;
-    p10 = plot(minis(:,2), minis(:,1), '^', 'markersize', 10, 'markeredgecolor', 'r');
+    if isfield(searchParameters,'downGoing') && searchParameters.downGoing
+        peakMark = 'v';   % downward triangle for down-going events
+    else
+        peakMark = '^';   % upward triangle for up-going events (default)
+    end
+    p10 = plot(minis(:,2), minis(:,1), peakMark, 'markersize', 10, 'markeredgecolor', 'r');
     p11 = plot(minis(:,15), minis(:,21), 'r.', 'markersize', 10);
     p12 = plot(minis(:,14), minis(:,20), 'r.', 'markersize', 10);
     p13 = plot(minis(:,13), minis(:,19), 'r.', 'markersize', 10);
@@ -560,7 +586,8 @@ if waveform.estimate || SD(4)
         button = questdlg('Do you want to estimate the average waveform?','Obtain Average Waveform','Yes','No','Yes');
         if strcmpi(button, 'Yes')
             [waveform.averageTrace, averageAmp, medianAmp, waveform.riseTimeDist, waveform.parameters, waveform.F] = averageWaveEffect(minis,...
-                initvsmooth, dt, waveform.tau_m, excludedT, 10, searchParameters.RTinterval, waveform.riseTimeArrayExt, true);
+                initvsmooth, dt, waveform.tau_m, excludedT, 10, searchParameters.RTinterval, waveform.riseTimeArrayExt, true,...
+                isfield(searchParameters,'downGoing') && searchParameters.downGoing);
            waveform.parameters.averageAmp = averageAmp;
            waveform.parameters.medianAmp = medianAmp;
         else
@@ -568,12 +595,14 @@ if waveform.estimate || SD(4)
         end
     elseif waveform.estimate == 3
         [waveform.averageTrace, averageAmp, medianAmp, waveform.riseTimeDist, waveform.parameters, waveform.F] = averageWaveEffect(minis, initvsmooth, dt, waveform.tau_m,...
-                excludedT, 10, searchParameters.RTinterval, waveform.riseTimeArrayExt, true);
+                excludedT, 10, searchParameters.RTinterval, waveform.riseTimeArrayExt, true,...
+                isfield(searchParameters,'downGoing') && searchParameters.downGoing);
         waveform.parameters.averageAmp = averageAmp;
         waveform.parameters.medianAmp = medianAmp;
     else
         [waveform.averageTrace, averageAmp, medianAmp, waveform.riseTimeDist, waveform.parameters] = averageWaveEffect(minis, initvsmooth, dt, waveform.tau_m, excludedT,...
-            10, searchParameters.RTinterval, waveform.riseTimeArrayExt, false);
+            10, searchParameters.RTinterval, waveform.riseTimeArrayExt, false,...
+            isfield(searchParameters,'downGoing') && searchParameters.downGoing);
         waveform.parameters.averageAmp = averageAmp;
         waveform.parameters.medianAmp = medianAmp;
     end
@@ -1483,6 +1512,12 @@ if isstruct(detectionParamsChk) && isfield(detectionParamsChk, 'downGoing')
 else
     chkDownGoing = false;
 end
+% Set peak marker shape based on event direction (used in re-plot calls below):
+if chkDownGoing
+    peakMark = 'v';   % downward triangle for down-going events
+else
+    peakMark = '^';   % upward triangle for up-going events (default)
+end
 isFirstCheckpoint = true;  % becomes false after first successful checkpoint save
 
 % Edit minis:
@@ -1539,9 +1574,15 @@ while edit
                 iBLend = max([min([ix - 1 + round(.5*nBLduration) length(t)]) nBLduration]);
                 iBLstart = iBLend - nBLduration + 1;
                 BL = mean(V(iBLstart:iBLend));
-                if minis(iUpBL,1) - BL > 0
+                if (chkDownGoing && minis(iUpBL,1) - BL < 0) || (~chkDownGoing && minis(iUpBL,1) - BL > 0)
                     % Estimate the new rise times:
-                    [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLstart:minis(iUpBL,3)), V(iBLstart:minis(iUpBL,3)), BL);
+                    % For down-going events pass negated segment so calcRT sees
+                    % a positive-going waveform (calcRT always expects peak > BL):
+                    if chkDownGoing
+                        [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLstart:minis(iUpBL,3)), -V(iBLstart:minis(iUpBL,3)), -BL);
+                    else
+                        [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLstart:minis(iUpBL,3)), V(iBLstart:minis(iUpBL,3)), BL);
+                    end
                     minis(iUpBL,:) = [minis(iUpBL,1:3), minis(iUpBL,1)-BL, BL, t(iBLstart), t(iBLend), iBLstart, iBLend, minis(iUpBL,3)-iBLstart+1,...
                         (minis(iUpBL,3)-iBLstart+1)*dt, t1090, t10, t50, t90, iBLstart-1+i10, iBLstart-1+i50, iBLstart-1+i90, V(iBLstart-1+i10),...
                         V(iBLstart-1+i50), V(iBLstart-1+i90), minis(iUpBL,22)];
@@ -1561,7 +1602,14 @@ while edit
                     iPeakLobound = 1;
                     prevPeak = 0;
                 end
-                [peaks, locs] = findpeaks(double(V(iPeakLobound:iPeakUpbound)));
+                % For down-going events find minima (troughs) in V; for
+                % up-going events find maxima (peaks) as before:
+                if chkDownGoing
+                    [neg_peaks, locs] = findpeaks(double(-V(iPeakLobound:iPeakUpbound)));
+                    peaks = -neg_peaks;   % convert back to original (negative) values
+                else
+                    [peaks, locs] = findpeaks(double(V(iPeakLobound:iPeakUpbound)));
+                end
                 if isempty(peaks)
                     continue % do nothing
                 end
@@ -1572,7 +1620,14 @@ while edit
                 iPeak = locs(iNearestPeak);
                 if iPeak ~= iPeakLobound && iPeak ~= iPeakUpbound
                     % Measure the baseline:
-                    [~, iTrough] = min(V(iPeakLobound:iPeak));
+                    % For down-going events the pre-event baseline lies at the
+                    % highest (most positive / least negative) point before the
+                    % peak; for up-going events it lies at the minimum:
+                    if chkDownGoing
+                        [~, iTrough] = max(V(iPeakLobound:iPeak));
+                    else
+                        [~, iTrough] = min(V(iPeakLobound:iPeak));
+                    end
                     iBLend = min([iPeakLobound - 1 + iTrough iPeak]);
                     if prevPeak
                         iBLstart = max([iBLend - nBLduration + 1 iPeakLobound]);
@@ -1580,21 +1635,42 @@ while edit
                         iBLstart = max([iBLend - nBLduration + 1 1]);
                     end
                     BL = mean(V(iBLstart:iBLend));
-                    if peak - BL <= 0
-                        continue
+                    if (chkDownGoing && peak - BL >= 0) || (~chkDownGoing && peak - BL <= 0)
+                        continue   % not a valid event for this direction
                     end
                     % Estimate the rise times:
-                    [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLend:iPeak), V(iBLend:iPeak), BL);
+                    % Pass negated segment for down-going so calcRT always
+                    % receives a positive-going waveform (peak > BL):
+                    if chkDownGoing
+                        [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLend:iPeak), -V(iBLend:iPeak), -BL);
+                    else
+                        [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLend:iPeak), V(iBLend:iPeak), BL);
+                    end
                     % Test whether the baseline is at the foothill:
                     if iBLstart - 1 + i10 - iBLend > ceil(.75*nBLduration)
                         iPeakLobound = iBLstart - 1 + i10 - ceil(.75*nBLduration);
-                        [~, iTrough] = min(V(iPeakLobound:iPeak));
+                        if chkDownGoing
+                            [~, iTrough] = max(V(iPeakLobound:iPeak));
+                        else
+                            [~, iTrough] = min(V(iPeakLobound:iPeak));
+                        end
                         iBLend = min([iPeakLobound - 1 + iTrough iPeak]);
                         iBLstart = iBLend - nBLduration + 1;
                         BL = mean(V(iBLstart:iBLend));
-                        [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLend:iPeak), V(iBLend:iPeak), BL);
+                        if chkDownGoing
+                            [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLend:iPeak), -V(iBLend:iPeak), -BL);
+                        else
+                            [t1090, t10, i10, t50, i50, t90, i90] = calcRT(RTtype, t(iBLend:iPeak), V(iBLend:iPeak), BL);
+                        end
                     end
-                    decay = calcDecay(V, BL, iPeak, dt);
+                    % calcDecay is designed for positive-going events; for
+                    % down-going events manually added during editing the decay
+                    % time is not computed and is left as NaN:
+                    if chkDownGoing
+                        decay = NaN;
+                    else
+                        decay = calcDecay(V, BL, iPeak, dt);
+                    end
                     % Establish the new mini:
                     %          1               2          3                     4           5          6-7         8-9         10                11
                     %         [finalisedPeaks, peakTimes, finalisedPeakIndices, amplitudes, baselines, tBaselines, nBaselines, elementRiseTimes, riseTimes,...
@@ -1616,7 +1692,7 @@ while edit
             end
             % Re-plot minis:
             delete(p);
-            p(1) = plot(minis(:,2), minis(:,1), '^', 'markersize', 10, 'markeredgecolor', 'r');
+            p(1) = plot(minis(:,2), minis(:,1), peakMark, 'markersize', 10, 'markeredgecolor', 'r');
             p(2) = plot(minis(:,15), minis(:,21), 'r.', 'markersize', 10);
             p(3) = plot(minis(:,14), minis(:,20), 'r.', 'markersize', 10);
             p(4) = plot(minis(:,13), minis(:,19), 'r.', 'markersize', 10);
@@ -1631,7 +1707,7 @@ while edit
             [~, miniToDelete] = min(distances);
             minis(miniToDelete,:) = [];
             delete(p);
-            p(1) = plot(minis(:,2), minis(:,1), '^', 'markersize', 10, 'markeredgecolor', 'r');
+            p(1) = plot(minis(:,2), minis(:,1), peakMark, 'markersize', 10, 'markeredgecolor', 'r');
             p(2) = plot(minis(:,15), minis(:,21), 'r.', 'markersize', 10);
             p(3) = plot(minis(:,14), minis(:,20), 'r.', 'markersize', 10);
             p(4) = plot(minis(:,13), minis(:,19), 'r.', 'markersize', 10);
@@ -1881,7 +1957,7 @@ doWaveform = ~isempty(waveform) && isfield(waveform, 'estimate') ...
 if doWaveform
     try
         [~, averageAmp, medianAmp, ~, waveformParams] = averageWaveEffect(...
-            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, false);
+            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, false, downGoing);
         if ~isempty(waveformParams) && isfield(waveformParams, 'tau_m') && ~isempty(waveformParams.tau_m)
             minisToSave = [minis repmat([averageAmp medianAmp waveformParams.tau_m], size(minis,1), 1)];
         end
@@ -1897,7 +1973,7 @@ end
 if ~isempty(wavFile) && doWaveform
     try
         [~, ~, ~, ~, ~, waveformF] = averageWaveEffect(...
-            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, true);
+            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, true, downGoing);
         if ~isempty(waveformF)
             saveas(waveformF(1), wavFile);
             set(waveformF, 'Visible', 'off');
@@ -1909,27 +1985,16 @@ if ~isempty(wavFile) && doWaveform
 end
 
 % Save the event text file:
-% When downGoing is true the trace was inverted before detection, so all
-% voltage-domain values (peak, baseline, RT potentials) are stored in
-% inverted units. Prefix the relevant column headers with '(inv)' to make
-% this explicit in the output file.
-if downGoing
-    peakHdr  = '(inv) Peak potential';
-    blHdr    = '(inv) Baseline (BL)';
-    v10Hdr   = '(inv) 10% RT potential';
-    v50Hdr   = '(inv) 50% RT potential';
-    v90Hdr   = '(inv) 90% RT potential';
-    v20Hdr   = '(inv) 20% RT potential';
-    v80Hdr   = '(inv) 80% RT potential';
-else
-    peakHdr  = 'Peak potential';
-    blHdr    = 'Baseline (BL)';
-    v10Hdr   = '10% RT potential';
-    v50Hdr   = '50% RT potential';
-    v90Hdr   = '90% RT potential';
-    v20Hdr   = '20% RT potential';
-    v80Hdr   = '80% RT potential';
-end
+% Event values are always stored in the original (non-inverted) trace
+% convention (negative peaks / negative amplitudes for down-going events),
+% so plain column headers are used regardless of the downGoing flag:
+peakHdr  = 'Peak potential';
+blHdr    = 'Baseline (BL)';
+v10Hdr   = '10% RT potential';
+v50Hdr   = '50% RT potential';
+v90Hdr   = '90% RT potential';
+v20Hdr   = '20% RT potential';
+v80Hdr   = '80% RT potential';
 fid = fopen(txtFile, 'wt+');
 if fid ~= -1
     nCols = size(minisToSave, 2);
@@ -1983,10 +2048,11 @@ if nargin >= 11 && ~isempty(checkpointFile)
     if isFirstSave
         % Full save on the first 'w' press:
         checkpoint.minis               = minis;
-        % NOTE: filterV is stored in the inverted space when downGoing is
-        % true (the inversion is applied inside detectMinis before filterV
-        % is assigned). checkpoint.downGoing records this so that the
-        % resume path in detectMinisStandalone can skip re-inverting.
+        % NOTE: filterV and minis are stored in the original (non-inverted)
+        % trace convention after the conversion block in detectMinis
+        % (negative peaks / negative amplitudes for down-going events).
+        % checkpoint.downGoing records the polarity so that the resume path
+        % can set options.skipInversion=true and avoid re-inverting the trace.
         checkpoint.filterV             = filterV;
         checkpoint.spectrum            = spectrum;
         checkpoint.waveform            = waveform;
