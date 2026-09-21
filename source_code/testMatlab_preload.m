@@ -263,16 +263,16 @@
 %               'averageTrace' is an average recording trace in mV or nA.
 %               'riseTimeArray' is a vector with rise times corresponding
 %                 to counts stored in the 'riseTimeDist' vector.
-%               'riseTimeDist' is a vector with a rise time distribution of
-%                 large (top 10%) amplitude minis-like events that were
-%                 used for obtaining the average waveform.
+%               'riseTimeDist' is a vector with the rise time distribution
+%                 of ALL detected minis-like events (independent of how
+%                 many events were averaged into 'averageTrace').
 %               'parameters' is a structure variable containing estimated
 %                 waveform parameters 'peak' (mV or nA), 'BL' (baseline, mV
 %                 or nA), 'Amp' (amplitude, mV or nA), 'risetime' (ms),
 %                 'tau_m' (effective dendritic membrane time constant, ms).
 %                 Additional fields like averageAmp and medianAmp are also
 %                 added which correspond to the mean and median amplitude
-%                 of the top 10% of the largest detected minis-like events.
+%                 of all detected minis-like events.
 %             'spectrum' - a matrix composed of four row vectors. The first
 %               vector contains amplitudes. The second one contains a
 %               power spectrum which should correspond to decibels (dB).

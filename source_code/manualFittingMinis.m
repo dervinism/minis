@@ -72,30 +72,22 @@ noiseProperties.sweep = filtNoise;
 clear filtering waveformN filtNoise
 
 
-%% Save the event text files:
-button = questdlg('Save the event text files?','Save File','Yes','No','Yes');
+%% Save the event data (TSV):
+button = questdlg('Save the event data (TSV)?','Save File','Yes','No','Yes');
 if strcmpi(button, 'Yes')
-    % Target events:
-    [filename, pathname, filterIndex] = uiputfile({'*.txt','Text files (*.txt)'},'Save Target Event Log as', 'detected target events.txt');
+    baseHeaders = {'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index', 'BL end index',...
+        'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
+        '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential'};
+
+    % Target events (includes an appended tau_m column -- see line 67):
+    [filename, pathname, filterIndex] = uiputfile({'*.tsv','TSV files (*.tsv)'},'Save Target Event Log as', 'detected target events.tsv');
     if filterIndex
-        fid = fopen(fullfile(pathname,filename),'wt+');
-        fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-            'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index', 'BL end index',...
-            'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
-            '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential', 'tau');
-        fprintf(fid,'%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n',minisTarget');
-        fclose(fid);
+        writeEventsTSV(fullfile(pathname,filename), [baseHeaders, {'tau'}], minisTarget);
     end
     % Noise events:
-    [filename, pathname, filterIndex] = uiputfile({'*.txt','Text files (*.txt)'},'Save Noise Event Log as', 'detected noise events.txt');
+    [filename, pathname, filterIndex] = uiputfile({'*.tsv','TSV files (*.tsv)'},'Save Noise Event Log as', 'detected noise events.tsv');
     if filterIndex
-        fid = fopen(fullfile(pathname,filename),'wt+');
-        fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-            'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index', 'BL end index',...
-            'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
-            '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential');
-        fprintf(fid,'%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n',minisNoise');
-        fclose(fid);
+        writeEventsTSV(fullfile(pathname,filename), baseHeaders, minisNoise);
     end
 end
 

@@ -259,16 +259,16 @@ function [status, output] = minisHeadless(input)
 %               'averageTrace' is an average recording trace in mV or nA.
 %               'riseTimeArray' is a vector with rise times corresponding
 %                 to counts stored in the 'riseTimeDist' vector.
-%               'riseTimeDist' is a vector with a rise time distribution of
-%                 large (top 10%) amplitude minis-like events that were
-%                 used for obtaining the average waveform.
+%               'riseTimeDist' is a vector with the rise time distribution
+%                 of ALL detected minis-like events (independent of how
+%                 many events were averaged into 'averageTrace').
 %               'parameters' is a structure variable containing estimated
 %                 waveform parameters 'peak' (mV or nA), 'BL' (baseline, mV
 %                 or nA), 'Amp' (amplitude, mV or nA), 'risetime' (ms),
 %                 'tau_m' (effective dendritic membrane time constant, ms).
 %                 Additional fields like averageAmp and medianAmp are also
 %                 added which correspond to the mean and median amplitude
-%                 of the top 10% of the largest detected minis-like events.
+%                 of all detected minis-like events.
 %             'spectrum' - a matrix composed of four row vectors. The first
 %               vector contains amplitudes. The second one contains a
 %               power spectrum which should correspond to decibels (dB).
@@ -411,14 +411,28 @@ elseif strcmpi(task, 'detection')
     filtering.excludedTimes = targetExcludedTimes;
     
     % Detect minis-like events in a file of choice:
-    [minisArray, ~, waveform, ~, F] = detectMinisStandalone(true, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
+    [minisArray, ~, waveform, dataProperties, F] = detectMinisStandalone(true, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
         parallelCores, 'none', true, waveform, filtering, [1 1 1 1]);
     if ~isempty(waveform)
         minisArray = [minisArray repmat([waveform.parameters.averageAmp waveform.parameters.medianAmp waveform.parameters.tau_m], size(minisArray,1), 1)];
     end
-    
-    % Save the detected event log and figures:
-    input.ld = saveTargetEventLog(minisArray, F, waveform, filtering, detectionParameters.RTinterval, graphicsFormats, input.ld);
+
+    % Incidence rate (events/s within each 1-second window, retrospectively
+    % assigned to every event in that window):
+    recordingDurationMs = numel(dataProperties.sweep) * dataProperties.dt;
+    incidenceRates = incidenceRate(minisArray(:,2), recordingDurationMs, excludedTimesToIntervals(targetExcludedTimes));
+
+    % Combine every result figure into a single tiled panel, excluding
+    % F(3) (the interactive detected-event summary/curation figure), which
+    % stays a standalone window -- see minis.m's Detect task for details:
+    panelSourceFigs = [F(1:2) F(4:end)];
+    if ~isempty(waveform) && isfield(waveform,'F') && ~isempty(waveform.F)
+        panelSourceFigs = [panelSourceFigs waveform.F];
+    end
+    resultsPanel = combineDetectionFigures(panelSourceFigs, 'Detection results');
+
+    % Save the detected event log, results panel, and curation figure:
+    input.ld = saveTargetEventLog(minisArray, incidenceRates, F(3), resultsPanel, detectionParameters.RTinterval, graphicsFormats, input.ld);
     
 elseif strcmpi(task, 'detectionHeadless')
     % Target file:
@@ -499,11 +513,27 @@ elseif strcmpi(task, 'detectCompare')
     filtering = noiseFilterDlg;
     
     % Detect minis-like events in both target and noise files and compare them:
-    [minisTarget, minisNoise, waveform, F] = compareMinis(targetFilename, noiseFilename, targetExcludedTimes, noiseExcludedTimes, detectionParameters,...
+    [minisTarget, minisNoise, waveform, F, targetIncidenceRates, noiseIncidenceRates] = compareMinis(targetFilename, noiseFilename, targetExcludedTimes, noiseExcludedTimes, detectionParameters,...
         classificationParameters, filtering, waveform, parallelCores);
-    
-    % Save the detected event logs and figures:
-    input.ld = saveEventLog(minisTarget, minisNoise, F, waveform, filtering, detectionParameters.RTinterval, graphicsFormats, input.ld);
+
+    % Combine every result figure into a single tiled panel, excluding
+    % F(1)/F(3) (the interactive target/noise curation figures), which stay
+    % standalone windows -- see minis.m's Detect-and-compare task for
+    % details:
+    panelSourceFigs = F(5:8);
+    if F(2) ~= F(1)
+        panelSourceFigs = [panelSourceFigs F(2)];
+    end
+    if F(4) ~= F(3)
+        panelSourceFigs = [panelSourceFigs F(4)];
+    end
+    if ~isempty(waveform) && isfield(waveform,'F') && ~isempty(waveform.F)
+        panelSourceFigs = [panelSourceFigs waveform.F];
+    end
+    resultsPanel = combineDetectionFigures(panelSourceFigs, 'Detect-and-compare results');
+
+    % Save the detected event logs, results panel, and curation figures:
+    input.ld = saveEventLog(minisTarget, minisNoise, targetIncidenceRates, noiseIncidenceRates, [F(1) F(3)], resultsPanel, detectionParameters.RTinterval, graphicsFormats, input.ld);
     
 elseif strcmpi(task, 'errorBounds')
     % Pulses:

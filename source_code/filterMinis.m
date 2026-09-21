@@ -1,11 +1,25 @@
-function [V, spectrum, f1, filtfsOut] = filterMinis(V, dt, filterParameters, summaryPlot, varargin)
+function [V, spectrum, f1, filtfsOut, spectrumBefore, fBefore] = filterMinis(V, dt, filterParameters, summaryPlot, varargin)
+% ... KEEPPREFILTERFIGURE (varargin{3}, default false) -- when true and
+% FILTERPARAMETERS.state is 'on' and SUMMARYPLOT is true, the frequency-
+% spectrum figure computed before filtering is kept open and returned as
+% FBEFORE/SPECTRUMBEFORE (both empty otherwise) instead of being discarded,
+% so the caller can show it alongside the after-filtering spectrum. Opt-in
+% and additive (new trailing outputs only), so existing callers that don't
+% request it are unaffected.
 
 if nargin > 4
     filename = varargin{1};
-    if nargin == 6
+    if nargin >= 6
         filtfs = varargin{2};
     end
 end
+if nargin >= 7 && ~isempty(varargin{3})
+    keepPreFilterFigure = varargin{3};
+else
+    keepPreFilterFigure = false;
+end
+spectrumBefore = [];
+fBefore = [];
 
 if ~exist('filtfs','var') && isfield(filterParameters,'filtfs')
     filtfs = filterParameters.filtfs;
@@ -23,6 +37,13 @@ if summaryPlot
         [spectrum, filtSpectrum, ~, f1] = fftMinis(V, dt, filterParameters.nSweeps, endPulse, summaryPlot, notchPlot, filename);
     else
         [spectrum, filtSpectrum, ~, f1] = fftMinis(V, dt, filterParameters.nSweeps, endPulse, summaryPlot, notchPlot);
+    end
+    if strcmpi(filterParameters.state, 'on') && ishghandle(f1)
+        set(f1, 'Name', 'Fourier Transform (before filtering)');
+        ax = findobj(f1, 'Type', 'axes');
+        if ~isempty(ax)
+            ax(1).Title.String = [ax(1).Title.String ' - before filtering'];
+        end
     end
 else
     [spectrum, filtSpectrum] = fftMinis(V, dt, filterParameters.nSweeps, endPulse, summaryPlot, notchPlot);
@@ -88,13 +109,26 @@ if ~strcmpi(filterParameters.state, 'spectrum')
     end
     
     if summaryPlot
-        if exist('f1', 'var') && ~isempty(f1)
+        if keepPreFilterFigure
+            % Keep the pre-filter figure/spectrum instead of discarding
+            % them, and compute the after-filtering spectrum as a separate
+            % new figure:
+            spectrumBefore = spectrum;
+            fBefore = f1;
+        elseif exist('f1', 'var') && ~isempty(f1)
             close(f1);
         end
         if exist('filename','var')
             [spectrum, ~, ~, f1] = fftMinis(V, dt, filterParameters.nSweeps, endPulse, summaryPlot, notchPlot, filename);
         else
             [spectrum, ~, ~, f1] = fftMinis(V, dt, filterParameters.nSweeps, endPulse, summaryPlot, notchPlot);
+        end
+        if ishghandle(f1)
+            set(f1, 'Name', 'Fourier Transform (after filtering)');
+            ax = findobj(f1, 'Type', 'axes');
+            if ~isempty(ax)
+                ax(1).Title.String = [ax(1).Title.String ' - after filtering'];
+            end
         end
     else
         spectrum = fftMinis(V, dt, filterParameters.nSweeps, endPulse, summaryPlot, notchPlot);
@@ -200,13 +234,15 @@ if spectrumPlot
     loglog(f, power);
     hold on
     if exist('filename','var')
-        filestring = sprintf('Single-Sided Amplitude Spectrum of %s', filename);
+        filestring = sprintf('Power Spectrum of %s', filename);
     else
-        filestring = 'Single-Sided Amplitude Spectrum of data';
+        filestring = 'Power Spectrum of data';
     end
     set(f1, 'NumberTitle', 'off');
     set(f1, 'Name', 'Fourier Transform (time to frequency domain)');
-    title(filestring);
+    % Filenames routinely contain underscores; without Interpreter='none'
+    % they render as subscripts (or worse, garbled, with more than one):
+    title(filestring, 'Interpreter', 'none');
     xlabel('Frequency (Hz)');
     ylabel('Power (mV^2/Hz)');
 end

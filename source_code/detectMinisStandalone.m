@@ -122,19 +122,21 @@ function [minis, filterV, waveform, dataProperties, F, spectrum] = detectMinisSt
 %   [MINIS FILTERV WAVEFORM] = DETECTMINISSTANDALONE(...)
 %   in addition outputs a structure variables WAVEFORM containing fields:
 %       'averageTrace' is an average recording trace in mV or nA.
-%       'riseTimeDist' is a vector with a rise time distribution of large
-%           amplitude minis-like events that were used for obtaining the
-%           average waveform.
+%       'riseTimeDist' is a vector with the rise time distribution of ALL
+%           detected minis-like events (independent of how many events were
+%           averaged into 'averageTrace' -- see averageWaveEffect.m).
 %       'parameters' is a structure variable containing estimated waveform
 %           parameters 'peak' (mV or nA), 'BL' (baseline, mV or nA), 'Amp'
 %           (amplitude, mV or nA), 'risetime' (ms), 'tau_m' (effective
 %           dendritic membrane time constant, ms). In case when input
 %           variable field waveform.estimate is set to 3, additional fields
 %           averageAmp and medianAmp are added which correspond to the mean
-%           and median amplitude of the top 10% of the largest detected
-%           minis-like events.
-%       'F' - handles of the average trace and the rise time distribution
-%           figures.
+%           and median amplitude of all detected minis-like events (this
+%           function always averages over all events, unlike detectMinis
+%           called directly, which defaults to the top 10% largest).
+%       'F' - handle of the average waveform figure (this function never
+%           produces the second, rise-time-distribution figure that a
+%           direct detectMinis call can).
 %   If the input waveform variable is not set to 1, the output waveform
 %   variable is empty.
 %
@@ -222,7 +224,7 @@ if nargin
     detectionParameters.sampleInterval = dataProperties.dt;
     detectionParameters.smoothWindow = round(detectionParameters.smoothWindow/detectionParameters.sampleInterval);
     detectionParameters.smoothWindowLite = 8;
-    if nargin == 12
+    if nargin >= 12 && ~isempty(varargin{11})
         options.display = varargin{11};
     else
         options.display = true;
@@ -233,7 +235,38 @@ if nargin
       options.summaryPlot = false;
     end
     options.filename = filenameShort;
-    
+    % Average the waveform (if estimated) over ALL detected events, with
+    % just the single average-waveform figure -- rather than detectMinis's
+    % legacy default of the top-10%-largest events plus a second, duplicate
+    % rise-time-distribution figure. Every caller of detectMinisStandalone
+    % is GUI-facing (Detect, Detect-and-compare, batch detect, manual
+    % fitting); the legacy behaviour remains the default for direct
+    % detectMinis callers (the genetic-algorithm optimiser, simulation
+    % retrieval), which still rely on it:
+    options.allEventsWaveform = true;
+    % Optional progress indication and pre-filter-spectrum inclusion
+    % (opt-in; used by the GUI Detect task only -- NOT Detect-and-compare,
+    % since compareMinis.m assigns detectMinisStandalone's figure-array
+    % output into fixed-size F(1:2)/F(3:4) slices that assume exactly 2
+    % figures per call; growing that array would break those assignments).
+    % Passed as a 13th positional argument (a struct with fields 'enable',
+    % 'label', and 'includePreFilterSpectrum') so existing callers that
+    % stop at 11 or 12 arguments are unaffected.
+    if nargin == 13 && isstruct(varargin{12})
+        progressOptions = varargin{12};
+        options.showProgress = isfield(progressOptions,'enable') && progressOptions.enable;
+        if isfield(progressOptions,'label') && ~isempty(progressOptions.label)
+            options.progressLabel = progressOptions.label;
+        else
+            options.progressLabel = 'Detecting events';
+        end
+        options.includePreFilterSpectrum = isfield(progressOptions,'includePreFilterSpectrum') && progressOptions.includePreFilterSpectrum;
+    else
+        options.showProgress = false;
+        options.progressLabel = 'Detecting events';
+        options.includePreFilterSpectrum = false;
+    end
+
     
     % Determine excluded times:
     excludedTimes = varargin{3};
@@ -314,12 +347,27 @@ if nargin
         else
             options.edit = true;
         end
-        if nargin == 12
+        if nargin >= 12 && ~isempty(varargin{11})
             options.display = varargin{11};
         else
             options.display = true;
         end
         options.summaryPlot = options.display;
+        options.allEventsWaveform = true;
+        if nargin == 13 && isstruct(varargin{12})
+            progressOptions = varargin{12};
+            options.showProgress = isfield(progressOptions,'enable') && progressOptions.enable;
+            if isfield(progressOptions,'label') && ~isempty(progressOptions.label)
+                options.progressLabel = progressOptions.label;
+            else
+                options.progressLabel = 'Detecting events';
+            end
+            options.includePreFilterSpectrum = isfield(progressOptions,'includePreFilterSpectrum') && progressOptions.includePreFilterSpectrum;
+        else
+            options.showProgress = false;
+            options.progressLabel = 'Detecting events';
+            options.includePreFilterSpectrum = false;
+        end
         excludedTimes = [];
         if nargin >= 3
             excludedTimesArg = varargin{3};
@@ -363,6 +411,10 @@ else
     options.summaryPlot = true;
     options.edit = true;
     options.display = true;
+    options.allEventsWaveform = true;
+    options.includePreFilterSpectrum = false;
+    options.showProgress = false;
+    options.progressLabel = 'Detecting events';
     if ~exist('detectionParameters','var')
         detectionParameters = struct('sampleInterval', dataProperties.dt, 'SWstart', 14, 'BLduration', 2, 'refractoryPeriod', 3,...
             'Amplobound', .02, 'Ampupbound', 1, 'smoothWindow', 30, 'smoothWindowLite', 8, 'nSweeps', numSweeps, 'RTinterval', '10-90%', 'downGoing', false, 'voltageClamp', false);

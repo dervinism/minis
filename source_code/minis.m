@@ -2091,14 +2091,32 @@ try
         filtering.excludedTimes = targetExcludedTimes;
 
         % Detect minis-like events in a file of choice:
-        [minisArray, ~, waveform, ~, F] = detectMinisStandalone(true, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
-            parallelCores, 'none', true, waveform, filtering, [1 1 1 1]);
+        progressOptions = struct('enable', true, 'label', 'Detecting events', 'includePreFilterSpectrum', true);
+        [minisArray, ~, waveform, dataProperties, F] = detectMinisStandalone(true, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
+            parallelCores, 'none', true, waveform, filtering, [1 1 1 1], [], progressOptions);
         if ~isempty(waveform)
             minisArray = [minisArray repmat([waveform.parameters.averageAmp waveform.parameters.medianAmp waveform.parameters.tau_m], size(minisArray,1), 1)];
         end
 
-        % Save the detected event log and figures:
-        handles.ld = saveTargetEventLog(minisArray, F, waveform, filtering, detectionParameters.RTinterval, graphicsFormats, handles.ld);
+        % Incidence rate (events/s within each 1-second window,
+        % retrospectively assigned to every event in that window):
+        recordingDurationMs = numel(dataProperties.sweep) * dataProperties.dt;
+        incidenceRates = incidenceRate(minisArray(:,2), recordingDurationMs, excludedTimesToIntervals(targetExcludedTimes));
+
+        % Combine every result figure -- amplitude/rise-time histograms,
+        % 2D histogram, frequency spectrum (if filtering was on), and
+        % average waveform/rise-time distribution (if estimated) -- into a
+        % single tiled panel. F(3) (the interactive detected-event summary
+        % figure, used for manual curation) is deliberately excluded and
+        % stays a standalone window:
+        panelSourceFigs = [F(1:2) F(4:end)];
+        if ~isempty(waveform) && isfield(waveform,'F') && ~isempty(waveform.F)
+            panelSourceFigs = [panelSourceFigs waveform.F];
+        end
+        resultsPanel = combineDetectionFigures(panelSourceFigs, 'Detection results');
+
+        % Save the detected event log, results panel, and curation figure:
+        handles.ld = saveTargetEventLog(minisArray, incidenceRates, F(3), resultsPanel, detectionParameters.RTinterval, graphicsFormats, handles.ld);
 
     elseif detectBatch
         disp('Batch detection task initiated');
@@ -2153,15 +2171,20 @@ try
         for iFile = 1:numel(folderStruct)
             targetFilename = fullfile(folderStruct(iFile).folder, folderStruct(iFile).name);
             if endsWith(targetFilename, '.abf')
-                [minisArray, ~, waveform] = detectMinisStandalone(false, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
+                [minisArray, ~, waveform, dataProperties] = detectMinisStandalone(false, targetFilename, detectionParameters, targetExcludedTimes, classificationParameters,...
                     parallelCores, 'none', false, waveform, filtering, [1 1 1 1], false);
                 if ~isempty(waveform)
-                    minisArray = [minisArray repmat([waveform.parameters.averageAmp waveform.parameters.medianAmp waveform.parameters.tau_m], size(minisArray,1), 1)]; %#ok<AGROW> 
+                    minisArray = [minisArray repmat([waveform.parameters.averageAmp waveform.parameters.medianAmp waveform.parameters.tau_m], size(minisArray,1), 1)]; %#ok<AGROW>
                 end
-        
+
+                % Incidence rate (events/s within each 1-second window,
+                % retrospectively assigned to every event in that window):
+                recordingDurationMs = numel(dataProperties.sweep) * dataProperties.dt;
+                incidenceRates = incidenceRate(minisArray(:,2), recordingDurationMs, excludedTimesToIntervals(targetExcludedTimes));
+
                 % Save the detected event log and figures:
-                eventLogFile = [targetFilename(1:end-3) 'txt'];
-                handles.ld = saveTargetEventLogReduced(minisArray, eventLogFile, detectionParameters.RTinterval);
+                eventLogFile = [targetFilename(1:end-3) 'tsv'];
+                handles.ld = saveTargetEventLogReduced(minisArray, incidenceRates, eventLogFile, detectionParameters.RTinterval);
             end
         end
 
@@ -2245,11 +2268,32 @@ try
         filtering = noiseFilterDlg;
 
         % Detect minis-like events in both target and noise files and compare them:
-        [minisTarget, minisNoise, waveform, F] = compareMinis(targetFilename, noiseFilename, targetExcludedTimes, noiseExcludedTimes, detectionParameters,...
-            classificationParameters, filtering, waveform, parallelCores);
+        [minisTarget, minisNoise, waveform, F, targetIncidenceRates, noiseIncidenceRates] = compareMinis(targetFilename, noiseFilename, targetExcludedTimes, noiseExcludedTimes, detectionParameters,...
+            classificationParameters, filtering, waveform, parallelCores, true);
 
-        % Save the detected event logs and figures:
-        handles.ld = saveEventLog(minisTarget, minisNoise, F, waveform, filtering, detectionParameters.RTinterval, graphicsFormats, handles.ld);
+        % Combine every result figure -- amplitude histograms, rise-time
+        % histograms, 2D histograms, frequency spectra/difference, and the
+        % target average waveform/rise-time distribution (if estimated) --
+        % into a single tiled panel. F(1) and F(3) (the interactive
+        % target/noise detected-event summary figures, used for manual
+        % curation) are deliberately excluded and stay standalone windows.
+        % F(2)/F(4) are only distinct frequency-spectrum figures when
+        % filtering was on; otherwise they duplicate F(1)/F(3) and must not
+        % be folded into the panel too (see compareMinis.m):
+        panelSourceFigs = F(5:8);
+        if F(2) ~= F(1)
+            panelSourceFigs = [panelSourceFigs F(2)];
+        end
+        if F(4) ~= F(3)
+            panelSourceFigs = [panelSourceFigs F(4)];
+        end
+        if ~isempty(waveform) && isfield(waveform,'F') && ~isempty(waveform.F)
+            panelSourceFigs = [panelSourceFigs waveform.F];
+        end
+        resultsPanel = combineDetectionFigures(panelSourceFigs, 'Detect-and-compare results');
+
+        % Save the detected event logs, results panel, and curation figures:
+        handles.ld = saveEventLog(minisTarget, minisNoise, targetIncidenceRates, noiseIncidenceRates, [F(1) F(3)], resultsPanel, detectionParameters.RTinterval, graphicsFormats, handles.ld);
 
     elseif errorBounds
         disp('Error bound estimation task initiated');

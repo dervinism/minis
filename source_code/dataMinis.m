@@ -92,8 +92,11 @@ for i = 1:2*length(files)
         iData = dataLength - halfSweeps*sweepDuration + 1 : dataLength;
     end
     % Estimate effective tau_m based on PSPs and the average and median amplitude of top 10% minis:
+    % (averageWaveEffect now defaults to averaging ALL events; pass
+    % top10PercentOnly=true explicitly here to keep this pipeline's
+    % existing "top 10%" semantics, matching its exported column names.)
     [~, ~, ~, ~, parameters] = averageWaveEffect(minisCurrent, dataProperties{file}.sweep, dataProperties{file}.dt, 10, excludedTimesArray{file}, 10,...
-        detectionParameters.RTinterval, classificationParameters.riseTimeArrayExt, false);
+        detectionParameters.RTinterval, classificationParameters.riseTimeArrayExt, false, false, true);
     if ~isempty(parameters.tau_m)
         tau_m(i) = parameters.tau_m;
     else

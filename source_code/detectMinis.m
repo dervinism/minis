@@ -110,19 +110,24 @@ function [minis, filterV, spectrum, waveform, varargout] = detectMinis(V, exclud
 %           membrane time constant based on impulses.
 %   The output variable WAVEFORM is a structure containing the fields:
 %       'averageTrace' is an average recording trace in mV or nA.
-%       'riseTimeDist' is a vector with a rise time distribution of large
-%           amplitude minis-like events that were used for obtaining the
-%           average waveform.
+%       'riseTimeDist' is a vector with the rise time distribution of ALL
+%           detected minis-like events (independent of how many events were
+%           averaged into 'averageTrace' -- see averageWaveEffect.m).
 %       'parameters' is a structure variable containing estimated waveform
 %           parameters 'peak' (mV or nA), 'BL' (baseline, mV or nA), 'Amp'
 %           (amplitude, mV or nA), 'risetime' (ms), 'tau_m' (effective
 %           dendritic membrane time constant, ms). In case when input
 %           variable field waveform.estimate is set to 3, additional fields
 %           averageAmp and medianAmp are added which correspond to the mean
-%           and median amplitude of the top 10% of the largest detected
-%           minis-like events.
-%       'F' - handles of the average trace and the rise time distribution
-%           figures.
+%           and median amplitude of the events averaged into 'averageTrace'
+%           (by default all detected events when reached via
+%           detectMinisStandalone -- e.g. the GUI's Detect and
+%           Detect-and-compare tasks -- or the top 10% largest when called
+%           directly with the legacy default, as the optimiser and
+%           preprocessing pipeline do).
+%       'F' - handle of the average waveform figure (and, only when called
+%           directly with the legacy default, a second handle for the
+%           rise-time-distribution figure -- see averageWaveEffect.m).
 %   If the input waveform variable is not set to 1 or 2, the output
 %   waveform variable is empty.
 %
@@ -285,6 +290,38 @@ if nargin == 7
     else
         SD = [false false false false];
     end
+    if isfield(options,'showProgress') && options.showProgress
+        showProgress = true;
+    else
+        showProgress = false;
+    end
+    if isfield(options,'progressLabel') && ~isempty(options.progressLabel)
+        progressLabel = options.progressLabel;
+    else
+        progressLabel = 'Detecting events';
+    end
+    % Controls how the average waveform (if estimated) is computed and
+    % displayed. Defaults to this function's long-standing behaviour --
+    % top-10%-largest-events only, with both the waveform and rise-time
+    % figures drawn -- since detectMinis is also called directly (bypassing
+    % detectMinisStandalone) by the genetic-algorithm optimiser and
+    % simulation-retrieval tooling (optimiseMinis.m, retrieveMinis.m),
+    % which rely on exactly that behaviour, including waveform.F(2).
+    % detectMinisStandalone.m sets this to true for the GUI's Detect and
+    % Detect-and-compare tasks:
+    if isfield(options,'allEventsWaveform') && options.allEventsWaveform
+        allEventsWaveform = true;
+    else
+        allEventsWaveform = false;
+    end
+    % Opt-in (GUI-facing only, same as allEventsWaveform above): also keep
+    % the frequency-spectrum figure computed before filtering, instead of
+    % discarding it once the after-filtering spectrum is available:
+    if isfield(options,'includePreFilterSpectrum') && options.includePreFilterSpectrum
+        includePreFilterSpectrum = true;
+    else
+        includePreFilterSpectrum = false;
+    end
 else
     interactMode = false;
     summaryPlot = false;
@@ -292,6 +329,10 @@ else
     smooth = true;
     SD = [false false false false];
     skipInversion = false;
+    showProgress = false;
+    progressLabel = 'Detecting events';
+    allEventsWaveform = false;
+    includePreFilterSpectrum = false;
 end
 clear options varargin
 
@@ -327,6 +368,20 @@ end
 
 
 
+%% Set up progress indication (opt-in; used by the GUI Detect and
+% Detect-and-compare tasks only -- never enabled during genetic-algorithm
+% optimisation, error-bound estimation, or preprocessing, which call
+% detectMinis many times in a tight loop):
+if showProgress
+    progressBar = waitbar(0, [progressLabel ': preparing...'], 'Name', 'Minis detection');
+    progressCleanup = onCleanup(@() closeProgressBar(progressBar)); %#ok<NASGU>
+else
+    progressBar = [];
+    progressCleanup = []; %#ok<NASGU>
+end
+
+
+
 %% Invert data
 if isfield(searchParameters,'downGoing') && searchParameters.downGoing && ~skipInversion
     V = -V;
@@ -335,12 +390,13 @@ end
 
 
 %% Band-stop filter the regular (systemic) noise:
+fBeforeFilter = [];
 if strcmpi(filtering.state,'on')
     if summaryPlot
         if exist('filename','var')
-            [V, spectrum, f1] = filterMinis(V, dt, filtering, summaryPlot, filename);
+            [V, spectrum, f1, ~, ~, fBeforeFilter] = filterMinis(V, dt, filtering, summaryPlot, filename, [], includePreFilterSpectrum);
         else
-            [V, spectrum, f1] = filterMinis(V, dt, filtering, summaryPlot);
+            [V, spectrum, f1, ~, ~, fBeforeFilter] = filterMinis(V, dt, filtering, summaryPlot, [], [], includePreFilterSpectrum);
         end
     else
         [V, spectrum] = filterMinis(V, dt, filtering, summaryPlot);
@@ -351,6 +407,9 @@ else
     spectrum = [];
 end
 filterV = V;
+if ~isempty(progressBar) && ishandle(progressBar)
+    waitbar(0.10, progressBar, [progressLabel ': filtering complete']);
+end
 
 
 
@@ -454,6 +513,9 @@ else
         pause(pauseTime*2);
     end
     clear V smoothWindows;
+    if ~isempty(progressBar) && ishandle(progressBar)
+        waitbar(0.15, progressBar, [progressLabel ': candidate peaks found, analysing...']);
+    end
 
     % PLOT1 - Examine the initial peaks and then dim them:
     if interactMode
@@ -468,14 +530,19 @@ else
         hold off;
     end
 
+    % Progress span for the main detection loop (peak search 0.15 -> 0.85):
+    progressBase = 0.15;
+    progressSpan = 0.70;
+
     % Detect minis-like events:
     switch parallelCores
         case 1                                                                  % Serial detection
             if interactMode
                 finalMinis = detectionAlgorithmSerial(initt, initvsmooth, searchParameters, initPeakIndexArray, origPeakIndexArray, interactMode, pauseTime,...
-                    f4, axes3);
+                    f4, axes3, progressBar, progressBase, progressSpan);
             else
-                finalMinis = detectionAlgorithmSerial(initt, initvsmooth, searchParameters, initPeakIndexArray, origPeakIndexArray);
+                finalMinis = detectionAlgorithmSerial(initt, initvsmooth, searchParameters, initPeakIndexArray, origPeakIndexArray, [], [], [], [],...
+                    progressBar, progressBase, progressSpan);
             end
         otherwise                                                               % Parallel detection
             % Divide the recording sweep for parallel processing:
@@ -493,10 +560,25 @@ else
                 peakIndexArray(iCores,:) = initPeakIndexArray((iCores-1)*initLength-add/2+1:iCores*initLength+add/2);
                 originalPeakIndexArray(iCores,:) = origPeakIndexArray((iCores-1)*origLength-add/2-addOrig+1:iCores*origLength+add/2+addOrig);
             end
-            % Carry out the detection:
+            % Carry out the detection. Progress (when enabled) is reported
+            % coarsely, one step per completed core, via a DataQueue: workers
+            % cannot touch the client's waitbar directly, and per-peak
+            % granularity would add unnecessary cross-process messaging
+            % overhead for what is normally just a handful of cores:
             finalMinis = zeros(initLength+add,22,parallelCores);
+            parallelCompletedCores = 0;
+            if ~isempty(progressBar) && ishandle(progressBar)
+                progressQueue = parallel.pool.DataQueue;
+                afterEach(progressQueue, @reportCoreProgress);
+                waitbar(progressBase, progressBar, sprintf('%s: analysing on %d cores...', progressLabel, parallelCores));
+            else
+                progressQueue = [];
+            end
             parfor iCore = 1:parallelCores
                 coreMinis = detectionAlgorithmParallel(initt, initvsmooth, searchParameters, peakIndexArray(iCore,:), originalPeakIndexArray(iCore,:));
+                if ~isempty(progressQueue)
+                    send(progressQueue, iCore); %#ok<PFBNS>
+                end
                 finalMinis(:,:,iCore) = coreMinis;
             end
     end
@@ -515,6 +597,9 @@ else
     assert(~sum(minis(:,3)==0));
     clear parallelCores interactMode peakIndexArray pauseTime f4 axes3 finalMinis iCore coreMinis vdim hdim tempMinis uniqueMinis
 end  % end detection block
+if ~isempty(progressBar) && ishandle(progressBar)
+    waitbar(0.90, progressBar, [progressLabel ': computing summary statistics...']);
+end
 
 %% Convert detected event values to original (non-inverted) convention:
 % When downGoing is true the trace was inverted (V = -V) before detection.
@@ -567,8 +652,16 @@ if summaryPlot || (exist('edit','var') && edit)
                 filterV, spectrum, searchParameters, filename);
         end
     end
+    haveBeforeFilter = ~isempty(fBeforeFilter) && ishghandle(fBeforeFilter);
     if exist('f1','var')
-        varargout{1} = [f5 f1];
+        if haveBeforeFilter
+            % Before-filtering panel first, then after-filtering:
+            varargout{1} = [f5 fBeforeFilter f1];
+        else
+            varargout{1} = [f5 f1];
+        end
+    elseif haveBeforeFilter
+        varargout{1} = [f5 fBeforeFilter];
     else
         varargout{1} = f5;
     end
@@ -581,13 +674,22 @@ clear summaryPlot edit nameStringf5 titleStringf5 optionsf5 f1 f5 initt p10 p11 
 
 
 %% Estimate the average waveform:
+if ~isempty(progressBar) && ishandle(progressBar)
+    waitbar(0.95, progressBar, [progressLabel ': finalising...']);
+end
+% top10Only mirrors this function's legacy default (top-10%-largest-events
+% only, both waveform and rise-time figures drawn) unless the caller opted
+% into allEventsWaveform (set by detectMinisStandalone.m for the GUI's
+% Detect and Detect-and-compare tasks -- see the options-parsing comment
+% above):
+top10Only = ~allEventsWaveform;
 if waveform.estimate || SD(4)
     if waveform.estimate == 1
         button = questdlg('Do you want to estimate the average waveform?','Obtain Average Waveform','Yes','No','Yes');
         if strcmpi(button, 'Yes')
             [waveform.averageTrace, averageAmp, medianAmp, waveform.riseTimeDist, waveform.parameters, waveform.F] = averageWaveEffect(minis,...
                 initvsmooth, dt, waveform.tau_m, excludedT, 10, searchParameters.RTinterval, waveform.riseTimeArrayExt, true,...
-                isfield(searchParameters,'downGoing') && searchParameters.downGoing);
+                isfield(searchParameters,'downGoing') && searchParameters.downGoing, top10Only, top10Only);
            waveform.parameters.averageAmp = averageAmp;
            waveform.parameters.medianAmp = medianAmp;
         else
@@ -596,13 +698,13 @@ if waveform.estimate || SD(4)
     elseif waveform.estimate == 3
         [waveform.averageTrace, averageAmp, medianAmp, waveform.riseTimeDist, waveform.parameters, waveform.F] = averageWaveEffect(minis, initvsmooth, dt, waveform.tau_m,...
                 excludedT, 10, searchParameters.RTinterval, waveform.riseTimeArrayExt, true,...
-                isfield(searchParameters,'downGoing') && searchParameters.downGoing);
+                isfield(searchParameters,'downGoing') && searchParameters.downGoing, top10Only, top10Only);
         waveform.parameters.averageAmp = averageAmp;
         waveform.parameters.medianAmp = medianAmp;
     else
         [waveform.averageTrace, averageAmp, medianAmp, waveform.riseTimeDist, waveform.parameters] = averageWaveEffect(minis, initvsmooth, dt, waveform.tau_m, excludedT,...
             10, searchParameters.RTinterval, waveform.riseTimeArrayExt, false,...
-            isfield(searchParameters,'downGoing') && searchParameters.downGoing);
+            isfield(searchParameters,'downGoing') && searchParameters.downGoing, top10Only);
         waveform.parameters.averageAmp = averageAmp;
         waveform.parameters.medianAmp = medianAmp;
     end
@@ -672,6 +774,19 @@ if any(SD)
         minis = [minis repmat(STD(STD ~= 0), size(minis,1), 1)];
     end
 end
+
+    % Nested callback for the parallel-detection progress DataQueue (see the
+    % 'otherwise' branch of the parallelCores switch above). Must be nested
+    % (rather than a sibling local function) so it can share progressBar /
+    % parallelCompletedCores with the rest of this function without those
+    % being passed through the DataQueue itself.
+    function reportCoreProgress(~)
+        parallelCompletedCores = parallelCompletedCores + 1;
+        if ~isempty(progressBar) && ishandle(progressBar)
+            waitbar(progressBase + progressSpan*parallelCompletedCores/parallelCores, progressBar,...
+                sprintf('%s: %d/%d cores complete', progressLabel, parallelCompletedCores, parallelCores));
+        end
+    end
 end
 
 
@@ -684,6 +799,16 @@ end
 
 
 %% Local functions:
+function closeProgressBar(h)
+% CLOSEPROGRESSBAR safely closes the detection progress waitbar. Used via
+% ONCLEANUP so the waitbar is removed on any exit path (normal return or
+% error), including if the user has already closed it manually.
+if ~isempty(h) && ishandle(h)
+    close(h);
+end
+end
+
+
 function coreMinis = detectionAlgorithmSerial(t, vsmooth, searchParameters, peakIndices, originalPeakInd, varargin)
 % DETECTIONALGORITHMSERIAL is a serial minis detection algorithm and is a
 % helper subfunction of DETECTMINIS.
@@ -699,6 +824,15 @@ if nargin > 5
     axes3 = varargin{4};
 else
     interactMode = false;
+end
+if nargin >= 12
+    progressBar = varargin{5};
+    progressBase = varargin{6};
+    progressSpan = varargin{7};
+else
+    progressBar = [];
+    progressBase = 0;
+    progressSpan = 0;
 end
 RTtype = searchParameters.RTinterval;                                       % The rise time type (20-80% or 10-90%)
 dt = searchParameters.sampleInterval;                                       % The sample interval, ms
@@ -736,12 +870,25 @@ v50s = zeros(lengthTempStore,1);
 v90s = zeros(lengthTempStore,1);
 decays = NaN(lengthTempStore,1);
 
+% Throttle progress-bar updates to ~20 steps total (every ~5% of peaks).
+% Each waitbar() redraw has a fixed cost (graphics + text layout) that is
+% independent of the trace size, so capping the number of calls -- rather
+% than scaling it with peak count -- keeps the overhead small and bounded:
+progressStep = max(1, floor(length(peakIndices)/20));
 
 % Major loop:
 for iPeak = 1:length(peakIndices)
+    % Cheap arithmetic check first so the (comparatively expensive) graphics
+    % handle query and waitbar redraw only happen on throttled updates, not
+    % once per peak:
+    if (mod(iPeak, progressStep) == 0 || iPeak == length(peakIndices)) &&...
+            ~isempty(progressBar) && ishandle(progressBar)
+        waitbar(progressBase + progressSpan*iPeak/length(peakIndices), progressBar,...
+            sprintf('Analysing candidate events (%d%%)', round(100*iPeak/length(peakIndices))));
+    end
     peakIndex = peakIndices(iPeak);
     peakTime = t(peakIndex);
-    
+
     % Filter out peaks that do not meat the inclusion criteria:
     % 1. Test whether the local maximum (peak) is the highest peak in the vicinity ahead:
     iEndRefractory = peakIndex + nRefractory;
@@ -749,10 +896,10 @@ for iPeak = 1:length(peakIndices)
     refractoryPeaks = vsmooth(refractoryPeakIndices);
     maxRefractoryPeak = max(refractoryPeaks);
     if isempty(maxRefractoryPeak) || vsmooth(peakIndex) > maxRefractoryPeak
-        
+
         % 2. Test whether the local maximum (peak) has no established peaks in the vicinity behind:
         if peakCounter && peakTime - peakTimes(peakCounter) > tRefractory || ~peakCounter
-            
+
             % PLOT2.1 - Mark a potential mini:
             if interactMode
                 figure(f4);
@@ -1787,8 +1934,8 @@ while edit
         case 'w' % Intermediate save
             % On the first press, prompt the user to choose file paths:
             if isempty(intermediateTxtFile)
-                suggestedTxt = fullfile(saveDir, [baseName '_intermediate.txt']);
-                [tName, tPath, tIdx] = uiputfile({'*.txt','Text files (*.txt)'},...
+                suggestedTxt = fullfile(saveDir, [baseName '_intermediate.tsv']);
+                [tName, tPath, tIdx] = uiputfile({'*.tsv','TSV files (*.tsv)'},...
                     'Save Intermediate Event Log as', suggestedTxt);
                 if tIdx
                     suggestedFig = fullfile(saveDir, [baseName '_intermediate.fig']);
@@ -1936,9 +2083,10 @@ function waveformF = manualAdjustSave(minis, V, f, waveform, RTtype, txtFile, fi
 %   At the time this function is called the MINIS matrix contains only the
 %   22 basic detection columns (SD columns and waveform statistics are
 %   appended later in the pipeline). When waveform estimation is enabled,
-%   MANUALADJUSTSAVE calls AVERAGEWAVEEFFECT internally to compute the
-%   average waveform statistics and appends them directly to produce a
-%   25-column output (22 basic + mean top 10% + median top 10% + tau).
+%   MANUALADJUSTSAVE calls AVERAGEWAVEEFFECT internally (averaged over all
+%   detected events) to compute the average waveform statistics and appends
+%   them directly to produce a 25-column output (22 basic + mean amplitude
+%   + median amplitude + tau).
 %
 
 % Initialise the waveform figure output:
@@ -1957,7 +2105,7 @@ doWaveform = ~isempty(waveform) && isfield(waveform, 'estimate') ...
 if doWaveform
     try
         [~, averageAmp, medianAmp, ~, waveformParams] = averageWaveEffect(...
-            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, false, downGoing);
+            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, false, downGoing, false);
         if ~isempty(waveformParams) && isfield(waveformParams, 'tau_m') && ~isempty(waveformParams.tau_m)
             minisToSave = [minis repmat([averageAmp medianAmp waveformParams.tau_m], size(minis,1), 1)];
         end
@@ -1973,7 +2121,7 @@ end
 if ~isempty(wavFile) && doWaveform
     try
         [~, ~, ~, ~, ~, waveformF] = averageWaveEffect(...
-            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, true, downGoing);
+            minis, V, dt, waveform.tau_m, excludedT, 10, RTtype, waveform.riseTimeArrayExt, true, downGoing, false, false);
         if ~isempty(waveformF)
             saveas(waveformF(1), wavFile);
             set(waveformF, 'Visible', 'off');
@@ -1984,54 +2132,18 @@ if ~isempty(wavFile) && doWaveform
     end
 end
 
-% Save the event text file:
-% Event values are always stored in the original (non-inverted) trace
-% convention (negative peaks / negative amplitudes for down-going events),
-% so plain column headers are used regardless of the downGoing flag:
-peakHdr  = 'Peak potential';
-blHdr    = 'Baseline (BL)';
-v10Hdr   = '10% RT potential';
-v50Hdr   = '50% RT potential';
-v90Hdr   = '90% RT potential';
-v20Hdr   = '20% RT potential';
-v80Hdr   = '80% RT potential';
-fid = fopen(txtFile, 'wt+');
-if fid ~= -1
-    nCols = size(minisToSave, 2);
-    if strcmpi(RTtype, '10-90%')
-        if nCols == 25
-            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\t %16s\t %16s\t %16s\n',...
-                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
-                'BL end index', 'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
-                '10% RT index', '50% RT index', '90% RT index', v10Hdr, v50Hdr, v90Hdr, 'decay time',...
-                'mean top 10%', 'median top 10%', 'tau');
-            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
-        else
-            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\n',...
-                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
-                'BL end index', 'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
-                '10% RT index', '50% RT index', '90% RT index', v10Hdr, v50Hdr, v90Hdr, 'decay time');
-            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\n', minisToSave');
-        end
-    elseif strcmpi(RTtype, '20-80%')
-        if nCols == 25
-            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\t %16s\t %16s\t %16s\n',...
-                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
-                'BL end index', 'Rise time (RT) length', 'RT', '20-80% RT', '20% RT time mark', '50% RT time mark', '80% RT time mark',...
-                '20% RT index', '50% RT index', '80% RT index', v20Hdr, v50Hdr, v80Hdr, 'decay time',...
-                'mean top 10%', 'median top 10%', 'tau');
-            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', minisToSave');
-        else
-            fprintf(fid, '%20s\t %16s\t %16s\t %16s\t %20s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %20s\t %20s\t %20s\t %16s\n',...
-                peakHdr, 'Peak Time', 'Peak Index', 'Amplitude', blHdr, 'BL start time', 'BL end time', 'BL start index',...
-                'BL end index', 'Rise time (RT) length', 'RT', '20-80% RT', '20% RT time mark', '50% RT time mark', '80% RT time mark',...
-                '20% RT index', '50% RT index', '80% RT index', v20Hdr, v50Hdr, v80Hdr, 'decay time');
-            fprintf(fid, '%20.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %20.14g\t %20.14g\t %20.14g\t %16.14g\n', minisToSave');
-        end
-    end
-    fclose(fid);
-    disp(['Intermediate event text file saved: ' txtFile]);
-end
+% Save the event data (TSV). Event values are always stored in the
+% original (non-inverted) trace convention (negative peaks / negative
+% amplitudes for down-going events), so plain column headers are used
+% regardless of the downGoing flag. minisToSave never carries SD columns
+% at this point in the pipeline (see the function header comment above) --
+% only the optional trailing waveform columns:
+nCols = size(minisToSave, 2);
+headers = [eventLogHeaders(RTtype, false, false, nCols == 25), {'Incidence rate (events/s)'}];
+recordingDurationMs = numel(V) * dt;
+incidenceRates = incidenceRate(minisToSave(:,2), recordingDurationMs, excludedPointsToIntervals(excludedT, dt));
+writeEventsTSV(txtFile, headers, [minisToSave, incidenceRates(:)]);
+disp(['Intermediate event data file saved: ' txtFile]);
 
 % Save the summary figure:
 if ishghandle(f)

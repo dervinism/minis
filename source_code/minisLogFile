@@ -1,0 +1,72 @@
+Logging is on, see C:\Users\m329786\Matlab_libraries\minis\source_code\minisLogFile
+minis is ready
+Logging is off
+Logging is on, see C:\Users\m329786\Matlab_libraries\minis\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Task completed
+uiopen('C:\Users\m329786\Downloads\zvzdsv.fig',1)
+uiopen('C:\Users\m329786\Downloads\xcdfxb.fig',1)
+2+2
+
+ans =
+
+     4
+
+Logging is off
+Logging is on, see C:\Users\m329786\Matlab_libraries\minis\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Task completed
+Logging is on, see C:\Users\m329786\Matlab_libraries\minis\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Task completed
+Detection task initiated
+Task completed
+Detection task initiated
+Task completed
+Detection task initiated
+Task completed
+Logging is off
+Logging is on, see C:\Users\m329786\Matlab_libraries\minis\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Task completed
+Detection task initiated
+Task completed
+Detection task initiated
+Task completed
+Detection task initiated
+Task completed
+Detect and compare task initiated
+Task completed
+Detection task initiated
+Task completed
+Detection task initiated
+Program execution failed
+{Error using <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('writeEventsTSV', 'C:\Users\m329786\Matlab_libraries\minis\source_code\writeEventsTSV.m', 19)" style="font-weight:bold">writeEventsTSV</a> (<a href="matlab: opentoline('C:\Users\m329786\Matlab_libraries\minis\source_code\writeEventsTSV.m',19,0)">line 19</a>)
+Could not open file for writing: C:\Users\m329786\Downloads\sdfsd.tsv
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('saveTargetEventLog', 'C:\Users\m329786\Matlab_libraries\minis\source_code\saveTargetEventLog.m', 17)" style="font-weight:bold">saveTargetEventLog</a> (<a href="matlab: opentoline('C:\Users\m329786\Matlab_libraries\minis\source_code\saveTargetEventLog.m',17,0)">line 17</a>)
+        writeEventsTSV(fullfile(eventPathname,eventFilename), headers, [minisArray, incidenceRates(:)]);
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis>startTool_ClickedCallback', 'C:\Users\m329786\Matlab_libraries\minis\source_code\minis.m', 2119)" style="font-weight:bold">minis>startTool_ClickedCallback</a> (<a href="matlab: opentoline('C:\Users\m329786\Matlab_libraries\minis\source_code\minis.m',2119,0)">line 2119</a>)
+        handles.ld = saveTargetEventLog(minisArray, incidenceRates, F(3), resultsPanel, detectionParameters.RTinterval, graphicsFormats, handles.ld);
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('gui_mainfcn', 'C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m', 95)" style="font-weight:bold">gui_mainfcn</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024a\toolbox\matlab\guide\gui_mainfcn.m',95,0)">line 95</a>)
+        feval(varargin{:});
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('minis', 'C:\Users\m329786\Matlab_libraries\minis\source_code\minis.m', 42)" style="font-weight:bold">minis</a> (<a href="matlab: opentoline('C:\Users\m329786\Matlab_libraries\minis\source_code\minis.m',42,0)">line 42</a>)
+    gui_mainfcn(gui_State, varargin{:});
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis(''startTool_ClickedCallback'',hObject,eventdata,guidata(hObject))')" style="font-weight:bold">matlab.graphics.internal.figfile.FigFile/read>@(hObject,eventdata)minis('startTool_ClickedCallback',hObject,eventdata,guidata(hObject))</a>
+} 
+Error while evaluating PushTool ClickedCallback.
+
+Logging is off
+Logging is on, see C:\Users\m329786\Matlab_libraries\minis\source_code\minisLogFile
+minis is ready
+Detection task initiated
+Task completed
+Logging is off

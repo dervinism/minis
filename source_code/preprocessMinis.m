@@ -468,24 +468,25 @@ try
     [data, data2, figures] = dataMinis(dataDirectory, handles.excludedTimes, handles.detectionParameters, handles.classificationParameters,...
         pulseAmplitude, APinfuse, APblock, minisInfuse, initFile, handles.parallelCores);
 
-    button = questdlg('Save the pre-processing data text file?','Save File','Yes','No','Yes');
+    button = questdlg('Save the pre-processing data (TSV)?','Save File','Yes','No','Yes');
     if strcmpi(button, 'Yes')
-        [eventFilename, eventPathname, filterIndex] = uiputfile({'*.txt','Text files (*.txt)'},'Save Pre-processing Log as', dataDirectory);
+        % The two data tables (per-file amplitude/SD/baseline summary, and
+        % per-file tau/capacitance/resistance) have different column counts,
+        % so they are saved as two separate TSV files rather than one file
+        % with a blank-line gap (which would not open as a clean table in
+        % Excel):
+        [eventFilename, eventPathname, filterIndex] = uiputfile({'*.tsv','TSV files (*.tsv)'},'Save Pre-processing Log as', dataDirectory);
         if filterIndex
             handles.ld = eventPathname;
-            fid = fopen(fullfile(eventPathname,eventFilename),'wt+');
-            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-                'File', 'Top 20% mean', 'Top 20% median', 'Top 10% mean', 'Top 10% median', 'Top 5% mean', 'Top 5% median', 'Top 2% mean', 'Top 2% median',...
-                'Top 1% mean', 'Top 1% median', '100ms SD', '100ms smoothed SD', '15ms-mean SD', '15ms-mean smoothed SD', '15ms-med SD',...
-                '15ms-med smoothed SD', '100ms BL', '100ms smoothed BL', '15ms BL', '15ms smoothed BL');
-            fprintf(fid,'%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', data');
-            fprintf(fid,'\r\n');
+            [~, baseName] = fileparts(eventFilename);
 
-            fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-                'File', 'Top 10% tau_m', 'Impulse tau_m', 'Effective tau_m', 'Capacitance', 'Effective capacitance', 'Pseudo series R');
-            fprintf(fid,'%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n', data2');
-            fprintf(fid,'\r\n');
-            fclose(fid);
+            summaryHeaders = {'File', 'Top 20% mean', 'Top 20% median', 'Top 10% mean', 'Top 10% median', 'Top 5% mean', 'Top 5% median', 'Top 2% mean', 'Top 2% median',...
+                'Top 1% mean', 'Top 1% median', '100ms SD', '100ms smoothed SD', '15ms-mean SD', '15ms-mean smoothed SD', '15ms-med SD',...
+                '15ms-med smoothed SD', '100ms BL', '100ms smoothed BL', '15ms BL', '15ms smoothed BL'};
+            writeEventsTSV(fullfile(eventPathname, [baseName '_summary.tsv']), summaryHeaders, data);
+
+            membraneHeaders = {'File', 'Top 10% tau_m', 'Impulse tau_m', 'Effective tau_m', 'Capacitance', 'Effective capacitance', 'Pseudo series R'};
+            writeEventsTSV(fullfile(eventPathname, [baseName '_membraneProperties.tsv']), membraneHeaders, data2);
         end
     end
 

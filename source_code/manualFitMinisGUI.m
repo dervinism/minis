@@ -283,16 +283,13 @@ if filterIndex
     end
 end
 
-% Save the event log file:
-[filename, ~, filterIndex] = uiputfile({'*.txt','Text files (*.txt)'},'Save Detected Event Log as', 'detected events.txt');
+% Save the event data (TSV):
+[filename, ~, filterIndex] = uiputfile({'*.tsv','TSV files (*.tsv)'},'Save Detected Event Log as', 'detected events.tsv');
 if filterIndex
-    fid = fopen(filename,'wt+');
-    fprintf(fid, '%16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\t %16s\n',...
-        'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index', 'BL end index',...
+    headers = {'Peak potential', 'Peak Time', 'Peak Index', 'Amplitude', 'Baseline (BL)', 'BL start time', 'BL end time', 'BL start index', 'BL end index',...
         'Rise time (RT) length', 'RT', '10-90% RT', '10% RT time mark', '50% RT time mark', '90% RT time mark',...
-        '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential', 'tau');
-    fprintf(fid,'%16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\t %16.14g\n',handles.minisSimulated');
-    fclose(fid);
+        '10% RT index', '50% RT index', '90% RT index', '10% RT potential', '50% RT potential', '90% RT potential', 'tau'};
+    writeEventsTSV(filename, headers, handles.minisSimulated);
 end
 
 % Save the detected event figure file:
